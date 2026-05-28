@@ -51,6 +51,8 @@ metadata:
 - CLI 输出为 JSON 格式，结构化呈现给用户。
 - 操作频率不宜过高，保持合理间隔。
 - 不读取、输出或迁移 cookie、token、app secret、Chrome profile、`.lark-cli` 等本机账号配置。
+- 发布前必须确认创作服务平台登录态；`xiaohongshu.com` 社区页已登录不代表 `creator.xiaohongshu.com` 发布页可用。
+- 用户要求只填预览时，不得调用 `click-publish`；最终发布必须由用户明确确认或手动完成。
 
 ## 子技能概览
 

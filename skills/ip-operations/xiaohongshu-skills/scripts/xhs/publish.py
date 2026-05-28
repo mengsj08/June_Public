@@ -530,21 +530,46 @@ def _input_single_tag(page: Page, content_selector: str, tag: str) -> None:
         time.sleep(random.uniform(0.05, 0.12))
 
     # 等待标签联想出现（最多 3 秒）
+    # 用户显式给定 tags 时只接受精确话题。小红书常把 "AI" 推荐成
+    # "人工智能" 等相近话题，默认点第一个会改变用户指定的标签。
     deadline = time.monotonic() + 3.0
     clicked = False
     while time.monotonic() < deadline:
         time.sleep(0.5)
         if page.has_element(TAG_TOPIC_CONTAINER):
-            item_selector = f"{TAG_TOPIC_CONTAINER} {TAG_FIRST_ITEM}"
-            if page.has_element(item_selector):
-                page.click_element(item_selector)
-                logger.info("点击标签联想: %s", tag)
+            clicked = page.evaluate(
+                f"""
+                (() => {{
+                    const wanted = {json.dumps(tag)}.trim().toLowerCase();
+                    const items = document.querySelectorAll(
+                        {json.dumps(f"{TAG_TOPIC_CONTAINER} {TAG_FIRST_ITEM}")}
+                    );
+                    for (const item of items) {{
+                        const raw = (item.textContent || "").trim();
+                        const normalized = raw
+                            .replace(/^#/, "")
+                            .replace(/\\[话题\\]#/g, "")
+                            .replace(/\\[话题\\]/g, "")
+                            .replace(/\\s+/g, "")
+                            .trim()
+                            .toLowerCase();
+                        if (normalized === wanted) {{
+                            item.click();
+                            return true;
+                        }}
+                    }}
+                    return false;
+                }})()
+                """
+            )
+            if clicked:
+                logger.info("点击精确标签联想: %s", tag)
                 clicked = True
                 break
 
     if not clicked:
-        # 没有联想，直接空格
-        logger.warning("未找到标签联想，直接输入空格: %s", tag)
+        # 没有精确联想，直接空格保留用户输入的原始 tag 文本。
+        logger.warning("未找到精确标签联想，保留原始标签文本: %s", tag)
         page.type_text(" ", delay_ms=0)
 
     time.sleep(0.8)

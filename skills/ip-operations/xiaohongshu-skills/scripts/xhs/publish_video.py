@@ -98,9 +98,54 @@ def _upload_video(page: Page, video_path: str) -> None:
     selector = UPLOAD_INPUT if page.has_element(UPLOAD_INPUT) else FILE_INPUT
     page.set_file_input(selector, [video_path])
 
-    # 等待发布按钮可点击（视频处理完成）
-    _wait_for_publish_button_clickable(page)
+    # 等待视频处理完成。新版创作页可能没有旧版发布按钮 selector，
+    # 不能只靠按钮可点击判断上传成功。
+    _wait_for_video_upload_ready(page, os.path.basename(video_path))
     logger.info("视频上传/处理完成")
+
+
+def _wait_for_video_upload_ready(page: Page, filename: str) -> None:
+    """等待视频进入可预览状态，兼容新版创作页。"""
+    max_wait = 600.0
+    start = time.monotonic()
+
+    logger.info("开始等待视频上传/处理完成")
+
+    while time.monotonic() - start < max_wait:
+        state = page.evaluate(
+            f"""
+            (() => {{
+                const bodyText = document.body ? document.body.innerText : "";
+                const btn = document.querySelector({_js_str(PUBLISH_BUTTON)});
+                const oldButtonReady = !!btn
+                    && btn.getBoundingClientRect().width > 0
+                    && btn.getBoundingClientRect().height > 0
+                    && !btn.disabled
+                    && !btn.classList.contains("disabled");
+                return {{
+                    oldButtonReady,
+                    hasFileName: bodyText.includes({_js_str(filename)}),
+                    hasVideo: document.querySelectorAll("video").length > 0,
+                    hasPreview: bodyText.includes("笔记预览") || bodyText.includes("封面预览"),
+                    failed: bodyText.includes("上传失败") || bodyText.includes("网络异常"),
+                }};
+            }})()
+            """
+        )
+
+        if isinstance(state, dict):
+            if state.get("failed"):
+                raise PublishError("视频上传失败，页面显示上传失败或网络异常")
+            if state.get("oldButtonReady") or (
+                state.get("hasFileName")
+                and state.get("hasVideo")
+                and state.get("hasPreview")
+            ):
+                return
+
+        time.sleep(1)
+
+    raise UploadTimeoutError("等待视频上传/处理完成超时(10分钟)")
 
 
 def _wait_for_publish_button_clickable(page: Page) -> None:
