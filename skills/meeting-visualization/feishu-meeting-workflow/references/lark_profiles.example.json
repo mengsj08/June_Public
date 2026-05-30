@@ -1,0 +1,25 @@
+{
+  "profiles": [],
+  "source_requirements": {
+    "feishu_docx": {
+      "description": "Feishu/Lark docx or AI notes docx link",
+      "required_scopes": ["docx:document:readonly"],
+      "recommended_scopes": ["docs:document.content:read", "docs:document:export", "drive:file:download"]
+    },
+    "feishu_minutes": {
+      "description": "Feishu/Lark minutes token or minutes link",
+      "required_scopes": ["minutes:minutes.search:read"],
+      "recommended_scopes": ["minutes:minutes:readonly", "minutes:minutes.artifacts:read", "minutes:minutes.transcript:export", "vc:note:read"]
+    },
+    "feishu_meeting": {
+      "description": "Feishu/Lark meeting search, recording, and notes",
+      "required_scopes": ["vc:meeting.search:read", "vc:record:readonly", "vc:note:read"],
+      "recommended_scopes": ["vc:meeting.meetingevent:read"]
+    },
+    "local_media": {
+      "description": "Local audio/video uploaded to Feishu/Lark before minutes generation",
+      "required_scopes": ["drive:file:upload"],
+      "recommended_scopes": ["minutes:minutes.search:read", "vc:note:read"]
+    }
+  }
+}
