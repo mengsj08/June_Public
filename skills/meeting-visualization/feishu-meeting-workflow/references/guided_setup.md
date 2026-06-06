@@ -19,22 +19,25 @@ Default layout:
 - `meeting-runtime/`: fetched source material, source resolution JSON, HTML renders.
 - `meeting-cases/`: case YAML, source index, internal brief, customer-safe material.
 
-## 2. CRM Skill Dependency
+## 2. Pre-Consult Skill Dependency
 
-Ask whether this meeting should use CRM.
+Ask whether this meeting should use the external pre-consult/customer consultation flow.
 
-If yes, ask the user to choose one:
+If yes, use one of these sources:
 
 - Local path: a directory containing `SKILL.md`.
-- GitHub HTTPS URL: a repo that contains the CRM skill, optionally with a subdirectory.
+- GitHub HTTPS URL: a repo that contains the pre-consult skill, optionally with a subdirectory.
+- Default GitHub source for presales cases: `https://github.com/jeffzh0802/skill_pre-consult.git`.
 
-Do not infer paths from the skill author's computer. Do not search random directories for CRM.
+Do not infer paths from the skill author's computer. Do not search random directories for consultation skills.
 
 Case behavior:
 
-- If the user provides `--crm-skill-path`, validate that the directory exists and contains `SKILL.md`.
-- If the user provides `--crm-skill-git-url`, clone it into `WORK_DIR/external-skills` unless another install directory is specified.
-- If the user has not provided either, create the case with `crm_skill_path: ""` and stop before invoking CRM.
+- If the user provides `--pre-consult-skill-path`, validate that the directory exists and contains `SKILL.md`.
+- If the user provides `--pre-consult-git-url`, clone it into `<runtime-dir>/pre-consult/external-skills` unless another install directory is specified.
+- If the user has not provided either and the case is presales, clone the default GitHub source above.
+- The scaffold writes `pre_consult_handoff.md`; the AI must then follow the external skill named `crm` for the five stages.
+- Legacy `--crm-*` options remain compatibility-only and are not the recommended customer page path.
 
 ## 3. Lark CLI Installed?
 

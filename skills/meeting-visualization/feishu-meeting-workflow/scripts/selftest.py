@@ -179,6 +179,52 @@ def main() -> int:
         check("signed media URL not embedded", "internal-api-drive-stream" not in html_text)
         check("authcode not leaked", "authcode" not in html_text and dummy_auth_value not in html_text)
 
+        # 8. presales cases route to external pre-consult skill and write a full-flow handoff.
+        fake_pre_consult = tmp_path / "fake-pre-consult"
+        fake_pre_consult.mkdir()
+        (fake_pre_consult / "SKILL.md").write_text("---\nname: crm\n---\n# fake crm\n", encoding="utf-8")
+        presales_case_root = tmp_path / "presales-cases"
+        presales_runtime_root = tmp_path / "presales-runtime"
+        presales_case_dir = presales_case_root / "pre-consult-case"
+        r5 = subprocess.run(
+            [
+                PY,
+                str(SCRIPT_DIR / "meeting_case.py"),
+                "--case-id", "pre-consult-case",
+                "--title", "客户拜访 AI 落地咨询",
+                "--source-kind", "manual_text",
+                "--input-file", str(FIXTURES / "sample_transcript.md"),
+                "--source-ref", "primary_transcript: /safe/runtime/source/meeting_transcript.md",
+                "--meeting-type", "presales",
+                "--customer-short-name", "测试客户",
+                "--pre-consult-skill-path", str(fake_pre_consult),
+                "--case-root", str(presales_case_root),
+                "--runtime-root", str(presales_runtime_root),
+            ],
+            capture_output=True,
+            text=True,
+        )
+        presales_case_yaml = presales_case_dir / "case.yaml"
+        presales_handoff = presales_case_dir / "pre_consult_handoff.md"
+        presales_customer = presales_case_dir / "customer_material.md"
+        yaml_text = presales_case_yaml.read_text(encoding="utf-8") if presales_case_yaml.exists() else ""
+        handoff_text = presales_handoff.read_text(encoding="utf-8") if presales_handoff.exists() else ""
+        customer_text = presales_customer.read_text(encoding="utf-8") if presales_customer.exists() else ""
+        check("pre-consult case scaffold succeeds", r5.returncode == 0, r5.stderr[-500:])
+        check("case.yaml routes to pre_consult", 'customer_page_generator: "pre_consult"' in yaml_text, yaml_text)
+        check("case.yaml records full pre-consult flow", 'pre_consult_flow: "full"' in yaml_text, yaml_text)
+        check("case.yaml records pre-consult skill path", str(fake_pre_consult.resolve()) in yaml_text, yaml_text)
+        check(
+            "pre_consult_handoff.md contains five-stage flow",
+            all(stage in handoff_text for stage in ["crm 会前", "crm 纪要", "crm 提问", "crm 成果", "crm 问卷"]),
+            handoff_text,
+        )
+        check("pre_consult_handoff.md records output root", "pre-consult/agent_output" in handoff_text, handoff_text)
+        check("pre_consult_handoff.md records customer short name", "测试客户" in handoff_text, handoff_text)
+        check("pre_consult_handoff.md records transcript path", "sample_transcript.md" in handoff_text, handoff_text)
+        check("new pre-consult route does not write crm_handoff.md", not (presales_case_dir / "crm_handoff.md").exists())
+        check("customer_material excludes private URLs", "feishu.cn/" not in customer_text and "internal-api-drive-stream" not in customer_text)
+
     failures = [r for r in RESULTS if not r[1]]
     for name, ok, detail in RESULTS:
         suffix = f"  -- {detail}" if (not ok and detail) else ""

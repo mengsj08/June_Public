@@ -2,7 +2,7 @@
 """Create a meeting visualization case scaffold.
 
 This script creates local case files only. It does not call Feishu/Lark APIs,
-does not call the CRM skill, and does not read credential files.
+does not call external consultation skills, and does not read credential files.
 """
 
 from __future__ import annotations
@@ -22,6 +22,7 @@ from _safety import has_secret_content, is_secret_file
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 DEFAULT_RUNTIME_ROOT = Path.cwd() / "meeting-runtime"
+DEFAULT_PRE_CONSULT_GIT_URL = "https://github.com/jeffzh0802/skill_pre-consult.git"
 
 MeetingType = Literal["internal", "presales", "customer_collaboration", "special"]
 
@@ -101,10 +102,19 @@ def validate_crm_skill_dir(path: Path) -> str:
     return str(skill_dir)
 
 
+def validate_pre_consult_skill_dir(path: Path) -> str:
+    skill_dir = ensure_safe_path(path, "pre-consult skill").resolve()
+    if not skill_dir.exists():
+        raise SystemExit(f"Pre-consult skill path does not exist: {skill_dir}")
+    if not (skill_dir / "SKILL.md").exists():
+        raise SystemExit(f"Pre-consult skill path must contain SKILL.md: {skill_dir}")
+    return str(skill_dir)
+
+
 def safe_github_repo_name(git_url: str) -> str:
     match = re.fullmatch(r"https://github\.com/([A-Za-z0-9_.-]+)/([A-Za-z0-9_.-]+?)(?:\.git)?/?", git_url.strip())
     if not match:
-        raise SystemExit("Only explicit public GitHub HTTPS repo URLs are supported for --crm-skill-git-url.")
+        raise SystemExit("Only explicit public GitHub HTTPS repo URLs are supported for external skill Git URLs.")
     owner, repo = match.groups()
     return f"{owner}__{repo}"
 
@@ -157,23 +167,84 @@ def resolve_crm_skill_path(
     return ""
 
 
-def route_for(meeting_type: MeetingType, requested_crm_stage: str | None, crm_skill_path: str) -> dict[str, str]:
+def install_pre_consult_skill_from_github(git_url: str, install_dir: Path, subdir: str | None) -> str:
+    if has_secret_content(git_url):
+        raise SystemExit("Refusing secret-like pre-consult skill GitHub URL.")
+
+    repo_name = safe_github_repo_name(git_url)
+    base_dir = ensure_safe_path(install_dir, "pre-consult skill install").resolve()
+    base_dir.mkdir(parents=True, exist_ok=True)
+    repo_dir = base_dir / repo_name
+
+    if repo_dir.exists():
+        if not (repo_dir / ".git").exists():
+            raise SystemExit(f"Install target exists but is not a git repo: {repo_dir}")
+    else:
+        subprocess.run(["git", "clone", "--depth", "1", git_url, str(repo_dir)], check=True)
+
+    if subdir:
+        return validate_pre_consult_skill_dir(repo_dir / subdir)
+    if (repo_dir / "SKILL.md").exists():
+        return validate_pre_consult_skill_dir(repo_dir)
+
+    candidates = [path.parent for path in repo_dir.glob("*/SKILL.md")]
+    if len(candidates) == 1:
+        return validate_pre_consult_skill_dir(candidates[0])
+    raise SystemExit(
+        "Unable to locate pre-consult skill after clone. Pass --pre-consult-subdir with the path containing SKILL.md."
+    )
+
+
+def resolve_pre_consult_skill_path(
+    explicit_path: str | None = None,
+    git_url: str | None = None,
+    install_dir: str | None = None,
+    subdir: str | None = None,
+) -> str:
+    env_path = os.environ.get("FEISHU_MEETING_PRE_CONSULT_SKILL_PATH") or os.environ.get("PRE_CONSULT_SKILL_PATH")
+    if explicit_path:
+        return validate_pre_consult_skill_dir(Path(explicit_path))
+    if env_path:
+        return validate_pre_consult_skill_dir(Path(env_path))
+    if git_url:
+        target_dir = Path(install_dir).expanduser() if install_dir else Path.cwd() / "external-skills"
+        return install_pre_consult_skill_from_github(git_url, target_dir, subdir)
+    return ""
+
+
+def route_for(
+    meeting_type: MeetingType,
+    requested_crm_stage: str | None,
+    crm_skill_path: str,
+    pre_consult_skill_path: str,
+    pre_consult_flow: str,
+    pre_consult_workspace: Path | None,
+) -> dict[str, str]:
     if meeting_type == "presales":
         return {
-            "customer_page_generator": "crm",
+            "customer_page_generator": "pre_consult" if pre_consult_skill_path else "crm",
             "crm_skill_path": crm_skill_path,
             "crm_stage": requested_crm_stage or "纪要",
+            "pre_consult_flow": pre_consult_flow if pre_consult_skill_path else "none",
+            "pre_consult_skill_path": pre_consult_skill_path,
+            "pre_consult_workspace": str(pre_consult_workspace or ""),
         }
     if meeting_type == "customer_collaboration":
         return {
             "customer_page_generator": "meeting_visualization",
             "crm_skill_path": crm_skill_path,
             "crm_stage": "none",
+            "pre_consult_flow": "none",
+            "pre_consult_skill_path": "",
+            "pre_consult_workspace": "",
         }
     return {
         "customer_page_generator": "none",
         "crm_skill_path": crm_skill_path,
         "crm_stage": "none",
+        "pre_consult_flow": "none",
+        "pre_consult_skill_path": "",
+        "pre_consult_workspace": "",
     }
 
 
@@ -229,6 +300,9 @@ customer_short_name: {yaml_quote(customer_short_name)}
 customer_page_generator: {yaml_quote(route["customer_page_generator"])}
 crm_skill_path: {yaml_quote(route["crm_skill_path"])}
 crm_stage: {yaml_quote(route["crm_stage"])}
+pre_consult_flow: {yaml_quote(route["pre_consult_flow"])}
+pre_consult_skill_path: {yaml_quote(route["pre_consult_skill_path"])}
+pre_consult_workspace: {yaml_quote(route["pre_consult_workspace"])}
 
 output_paths: []
 handoff_notes: ""
@@ -297,8 +371,10 @@ def write_internal_brief(
         "## Routing Decision",
         "",
     ]
-    if meeting_type == "presales":
-        lines.append("- Presales customer scenario: route customer-facing draft to CRM skill.")
+    if meeting_type == "presales" and route["customer_page_generator"] == "pre_consult":
+        lines.append("- Presales customer scenario: prepare full pre-consult handoff; do not write customer pages directly from this scaffold.")
+    elif meeting_type == "presales":
+        lines.append("- Presales customer scenario: legacy CRM route is available, but pre-consult is the preferred customer-page generator.")
     elif meeting_type == "customer_collaboration":
         lines.append("- Customer collaboration: use meeting visualization draft path, not CRM by default.")
     elif meeting_type == "internal":
@@ -372,13 +448,79 @@ def write_crm_handoff(
     write_if_absent(case_dir / "crm_handoff.md", "\n".join(lines), force, statuses)
 
 
+def write_pre_consult_handoff(
+    case_dir: Path,
+    runtime_dir: Path,
+    meeting_type: MeetingType,
+    route: dict[str, str],
+    title: str,
+    customer_short_name: str,
+    transcript_path: str,
+    force: bool,
+    statuses: list[tuple[str, str]],
+) -> None:
+    if meeting_type != "presales" or route["customer_page_generator"] != "pre_consult":
+        return
+
+    workspace = Path(route["pre_consult_workspace"])
+    output_root = workspace / "agent_output"
+    output_root.mkdir(parents=True, exist_ok=True)
+    customer_name = customer_short_name or "[fill required]"
+    skill_path = route["pre_consult_skill_path"] or "[pre-consult skill not configured]"
+    transcript_display = transcript_path or "[transcript path not provided; use source_index.md]"
+
+    lines = [
+        "# Pre-Consult Handoff",
+        "",
+        f"- Title: {title}",
+        f"- Customer short name: `{customer_name}`",
+        f"- Pre-consult skill path: `{skill_path}`",
+        "- Trigger skill name: `crm`",
+        f"- Flow: `{route['pre_consult_flow']}`",
+        f"- Workspace: `{workspace}`",
+        f"- Output root: `{output_root}`",
+        f"- Case YAML: `{case_dir / 'case.yaml'}`",
+        f"- Meeting transcript: `{transcript_display}`",
+        f"- Customer-safe material: `{case_dir / 'customer_material.md'}`",
+        f"- Source index: `{case_dir / 'source_index.md'}`",
+        "",
+        "## Invocation Order",
+        "",
+        "Run the external `crm` skill from the workspace above. Do not write generated customer artifacts into the skill source directory.",
+        "",
+        "1. `crm 会前` — build or backfill `agent_output/客户档案/<客户简称>.md` from `case.yaml`, known customer background, and meeting goals.",
+        "2. `crm 纪要` — use `meeting_transcript.md` plus `customer_material.md`; output customer-visible `纪要_<日期>.html`.",
+        "3. `crm 提问` — use the phase 2 minutes and customer archive; output consultant-only `作战手册_<日期>.html`.",
+        "4. `crm 成果` — use phase 2 minutes plus phase 3 notes or transcript-backed deep answers; output customer-visible `成果_<日期>.html`.",
+        "5. `crm 问卷` — use the customer archive, minutes, and result page; output customer-visible `问卷_<日期>.md`.",
+        "",
+        "## Stage Mapping Notes",
+        "",
+        "- If the meeting already happened, phase 1 is a backfill step; do not pretend it was used live before the meeting.",
+        "- Phase 3 output is internal consultant material and must not be copied into customer-facing artifacts.",
+        "- If phase 4 lacks enough deep-question notes or customer answers, stop and ask for keywords instead of inventing a result page.",
+        "- Record any generated absolute output paths back into `case.yaml` after the external skill finishes.",
+        "",
+        "## Customer-Safe Guardrails",
+        "",
+        "- Do not include Feishu doc/minute links, signed media URLs, auth tokens, raw private excerpts, or source credentials in customer-facing pages.",
+        "- Do not include internal sales judgment from `internal_brief.md` in customer-facing output.",
+        "- Do not write customer-facing phrases such as sales, deal, unit price, or script.",
+        "- Do not invent customer pain points, numbers, commitments, budgets, or ROI claims.",
+        "",
+    ]
+    write_if_absent(case_dir / "pre_consult_handoff.md", "\n".join(lines), force, statuses)
+
+
 def create_case(args: argparse.Namespace) -> tuple[Path, list[tuple[str, str]]]:
     source_text = ""
+    transcript_path = ""
     if args.input_file:
         source_path = Path(args.input_file).expanduser()
         if is_secret_file(source_path):
             raise SystemExit(f"Refusing to read secret-like input path: {source_path}")
         source_text = source_path.read_text(encoding="utf-8")
+        transcript_path = str(source_path.resolve())
     elif args.input_text:
         source_text = args.input_text
 
@@ -391,15 +533,33 @@ def create_case(args: argparse.Namespace) -> tuple[Path, list[tuple[str, str]]]:
     runtime_dir = Path(args.runtime_root).expanduser() / case_id
     case_dir.mkdir(parents=True, exist_ok=True)
     runtime_dir.mkdir(parents=True, exist_ok=True)
+    pre_consult_workspace = runtime_dir / "pre-consult"
 
     meeting_type = classify_meeting(source_text + "\n" + args.title, args.meeting_type)
+    pre_consult_git_url = args.pre_consult_git_url
+    if meeting_type == "presales" and not args.pre_consult_skill_path and not pre_consult_git_url:
+        pre_consult_git_url = DEFAULT_PRE_CONSULT_GIT_URL
+    pre_consult_install_dir = args.pre_consult_install_dir or str(pre_consult_workspace / "external-skills")
+    pre_consult_skill_path = resolve_pre_consult_skill_path(
+        explicit_path=args.pre_consult_skill_path,
+        git_url=pre_consult_git_url if meeting_type == "presales" else None,
+        install_dir=pre_consult_install_dir,
+        subdir=args.pre_consult_subdir,
+    )
     crm_skill_path = resolve_crm_skill_path(
         explicit_path=args.crm_skill_path,
         git_url=args.crm_skill_git_url,
         install_dir=args.crm_skill_install_dir,
         subdir=args.crm_skill_subdir,
     )
-    route = route_for(meeting_type, args.crm_stage, crm_skill_path)
+    route = route_for(
+        meeting_type,
+        args.crm_stage,
+        crm_skill_path,
+        pre_consult_skill_path,
+        args.pre_consult_flow,
+        pre_consult_workspace,
+    )
 
     force = bool(getattr(args, "force", False))
     statuses: list[tuple[str, str]] = []
@@ -421,7 +581,19 @@ def create_case(args: argparse.Namespace) -> tuple[Path, list[tuple[str, str]]]:
     write_source_index(case_dir, args.source_kind, source_refs, runtime_dir, force, statuses)
     write_internal_brief(case_dir, meeting_type, route, args.title, force, statuses)
     write_customer_material(case_dir, meeting_type, args.title, source_text, force, statuses)
-    write_crm_handoff(case_dir, meeting_type, route, args.customer_short_name or "", force, statuses)
+    write_pre_consult_handoff(
+        case_dir=case_dir,
+        runtime_dir=runtime_dir,
+        meeting_type=meeting_type,
+        route=route,
+        title=args.title,
+        customer_short_name=args.customer_short_name or "",
+        transcript_path=transcript_path,
+        force=force,
+        statuses=statuses,
+    )
+    if route["customer_page_generator"] != "pre_consult":
+        write_crm_handoff(case_dir, meeting_type, route, args.customer_short_name or "", force, statuses)
     return case_dir, statuses
 
 
@@ -448,6 +620,17 @@ def main() -> int:
     parser.add_argument("--crm-skill-git-url", help="Explicit GitHub HTTPS repo URL to clone for the CRM skill.")
     parser.add_argument("--crm-skill-install-dir", help="Directory used when cloning --crm-skill-git-url. Defaults to ./external-skills.")
     parser.add_argument("--crm-skill-subdir", help="Subdirectory inside the cloned repo that contains the CRM SKILL.md.")
+    parser.add_argument("--pre-consult-skill-path", help="Explicit local skill_pre-consult directory containing SKILL.md.")
+    parser.add_argument(
+        "--pre-consult-git-url",
+        help=f"GitHub HTTPS repo URL for skill_pre-consult. Defaults to {DEFAULT_PRE_CONSULT_GIT_URL} for presales cases.",
+    )
+    parser.add_argument(
+        "--pre-consult-install-dir",
+        help="Directory used when cloning --pre-consult-git-url. Defaults to <runtime-dir>/pre-consult/external-skills.",
+    )
+    parser.add_argument("--pre-consult-subdir", help="Subdirectory inside the cloned repo that contains SKILL.md.")
+    parser.add_argument("--pre-consult-flow", default="full", choices=["full"])
     parser.add_argument("--owner", help="Optional case owner. Defaults to the current OS user.")
     parser.add_argument("--runtime-root", default=str(DEFAULT_RUNTIME_ROOT))
     parser.add_argument("--case-root", default=str(Path.cwd() / "meeting-cases"))
