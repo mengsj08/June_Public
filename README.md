@@ -1,15 +1,14 @@
 # June Public
 
-Public skill collection.
+Public skill collection and landing pages.
 
 ## Landing Pages
 
-- [`landing/index.html`](landing/index.html) — overview for the public skill pages
-- [`landing/feishu-meeting-workflow.html`](landing/feishu-meeting-workflow.html) — Feishu/Lark meeting workflow
-- [`landing/xiaohongshu-skills.html`](landing/xiaohongshu-skills.html) — Xiaohongshu operations skills
-- [`landing/mj-adapt.html`](landing/mj-adapt.html) — multi-platform content adaptation
+- [`landing/workbuddy-team-sync-reporter/index.html`](landing/workbuddy-team-sync-reporter/index.html) — WorkBuddy team sync reporter
 
 ## Skills
+
+- `skills/team-operations/workbuddy-team-sync-reporter/` - WorkBuddy 团队同步日报：在团队成员自己的 Mac 上同步指定 GitHub 仓库和 Feishu/Wiki 本地导出结果，生成可审阅中文日报，并在测试确认后交给 WorkBuddy 定时发送到飞书群。
 
 - `skills/meeting-visualization/feishu-meeting-workflow/`  
   Feishu/Lark 会议工作流：解析 AI 纪要或会议转录文档，创建本地会议 case，区分内部来源记录与客户材料，并渲染客户安全的独立 HTML 会议总结。
@@ -34,3 +33,5 @@ Public skill collection.
 ## Safety
 
 This repository contains only code, skill instructions, tests, examples, and selected extension source. It does not include local account state, cookies, Feishu app secrets, user tokens, bot tokens, fetched meeting transcripts, generated runtime workspaces, or collected output data.
+
+For `workbuddy-team-sync-reporter`, repository URLs, Feishu/Wiki export commands, webhook URLs, bot secrets, app credentials, and WorkBuddy runtime traces must stay in each user's local config or environment files.

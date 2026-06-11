@@ -1,0 +1,45 @@
+{
+  "teamspace_root": "~/Documents/TeamSpace",
+  "timezone": "Asia/Shanghai",
+  "env_files": [
+    "~/.config/team-sync-reporter/secrets.env"
+  ],
+  "report_window": {
+    "mode": "yesterday"
+  },
+  "report": {
+    "message_prompt_path": "$TEAMSPACE_CONFIG_DIR/feishu-message-prompt.md"
+  },
+  "github": {
+    "repos": [
+      {
+        "name": "REQUIRED_REPO_NAME",
+        "url": "REQUIRED_GITHUB_REPO_URL",
+        "branch": "main"
+      }
+    ]
+  },
+  "feishu": {
+    "sync_commands": [
+      {
+        "label": "wiki-export",
+        "cwd": "$TEAMSPACE_ROOT/workflows/feishu-sync",
+        "argv": ["python3", "sync_incremental.py"],
+        "timeout_seconds": 1800
+      }
+    ],
+    "state_files": [
+      {
+        "label": "team wiki",
+        "path": "$INFO_LIBRARY_ROOT/raw/feishu/team-sync/.sync_state.json"
+      }
+    ]
+  },
+  "send": {
+    "mode": "webhook",
+    "webhook_env": "FEISHU_BOT_WEBHOOK",
+    "secret_env": "FEISHU_BOT_SECRET",
+    "test_webhook_env": "FEISHU_TEST_BOT_WEBHOOK",
+    "test_secret_env": "FEISHU_TEST_BOT_SECRET"
+  }
+}
