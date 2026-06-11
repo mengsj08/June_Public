@@ -1,0 +1,4 @@
+interface:
+  display_name: "Article Visualization"
+  short_description: "Turn papers and long articles into layperson-friendly visual assets."
+  default_prompt: "Use article-visualization to turn this article or paper into a layperson-friendly visual plan, then generate long-image, Xiaohongshu card, and cover assets after I approve the plan."

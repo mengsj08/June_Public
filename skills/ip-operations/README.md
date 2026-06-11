@@ -7,7 +7,7 @@
 | Skill | When to use | Main output |
 | --- | --- | --- |
 | `xiaohongshu-skills/` | 需要操作小红书账号：登录、搜索、详情、发布、互动、采集入库 | 浏览器自动化操作结果、JSON、飞书 Base 记录 |
-| `mj-adapt/` | 已经有一篇完整文章，需要改成公众号 HTML 或小红书图片素材 | 微信公众号 HTML、小红书长图素材 |
+| `article-visualization/` | 需要把文章、研究博客或论文重新设计成外行可读的科普图文 | 科普长图、小红书卡片、公众号封面、短文素材 |
 
 ## How To Use
 
@@ -20,7 +20,7 @@
 ```
 
 ```text
-使用 mj-adapt，把这篇 Markdown 文章适配成公众号 HTML 和小红书图片素材。
+使用 article-visualization，把这篇论文做成给外行看懂的小红书图文卡和公众号封面。先给我 Page Plan，不要直接渲染。
 ```
 
 ## Account And Secret Boundary
@@ -30,5 +30,6 @@
 - 不包含 Chrome profile、cookies、登录态。
 - 不包含 `.lark-cli` profile、飞书 token、app secret。
 - 不包含本地采集结果、发布草稿、运行缓存。
+- 不包含真实 case 运行目录、下载图片、未发布截图或客户/内部素材。
 
 每个使用者必须在自己的机器上连接自己的小红书账号、浏览器扩展和 Feishu/Lark CLI profile。

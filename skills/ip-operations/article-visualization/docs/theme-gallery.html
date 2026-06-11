@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8">
+<link rel="stylesheet" href="theme-gallery.css">
+<style>
+  body{background:#d8d2c8!important;padding:34px!important;display:block!important}
+  h1{font-family:-apple-system,sans-serif;font-size:30px;font-weight:850;color:#23211e;margin:0 0 6px}
+  .desc{font-family:-apple-system,sans-serif;font-size:16px;color:#5a554c;margin-bottom:26px}
+  .grid{display:flex;flex-wrap:wrap;gap:30px}
+  .cell{width:432px}
+  .frame{width:1080px;height:1440px;transform:scale(.4);transform-origin:top left}
+  .clip{width:432px;height:576px;overflow:hidden;border:1px solid #b5ae9f;border-radius:10px}
+  .name{font-family:"SF Mono",ui-monospace,Menlo,monospace;font-size:15px;font-weight:700;color:#23211e;margin-top:10px}
+  .tag{font-family:-apple-system,sans-serif;font-size:13px;color:#7a7468;margin-top:2px}
+</style></head>
+<body>
+  <h1>配色主题库 · 同一张卡 × 11 套主题</h1>
+  <div class="desc">结构完全相同,只换 <code>data-theme</code>。按内容领域/品牌/意图选,不再写死暖色。来源:公开设计参考 · 自定义。</div>
+  <div class="grid" id="g"></div>
+  <script>
+    const THEMES=[
+      ["warm-popsci","暖科普 · 默认 · 中性(自定义)"],
+      ["cool-clinical","冷静临床 · 医学/生命科学 · 安静(自定义)"],
+      ["indigo-porcelain","靛青瓷 · 技术/研究/数据 · 安静(guizang)"],
+      ["forest-ink","林墨 · 户外/自然 · 中性(guizang)"],
+      ["kraft-paper","牛皮纸 · 手作/个人随笔 · 暖(guizang)"],
+      ["ink-classic","经典墨 · 商业评论/AI随笔 · 中性(guizang)"],
+      ["midnight-ink","午夜墨 · 游戏/夜景/影像 · 大胆·暗色(guizang)"],
+      ["safety-orange","安全橙 · 风险/警示/决策 · 大胆(guizang)"],
+      ["swiss-bold","瑞士蓝 · 数据/科技 · 大胆(guizang IKB)"],
+      ["ink-editorial","墨刊 · 严肃观点/报告 · 中性(自定义)"],
+      ["neo-brutalism","黑白硬核 · 媒体/榜单 · 大胆"]
+    ];
+    const card=(t)=>`<div class="cell"><div class="clip"><div class="frame"><div data-theme="${t[0]}"><div class="xhs-card">
+        <span class="kick">主题预览 · ${t[0]}</span>
+        <div class="title">同一张卡<br>换不同<span class="hl">气质</span></div>
+        <div class="bigstat" style="margin-top:30px"><span class="n">94%</span><span class="l">关键指标<br>示例数字</span></div>
+        <div class="bars" style="margin-top:30px"><div class="bar"><div class="lab"><span>对比项</span><b style="color:var(--clay-deep)">80%</b></div><div class="track"><div class="fill win" style="width:80%"></div></div></div></div>
+        <div class="note" style="margin-top:auto">配色随内容/品牌切换,结构不变。</div>
+      </div></div></div></div><div class="name">${t[0]}</div><div class="tag">${t[1].split(" · ").slice(1).join(" · ")}</div></div>`;
+    document.getElementById("g").innerHTML=THEMES.map(card).join("");
+  </script>
+</body>
+</html>

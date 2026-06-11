@@ -4,6 +4,7 @@ Public skill collection and landing pages.
 
 ## Landing Pages
 
+- [`landing/article-visualization/index.html`](landing/article-visualization/index.html) — article and paper visualization skill
 - [`landing/workbuddy-team-sync-reporter/index.html`](landing/workbuddy-team-sync-reporter/index.html) — WorkBuddy team sync reporter
 
 ## Skills
@@ -16,8 +17,8 @@ Public skill collection and landing pages.
 - `skills/ip-operations/xiaohongshu-skills/`
   小红书自动化技能集合：认证、搜索、发布、互动、复合运营，以及 topic2feishu 采集写入飞书 Base。
 
-- `skills/ip-operations/mj-adapt/`
-  多平台内容适配：将已完成文章转换为公众号 HTML、小红书长图和社交短内容。
+- `skills/ip-operations/article-visualization/`
+  文章/论文科普可视化：把研究论文、技术博客或长文章重新设计成外行可读的长图、小红书图文卡、公众号封面和短文素材。
 
 - `skills/openclaw/`  
   Archived OpenClaw onboarding and configuration skills. Kept for historical reference only; not recommended for new workflows.
@@ -35,3 +36,5 @@ Public skill collection and landing pages.
 This repository contains only code, skill instructions, tests, examples, and selected extension source. It does not include local account state, cookies, Feishu app secrets, user tokens, bot tokens, fetched meeting transcripts, generated runtime workspaces, or collected output data.
 
 For `workbuddy-team-sync-reporter`, repository URLs, Feishu/Wiki export commands, webhook URLs, bot secrets, app credentials, and WorkBuddy runtime traces must stay in each user's local config or environment files.
+
+For `article-visualization`, generated case folders, screenshots, downloaded article images, runtime HTML, and unpublished drafts must stay outside this public repository unless they are intentionally synthetic examples.

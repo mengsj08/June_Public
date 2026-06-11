@@ -1,5 +1,7 @@
 # CLAUDE.md
 
+> doc_type: rule · owner: June
+
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## What this repository is
@@ -12,11 +14,12 @@ The hard rule that defines this repo: **nothing private may ever live here.** No
 
 Everything lives under `skills/`, grouped by domain. Each domain dir has its own `README.md`:
 
-- `skills/ip-operations/` — 内容运营 / IP 运营 / 多平台分发. Contains `xiaohongshu-skills/` (小红书 browser-automation skill collection, has its own nested `CLAUDE.md`) and `mj-adapt/` (multi-platform content adaptation: 公众号 HTML, 小红书 长图, social short-form).
+- `skills/ip-operations/` — 内容运营 / IP 运营 / 多平台分发. Contains `xiaohongshu-skills/` (小红书 browser-automation skill collection, has its own nested `CLAUDE.md`) and `article-visualization/` (article/paper to layperson-friendly visual assets: long images, Xiaohongshu cards, WeChat covers, short copy).
 - `skills/meeting-visualization/feishu-meeting-workflow/` — 飞书/Lark 会议工作流: resolve AI notes → transcript, scaffold a local meeting case, AI-write the analysis, render customer-safe HTML.
+- `skills/team-operations/workbuddy-team-sync-reporter/` — WorkBuddy 团队同步日报执行站: mirror user-provided GitHub repos, run local Feishu/Wiki export commands, generate reviewable Chinese reports, then hand off scheduled sends to WorkBuddy.
 - `skills/openclaw/` — **Archived** OpenClaw onboarding/config skills (七个 `openclaw-*` builder skills). Kept for historical reference only; do not promote or extend for new workflows.
 
-Note: the root `README.md` lists a `landing/` directory of HTML pages that is not currently present in the tree — treat those links as aspirational, not authoritative.
+The `landing/` directory contains public static landing pages. Keep landing pages paired with active promoted skills and remove or archive pages for skills that are no longer promoted.
 
 ## Skill-package convention
 
@@ -32,7 +35,8 @@ There is **no repo-wide build/test runner.** Skills are markdown + script packag
 
 - `xiaohongshu-skills/` (Python, `uv` + `pyproject.toml`): `uv sync`, `uv run ruff check .`, `uv run ruff format .`, `uv run pytest`. Code style: line length 100, full type hints with `from __future__ import annotations`, exceptions subclass `XHSError`, user-facing messages in 中文, JSON `ensure_ascii=False`.
 - `feishu-meeting-workflow/` (Python, no package manager): offline self-test `python3 scripts/selftest.py` (exit 0 = pass) — verifies scripts don't clobber analysis files and don't embed Feishu private URLs.
-- `mj-adapt/` (Node, `package.json` + puppeteer/cheerio): `npm run generate`, `generate:xhs`, `generate:cover`. No test suite.
+- `article-visualization/` (Node scripts, no package manager in the public copy): run `node --check scripts/*.js` for syntax checks. Runtime case folders, downloaded images, screenshots, rendered HTML, and unpublished drafts must stay outside this public repo.
+- `workbuddy-team-sync-reporter/` (Python standard library): `python3 scripts/team_sync_reporter.py --help` and `python3 -m py_compile scripts/team_sync_reporter.py`.
 - `openclaw/*` (archived): markdown-only, no commands.
 
 ## Working in nested skills

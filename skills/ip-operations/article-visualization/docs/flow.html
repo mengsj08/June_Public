@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="UTF-8">
+<style>
+  :root{--clay:#cc785c;--clay-deep:#b5563b;--clay-soft:#e7a98f;--cream:#f7f4ef;--cream-2:#efe9e0;
+    --paper:#fffdfa;--ink:#23211e;--ink-2:#4a463f;--muted:#8a8378;--line:#ddd6ca;
+    --green:#3f8e6d;--green-soft:#e3f1ea;--blue:#4a6fa5;--blue-soft:#e8eef7;--amber:#c89b3c;--amber-soft:#f6ecd6;}
+  *{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB",sans-serif}
+  body{background:var(--cream);width:1560px;padding:54px 56px 60px}
+  .head{margin-bottom:30px}
+  .eyebrow{display:inline-block;font-size:15px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--clay-deep);background:#fff;border:1px solid var(--line);padding:7px 16px;border-radius:999px}
+  h1{font-size:42px;font-weight:850;letter-spacing:-1px;margin-top:16px;color:var(--ink)}
+  h1 .hl{color:var(--clay-deep)}
+  .sub{font-size:19px;color:var(--ink-2);margin-top:10px}
+  mono,.mono{font-family:"SF Mono",ui-monospace,Menlo,monospace}
+
+  .box{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:18px 20px;box-shadow:0 6px 18px rgba(60,45,30,.06)}
+  .box .t{font-size:21px;font-weight:800;color:var(--ink);display:flex;align-items:center;gap:9px}
+  .box .d{font-size:15.5px;color:var(--ink-2);margin-top:7px;line-height:1.5}
+  .box .s{font-family:"SF Mono",ui-monospace,Menlo,monospace;font-size:13.5px;color:var(--clay-deep);margin-top:8px;background:var(--cream-2);border-radius:7px;padding:5px 9px;display:inline-block}
+  .tag{font-size:12px;font-weight:800;letter-spacing:1px;text-transform:uppercase;padding:3px 9px;border-radius:6px}
+  .tag.ai{background:var(--blue-soft);color:var(--blue)}
+  .tag.script{background:var(--cream-2);color:var(--muted)}
+
+  .arrow{text-align:center;color:var(--clay-soft);font-size:26px;font-weight:800;margin:8px 0}
+  .row{display:flex;gap:24px;align-items:stretch}
+
+  /* input + analyze */
+  .topflow{display:flex;flex-direction:column;align-items:center;gap:0;margin-bottom:6px}
+  .pill{background:var(--ink);color:#f3eee6;border-radius:14px;padding:16px 30px;font-size:20px;font-weight:800}
+  .analyze{background:var(--blue-soft);border:1px solid #cdd9ec;border-radius:16px;padding:18px 26px;text-align:center;max-width:760px}
+  .analyze .t{font-size:22px;font-weight:850;color:var(--ink)}
+  .analyze .d{font-size:16px;color:var(--ink-2);margin-top:6px}
+  .tsw{font-size:12px;font-weight:800;color:#fff;border-radius:6px;padding:4px 10px}
+
+  .fan{text-align:center;color:var(--clay-soft);font-size:20px;font-weight:800;margin:14px 0 6px;letter-spacing:1px}
+  .lanes{display:grid;grid-template-columns:1.35fr 1fr 1fr;gap:22px;align-items:start}
+  .lane{background:rgba(255,255,255,.5);border:1.5px dashed var(--line);border-radius:20px;padding:20px}
+  .lane>.lh{font-size:20px;font-weight:850;color:var(--clay-deep);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+  .lane .box{margin-bottom:0}
+  .stack>*+*{margin-top:0}
+  .stack .arrow{margin:6px 0}
+
+  /* xhs loop highlight */
+  .loop{background:var(--amber-soft);border:1.5px solid #e7cf9a;border-radius:16px;padding:14px 16px;margin-top:10px}
+  .loop .lt{font-size:16px;font-weight:850;color:#9a7320;display:flex;align-items:center;gap:8px}
+  .loop .ld{font-size:14.5px;color:#6f5a2c;margin-top:6px;line-height:1.5}
+  .loopback{text-align:center;color:var(--amber);font-size:15px;font-weight:800;margin:6px 0}
+
+  .out{background:var(--green-soft);border:1px solid #c4e2d3;border-radius:12px;padding:12px 14px;text-align:center}
+  .out .t{font-size:17px;font-weight:850;color:var(--green)}
+  .out .d{font-size:13.5px;color:var(--ink-2);margin-top:4px}
+
+  .feed{background:var(--cream-2);border:1px dashed var(--clay-soft);border-radius:12px;padding:10px 14px;font-size:14.5px;color:var(--ink-2)}
+  .feed b{color:var(--clay-deep)}
+
+  .footer{margin-top:26px;display:grid;grid-template-columns:1fr 1fr;gap:22px}
+  .fcard{border-radius:16px;padding:20px 24px}
+  .fcard.dark{background:linear-gradient(135deg,#2b2722,#3a342c);color:#eee7da}
+  .fcard.dark .t{color:#fff}
+  .fcard.light{background:var(--paper);border:1px solid var(--line)}
+  .fcard .t{font-size:19px;font-weight:850;margin-bottom:10px}
+  .fcard ul{list-style:none;display:flex;flex-direction:column;gap:8px}
+  .fcard li{font-size:15.5px;line-height:1.45;padding-left:22px;position:relative;color:var(--ink-2)}
+  .fcard.dark li{color:#d8d0c4}
+  .fcard li:before{content:"▪";position:absolute;left:4px;color:var(--clay)}
+  .fcard.dark li:before{color:var(--clay-soft)}
+  .fcard li b{color:var(--ink)}.fcard.dark li b{color:#fff}
+</style></head>
+<body>
+  <div class="head">
+    <span class="eyebrow">article-visualization 工作台 · 工作流</span>
+    <h1>一篇文章 → <span class="hl">多平台可视化素材</span> 的流水线</h1>
+    <div class="sub">读文提炼一次,分流出长图 / 小红书 / 公众号封面 / 短文;小红书走「重规划 + 密度自适应」闭环。</div>
+  </div>
+
+  <!-- input → analyze -->
+  <div class="topflow">
+    <div class="pill">📥 输入:文章链接 / Markdown</div>
+    <div class="arrow">↓</div>
+    <div class="analyze">
+      <div class="t">① 分析 + 定决策 <span class="tag ai">Claude</span></div>
+      <div class="d">读原文(必要时回原文 / jsonl 取<b>全文</b>)→ 写 <span class="mono">brief.md</span>:核心事实 + 顶部<b>「决策块」</b>(平台 · 主题 · 品牌色 · 温度 · 受众)。按需 <span class="mono">curl</span> 原文图到 <span class="mono">assets/</span>。</div>
+      <div style="margin-top:13px;display:flex;gap:7px;flex-wrap:wrap;justify-content:center">
+        <span class="tsw" style="background:#cc785c">warm</span>
+        <span class="tsw" style="background:#2c8a8a">clinical</span>
+        <span class="tsw" style="background:#0a4fd6">swiss</span>
+        <span class="tsw" style="background:#FF6B35">orange</span>
+        <span class="tsw" style="background:#0e0d0c;color:#d4a04a">midnight</span>
+        <span class="tsw" style="background:#000">neo</span>
+        <span style="font-size:13.5px;color:var(--muted);align-self:center">…11 套主题,按内容/品牌选,不写死</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="fan">┌────────────── 分流:四条输出线 ──────────────┐</div>
+
+  <div class="lanes">
+    <!-- Lane B: 小红书 (widest, with loop) -->
+    <div class="lane" style="border-color:var(--clay-soft);background:rgba(231,169,143,.08)">
+      <div class="lh">🔴 小红书图文(重规划)</div>
+      <div class="stack">
+        <div class="box"><div class="t">② Page Plan <span class="tag ai">Claude</span></div><div class="d">从 brief <b>重新规划</b>:一卡一观点,套 8 种角色配方(封面/对比/数据/清单/步骤/金句/结尾…)。</div><div class="s">references/xhs-recipes.md</div></div>
+        <div class="arrow">↓ 用户确认</div>
+        <div class="box"><div class="t">③ 写卡片 <span class="tag ai">Claude</span></div><div class="d">套配方写 <span class="mono">xhs-cards.html</span>,嵌原文图作证据。</div><div class="feed" style="margin-top:8px">⬅ 取材 <b>assets/</b> 原文图</div></div>
+        <div class="arrow">↓</div>
+        <div class="box"><div class="t">④ 渲染固定卡 <span class="tag script">脚本</span></div><div class="s">shoot-cards.js → 1080×1440 (2×)</div></div>
+        <div class="loop">
+          <div class="lt">⑤ 密度检查 <span class="tag script" style="margin-left:auto">measure-cards.js</span></div>
+          <div class="ld">量每张 fill%。偏空(&lt;78%)→ <b>回原文补真实细节</b>(不编造/不灌水/守一卡一观点);溢出 → 精简或裁图。封面·金句豁免。</div>
+        </div>
+        <div class="loopback">↺ 偏空则补,循环到达标</div>
+        <div class="out"><div class="t">✅ xhs/xhs-01…NN.png</div><div class="d">固定 3:4 · 2160×2880</div></div>
+      </div>
+    </div>
+
+    <!-- Lane A: 长图 -->
+    <div class="lane">
+      <div class="lh">📜 科普长图</div>
+      <div class="stack">
+        <div class="box"><div class="t">填模板 <span class="tag ai">Claude</span></div><div class="d">复制按例模板,改写成本篇完整科普页。</div><div class="s">templates/base-template.html → index.html</div></div>
+        <div class="arrow">↓</div>
+        <div class="box"><div class="t">生成长图源 <span class="tag script">脚本</span></div><div class="d">展开 tab、关动画、置终值。</div><div class="s">build-longimage.js</div></div>
+        <div class="arrow">↓</div>
+        <div class="box"><div class="t">整页截图 <span class="tag script">脚本</span></div><div class="s">shoot.js (CDP · 2×)</div></div>
+        <div class="arrow">↓</div>
+        <div class="out"><div class="t">✅ &lt;slug&gt;-longimage.png</div><div class="d">完整连续页 · 不分页</div></div>
+      </div>
+    </div>
+
+    <!-- Lane C + D -->
+    <div class="lane">
+      <div class="lh">🟢 封面 / 短文</div>
+      <div class="stack">
+        <div class="box"><div class="t">公众号封面 <span class="tag ai">Claude</span></div><div class="d">popsci 风格封面卡。</div><div class="s">covers.html → shoot-cards.js</div></div>
+        <div class="out" style="margin-top:10px"><div class="t">✅ 2.35:1 + 1:1</div><div class="d">首图 1800×766 · 方图 2160×2160</div></div>
+        <div class="arrow">·</div>
+        <div class="box"><div class="t">推特 / 短文 <span class="tag ai">Claude</span></div><div class="d">≤140 字 + 200–500 字两版,只出文字。</div><div class="s">twitter.txt</div></div>
+        <div class="out" style="margin-top:10px"><div class="t">✅ 纯文本</div><div class="d">多平台分发文案</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- governance footer -->
+  <div class="footer">
+    <div class="fcard light">
+      <div class="t">📂 落位约定</div>
+      <ul>
+        <li><b>源 / 规则</b>(进 git):<span class="mono">_projects/…/article-visualization/</span> — scripts · templates · references · cases/&lt;slug&gt;/brief.md</li>
+        <li><b>产物</b>(可重建,不进 git):<span class="mono">_runtime/…/&lt;slug&gt;/</span> — index/longimage/xhs/covers/assets/twitter</li>
+      </ul>
+    </div>
+    <div class="fcard dark">
+      <div class="t">⚙️ 贯穿全程的三条原则</div>
+      <ul>
+        <li><b>配色主题化</b>:11 套主题(guizang / mj / 自定义),按内容·品牌选,<b>绝不写死</b>暖色</li>
+        <li><b>省 token 复核</b>:多图缩略拼成一张,单次查看,绝不逐张读大图</li>
+        <li><b>规则驱动 + 闭环</b>:配方库定结构、密度脚本量化、偏空回原文补 —— 而非靠手感</li>
+      </ul>
+    </div>
+  </div>
+</body>
+</html>
