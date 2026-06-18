@@ -1,130 +1,115 @@
 ---
 name: feishu-meeting-workflow
-description: Use when Codex needs to analyze Feishu/Lark meeting notes, AI notes, Meeting transcript docs, local meeting transcripts, or meeting Markdown files; guide users through workspace selection, optional pre-consult/customer consultation skill setup, Lark CLI installation/configuration/profile selection, resolve AI notes to the original transcript, create a local meeting case, perform AI-based meeting analysis from the transcript, optionally route presales cases to the external skill_pre-consult full customer consultation flow, and render Markdown analysis into HTML.
+description: "Use when Codex needs to process meeting material from a bot message, Feishu/Lark AI Notes, Meeting transcript docs, minutes links, Get笔记 or third-party notes, local Markdown/transcripts, pasted text, or uploaded meeting text. Handles source normalization, multi-organization Feishu routing, team case creation, route selection, Agent analysis, optional supplement, optional crm/skill_客户洽谈, WOW handoff, meeting-visual-report HTML with Prompt confirmation, optional AirDrop publishing of approved HTML as a shareable live webpage, and unified one-document Feishu return."
 ---
 
-# Feishu Meeting Workflow
+# Meeting Material Workflow
 
-Use this skill to run a repeatable meeting-analysis workbench. The AI guides the user through setup and decision points; scripts only verify local state, resolve sources, scaffold cases, and render HTML. The AI must personally read the transcript and write the actual analysis; do not use scripts to generate conclusions, risks, action items, or customer-facing wording.
+Use this skill to turn meeting material into a reviewed local case package and, when approved, one formal Feishu archive document. Scripts orchestrate fetching, scaffolding, route state, manifests, and delivery. The Agent must read the transcript/notes and write the actual analysis.
 
-## Core Boundary
+## Reference Loading
 
-- Treat the original `Meeting transcript` as the primary source.
-- Treat AI notes as an entry point only. If given an AI notes docx, fetch it, extract the `Meeting transcript` docx link, then fetch the transcript.
-- If given a transcript docx directly, fetch it directly.
-- If given a local transcript or Markdown file, use it directly.
-- Never print or copy app secrets, tokens, cookies, browser profiles, auth files, or raw private logs.
-- Do not include Feishu doc/minute tokens or signed media URLs in customer-facing HTML.
-- Do not hard-code the author's home directory or workspace paths. Resolve paths from user-provided directories, the current working directory, or the installed skill directory.
-- Do not assume the pre-consult/customer consultation skill location. For presales routing, use a user-provided local skill path or GitHub repository URL. The default public source for the pre-consult route is `https://github.com/jeffzh0802/skill_pre-consult.git`.
-- Do not treat setup as a black-box script. Guide the user through each decision node, then use commands to verify.
+- Load `references/output_contract.md` before deciding what files or Feishu documents may be created. It is the source of truth for output types, route ownership, pauses, and the one-document archive rule.
+- Load `references/guided_setup.md` when installing/configuring Lark CLI, choosing Lark profiles, resolving permission issues, or deciding where the external pre-consult/customer consultation skill lives.
+- Load `references/team_bot_chain.md` when the user mentions the team bot, FE72/FM96 automation, old Mac / WOW routing, two-Mac sync, `business_meeting_cases`, route keywords, or Feishu return behavior.
 
-## AI-Led Setup Contract
+## Hard Boundaries
 
-Before fetching Feishu content, the AI should guide the user through these questions and only run verification commands after the needed choice is known:
+- Treat the original transcript as the primary source when one exists.
+- Treat AI notes, Get笔记, third-party notes, and summaries as entry points or secondary sources unless they are the only available material.
+- If given Feishu AI Notes docx, fetch it, extract the embedded `Meeting transcript` docx or minutes link, then fetch the transcript.
+- If given a transcript docx, local transcript, Markdown, exported note, or pasted text, normalize it directly into the case source directory.
+- If a non-Feishu source cannot be read with current tools or permissions, ask the user to export Markdown/text or paste the content.
+- Source provenance is a mandatory gate, not a manual optional step. Before route recording, analysis rendering, route finalization, or Feishu return, scripts require either a non-empty `source/meeting_transcript.md` or an explicit negative `source/source_resolution.json` with `transcript_available:false` and `reason`; finalization and return still require the real transcript and must block on negative provenance.
+- Do not let deterministic scripts invent conclusions, risks, action items, customer-facing wording, or route-specific business judgment.
+- For team @bot input, parse route keywords from the original message first. If absent, show the route menu and wait.
+- Do not start formal analysis before the route is known.
+- The default route uses the current Agent directly. Do not invoke `crm`, `skill_客户洽谈`, `meeting-visual-report`, WOW, or another specialist route unless the user selected it or the route contract requires it.
+- `补资料` is an intermediate route. After context collection, ask which final route to enter unless the user explicitly stops there.
+- Use `crm` / `skill_客户洽谈` only when the user explicitly chooses the customer-consultation route.
+- Use `meeting-visual-report` only after customer-facing HTML is explicitly requested; it must output a structured Prompt first and wait for confirmation before final HTML.
+- After a final route creates Markdown or HTML, run `scripts/finalize_route.py` to normalize outputs and build the Feishu return package.
+- Require user approval before CRM/customer-facing HTML send/upload, before real Feishu writes when the target changed, and before any legacy split-document delivery.
+- Archive team meeting outputs only into the configured 智回 `【内部】脑回路实验室` meeting-chain targets. Validate the target Wiki space before send/upload.
+- Default Feishu hygiene is one meeting source -> one formal Feishu archive document from `analysis/feishu_meeting_document.md`. Do not fan out local artifacts into multiple Wiki/Drive documents unless the user explicitly asks for legacy multi-artifact upload.
+- The meeting output can be requested as a live webpage, not just a local HTML file. Publishing reviewed HTML to AirDrop (`airdrop deploy`) is an outward-facing, shareable action: require explicit user confirmation before deploying, deploy only customer-safe HTML (no Feishu private links, signed media URLs, tokens, secrets, or internal sales judgment), and record only the returned public URL — never the AirDrop token. The token lives in `~/.airdrop/config.json` (0600) or `AIRDROP_TOKEN`; never print, copy, or commit it.
+- Never print or copy app secrets, tokens, cookies, browser profiles, auth files, raw private logs, Feishu doc/minute tokens, or signed media URLs into docs, reports, commits, screenshots, chat, or customer-facing HTML.
+- Do not hard-code the author's home directory, workspace paths, app secrets, chat IDs, or profile names. Resolve paths from user input, the current working directory, the installed skill directory, env config, or Lark CLI profile checks.
+- Do not assume the external customer-consultation skill location. Accept a user-provided local skill path or GitHub HTTPS repo URL. The default public source, when needed, is `https://github.com/jeffzh0802/skill_pre-consult.git`.
 
-1. **Where should outputs go?** Ask for or infer a working directory, normalize it to `WORK_DIR`, and keep runtime/cases under it.
-2. **What is the input source?** Classify as Feishu AI notes docx, Meeting transcript docx, Feishu minutes token/link, local transcript, or local media.
-3. **Is pre-consult needed?** If the meeting is presales or the user asks for customer consultation output, use the external `skill_pre-consult` flow. Accept either a local skill directory containing `SKILL.md` or a GitHub HTTPS repo URL. If none is provided, use `https://github.com/jeffzh0802/skill_pre-consult.git` for presales cases.
-4. **Is `lark-cli` installed?** Check with `command -v lark-cli`. If missing, guide the user to install the official Lark CLI, then ask them to rerun the check. Do not continue Feishu fetch until it exists.
-5. **Is a Lark app configured?** Use `lark-cli profile list`, `lark-cli config show`, and `lark-cli auth status` to verify. Do not read raw config files.
-6. **If no app is configured, guide configuration.** Run or ask the user to run `lark-cli config init --new`. The user should get app credentials from the Feishu/Lark developer console and enter them into the CLI flow locally. Never ask the user to paste `app_secret`, tokens, or passwords into chat.
-7. **If user auth is missing or scopes are insufficient, guide authorization.** Use the missing scope from CLI errors and ask the user to run `lark-cli auth login --scope "<scope>"`, or start the command and send the authorization link for the user to complete.
-8. **For multiple organizations, avoid guessing.** Use profile checks and host routing when configured. If host routing is absent and more than one profile can work, either ask the user to choose a profile or let the resolver try readable profiles as fallback.
+## Setup Questions
 
-Load `references/guided_setup.md` when the user is installing/configuring Lark CLI, deciding where to put the pre-consult skill, or stuck at a permission/profile step.
+Ask only when the answer is not obvious from the request:
 
-## Path Handling
+1. Where should local outputs go? Normalize to `WORK_DIR`.
+2. What is the source type: Feishu AI Notes docx, Meeting transcript docx, Feishu minutes, Get笔记/third-party note, local transcript, pasted text, or local media?
+3. Which route is requested? If no route is provided, pause and show the route choices from `references/output_contract.md`.
+4. For Feishu/Lark sources, is `lark-cli` installed, configured, and authorized for the source organization?
+5. For multiple organizations, which profile can read the source? Prefer profile verification over guessing.
+6. For customer-consultation routing, where is `skill_客户洽谈` / `skill_pre-consult`: local path or GitHub URL?
 
-Before running scripts, set these shell variables for the current machine:
+## Path Setup
+
+Set paths per machine before running scripts:
 
 ```bash
-# The agent should fill this with the absolute path of this installed skill directory.
 SKILL_DIR="<absolute-path-to-feishu-meeting-workflow>"
-
-# Accept either an absolute or relative user workspace path, then normalize it.
 WORK_DIR="$(python3 -c 'from pathlib import Path; import sys; print(Path(sys.argv[1]).expanduser().resolve())' "<user-work-dir-or-.>")"
 mkdir -p "$WORK_DIR"
 cd "$WORK_DIR"
 ```
 
-Use `./meeting-runtime` and `./meeting-cases` under `WORK_DIR` by default, unless the user specifies other output directories.
+Standalone workbench defaults:
 
-## Workflow
+```text
+./meeting-runtime
+./meeting-cases
+```
 
-### 1. Guide Setup And Input
+Team bot defaults:
 
-Identify the source:
+```text
+~/Documents/Shape-of-thought/z-h-ai/team-workspace/shared/docs/business_meeting_rawdata/_automation_inbox
+~/Documents/Shape-of-thought/z-h-ai/team-workspace/shared/docs/business_meeting_cases
+```
 
-- Feishu AI notes docx URL
-- Feishu Meeting transcript docx URL
-- Feishu minutes URL/token
-- Local transcript/Markdown file
-- Local audio/video, only after user confirms upload is allowed
+## Operating Flow
 
-Ask only when necessary. If the user provides a URL or path, proceed through the setup contract above. Keep setup decisions in the case files when useful, but never include secrets.
+### 1. Resolve Source
 
-### 2. Check Lark CLI And Profile
-
-Use `lark-cli` for Feishu/Lark sources. If `lark-cli` is unavailable or not configured, guide the user to run:
+For Feishu/Lark sources, verify CLI/profile access first:
 
 ```bash
 command -v lark-cli
-lark-cli config init --new
-lark-cli auth login --recommend
-```
-
-For multi-organization setups, check profiles:
-
-```bash
+lark-cli profile list
+lark-cli auth status
 python3 "$SKILL_DIR/scripts/check_lark_profiles.py" \
   --source-ref "<feishu-url>" \
   --format table
 ```
 
-Use the returned `recommended_profile` and `recommended_identity`. For user identity, add `--as user`; for bot fallback, add `--as bot`.
-
-To customize organization routing, copy and edit:
-
-```text
-$SKILL_DIR/references/lark_profiles.example.json
-```
-
-The bundled example intentionally contains no personal profile names. For host-to-profile routing, create a user-local copy in `WORK_DIR` and pass `--config <your-json>`.
-
-### 3. Resolve Source To Transcript
-
-For Feishu docx or minutes sources, run:
+For Feishu docx, minutes, or Get笔记 sources, `meeting_case.py` automatically invokes the resolver after writing `case.yaml` when a supported `--source-ref` is present. You may still run the resolver directly before case creation for diagnosis or controlled re-fetch:
 
 ```bash
 python3 "$SKILL_DIR/scripts/resolve_meeting_source.py" \
-  --source-ref "<ai-notes-or-transcript-docx-url, OR a /minutes/<token> link>" \
+  --source-ref "<ai-notes-or-transcript-docx-url-or-minutes-link>" \
   --case-id "<YYYY-MM-DD-short-name>" \
   --runtime-dir "$WORK_DIR/meeting-runtime/<case-id>"
 ```
 
-The resolver auto-detects the source kind:
+This should produce `source/meeting_transcript.md`, `source/source_resolution.json`, and optionally `source/ai_notes.md`. If the source cannot be fetched or the fetched transcript is empty, the resolver must still write `source/source_resolution.json` with `transcript_available:false`, `reason`, attempted profile/identity data, and any discovered transcript fallback link. That negative provenance is a stop record, not approval to analyze or return.
 
-- **docx** (`/docx/...` URL): fetched with `lark-cli docs +fetch`. AI notes are followed to the embedded `Meeting transcript` link.
-- **minutes** (`/minutes/<token>` URL, or `minute_token:<token>`): fetched with `lark-cli vc +notes`, which writes artifacts under `source/minutes/<token>/`. The resolver auto-picks the most transcript-like artifact. If it picks wrong, re-run with `--minutes-artifact "<path-to-the-transcript-file>"`. AI notes that link to a minutes transcript are also followed into this path.
+### 2. Create Or Reuse Case
 
-This writes:
+When a case already exists under the team workspace, reuse it unless the user asks to re-fetch. Read `case.json`, route/request files under `analysis/`, and source files under `source/`.
 
-- `source/meeting_transcript.md`
-- `source/ai_notes.md`, only when the input was AI notes
-- `source/source_resolution.json`
-
-The printed JSON includes `source_kind` (`feishu_docx` or `feishu_minutes`) and `transcript_title`. Pass that same `source_kind` to `meeting_case.py` in the next step. If `--runtime-dir` is omitted, the script writes under `./meeting-runtime/<case_id>`.
-
-### 4. Create Case
-
-Create a case scaffold:
+For a new case:
 
 ```bash
 python3 "$SKILL_DIR/scripts/meeting_case.py" \
   --case-id "<case-id>" \
   --title "<meeting-title>" \
-  --source-kind "<source_kind reported by resolve_meeting_source.py: feishu_docx | feishu_minutes>" \
+  --source-kind "<feishu_docx|feishu_meeting|feishu_minutes|getbiji_note|local_media|manual_text>" \
   --source-ref "primary_transcript: <path-or-url>" \
   --input-file "<runtime-dir>/source/meeting_transcript.md" \
   --meeting-type auto \
@@ -134,104 +119,107 @@ python3 "$SKILL_DIR/scripts/meeting_case.py" \
   --runtime-root "$WORK_DIR/meeting-runtime"
 ```
 
-Re-running case creation is safe: existing non-empty scaffold files (including any analysis you already wrote into `internal_brief.md` / `customer_material.md`) are preserved and reported as `skipped (exists)` on stderr. Pass `--force` only when you intentionally want to regenerate scaffolds and discard their current contents.
+Re-running case creation should preserve existing non-empty analysis files. Use `--force` only when intentionally regenerating scaffolds. For local transcript input, the script normalizes the text into `<runtime-dir>/source/meeting_transcript.md` and writes positive source provenance. For Feishu/minutes/Get笔记 source refs, it writes `case.yaml` first, then automatically resolves the primary source into the same runtime `source/` directory.
 
-Use explicit `--meeting-type` when the user tells you the route:
+### 3. Record Route
 
-- `internal`
-- `presales`
-- `customer_collaboration`
-- `special`
-
-If the user says to use the customer consultation or pre-consult skill, use `--meeting-type presales`. The preferred route is `skill_pre-consult` full flow: 会前 → 纪要 → 提问 → 成果 → 问卷. The script prepares the handoff only; the AI must read the external `crm` skill's `SKILL.md` and references before generating those artifacts.
-
-Pre-consult dependency options:
-
-- Local pre-consult skill: pass `--pre-consult-skill-path "<path-containing-SKILL.md>"`.
-- GitHub pre-consult skill: pass `--pre-consult-git-url "https://github.com/<owner>/<repo>"`; add `--pre-consult-subdir "<subdir>"` if `SKILL.md` is not at the repo root.
-- Default presales source: if no local path or Git URL is provided, the script clones `https://github.com/jeffzh0802/skill_pre-consult.git` into `<runtime-dir>/pre-consult/external-skills/`.
-- Legacy `--crm-*` options are kept only for compatibility. New customer consultation cases should use the pre-consult route and `pre_consult_handoff.md`.
-
-### 5. Analyze Manually From Transcript
-
-Read `meeting_transcript.md` yourself. Write analysis artifacts in the case directory. Do not ask the script to decide the content.
-
-Required outputs:
-
-- `internal_brief.md`: internal judgment, risks, routing, next actions.
-- `customer_material.md`: only facts, customer quotes, and customer-visible commitments.
-- `collaboration_analysis.md` or a mode-specific analysis Markdown for HTML rendering.
-- `pre_consult_handoff.md` for presales cases routed to the external pre-consult flow.
-
-Use exact dates. Convert relative terms like “下周一” using the meeting date in the transcript.
-
-Routing guidance:
-
-- `internal`: internal recap, decisions, owners, action items. No customer page.
-- `customer_collaboration`: cooperation context, confirmed items, joint actions, open confirmations. Customer page may be generated through this workflow.
-- `presales`: use `skill_pre-consult` as an external dependency. Keep pre-consult inputs restricted to transcript-backed, customer-safe material plus explicit internal handoff notes. Do not copy Feishu private links, raw private excerpts, or internal sales judgment into customer-facing pre-consult outputs.
-- `special`: create the case and question list; stop before producing downstream pages.
-
-### 5.1 Pre-Consult Full Flow For Presales
-
-For `customer_page_generator: pre_consult`, open `pre_consult_handoff.md` and use the external skill named `crm` from `pre_consult_skill_path`.
-
-The five stages are:
-
-1. `crm 会前`: build or backfill `agent_output/客户档案/<客户简称>.md` from `case.yaml`, known background, and meeting goals. If the meeting already happened, clearly treat this as a backfill step.
-2. `crm 纪要`: use `meeting_transcript.md` plus `customer_material.md`; output customer-visible `纪要_<日期>.html`.
-3. `crm 提问`: use the phase 2 minutes and archive; output consultant-only `作战手册_<日期>.html`.
-4. `crm 成果`: use phase 2 minutes plus phase 3 notes or transcript-backed deep answers; output customer-visible `成果_<日期>.html`. If deep answers are missing, stop and ask for keywords instead of inventing a result page.
-5. `crm 问卷`: use the archive, minutes, and result page; output customer-visible `问卷_<日期>.md`.
-
-All pre-consult artifacts must be written under `pre_consult_workspace`, usually `<runtime-dir>/pre-consult/agent_output/`. Do not write customer artifacts into the external skill source directory.
-
-### 6. Render HTML
-
-Render the analysis Markdown:
+If the case is at `analysis_status=needs_user_context` or `analysis_stage=meeting/context`, handle the route reply before analysis:
 
 ```bash
-python3 "$SKILL_DIR/scripts/render_meeting_html.py" \
-  --input "<case-dir>/collaboration_analysis.md" \
-  --case "<case-dir>/case.yaml" \
-  --output "<runtime-dir>/html/report.html"
+python3 "$SKILL_DIR/scripts/route_context_reply.py" \
+  --case-dir "<case-dir>" \
+  --reply "<用户回复>"
 ```
 
-The current renderer is a simple standalone HTML renderer and remains a fallback for non-presales or collaboration reports. For presales customer consultation pages, prefer the external pre-consult full flow.
+The helper records route state only. The Agent then performs the selected work according to `references/output_contract.md`.
 
-## HTML Quality Rules
+### 4. Analyze
 
-- Use transcript-backed facts and evidence anchors.
-- Prefer project-workbench layouts over generic reports: summary strip, timeline, action matrix, risk/decision modules, customer-visible section, evidence anchors.
-- Do not show internal sales strategy, qualification labels, or private risk judgment in customer-visible sections.
-- Do not embed Feishu signed image/media URLs; render them as source references or omit them.
-- Keep generated HTML standalone unless the user asks for a web app.
+Read `source/meeting_transcript.md` and available notes personally. Do not start analysis from AI Notes alone when the transcript gate is unresolved or negative. Write route outputs into the case package:
 
-## Local File Selection
+- Default analysis: `analysis/meeting_analysis.md`
+- Supplement: `analysis/context_materials.md`
+- WOW return: `analysis/remote_outputs/` and/or `html/`
+- CRM/customer-consultation: `analysis/crm/` and/or `html/`
+- Customer-facing HTML: final reviewed HTML under `html/`
 
-If the user wants to use a local document instead of Feishu:
+If the user wants the output as a webpage (a live shareable URL rather than a local file), still write the reviewed HTML under `html/` here, then publish it in step 6.
 
-1. Ask for or infer the local file path.
-2. If it is Markdown/text, read it directly.
-3. If it is `.docx`, use an appropriate document extraction tool before analysis.
-4. Never read `.env`, credentials, browser profiles, or token files.
-5. Create the same case artifacts and render HTML if requested.
+Use exact dates. Convert relative dates from the meeting date when needed. Treat `internal`, `partner`, and `customer` as separate archive audiences: partner meetings are external collaboration, but not customer sales. Keep customer-facing material free of internal sales labels, private strategy, Feishu private links, signed media URLs, and unsupported claims.
+
+### 5. Finalize And Return
+
+After final route outputs exist:
+
+```bash
+python3 "$SKILL_DIR/scripts/finalize_route.py" \
+  --case-dir "<case-dir>" \
+  --route "<agent_default|crm_skill|customer_html_prompt|wow_codex|wow_claude>" \
+  --scan-case
+```
+
+For CRM or customer-facing HTML, ask:
+
+```text
+成果已放入会议 case。是否确认收尾归档并回传飞书？
+```
+
+After approval:
+
+```bash
+python3 "$SKILL_DIR/scripts/finalize_route.py" \
+  --case-dir "<case-dir>" \
+  --route "<route>" \
+  --approve
+```
+
+When a Feishu target is known and approved, add `--send`. Use `--send --dry-run` before enabling or changing a target. Use `--doc` to append to an existing Feishu document, or `--folder-token` / `--wiki-token` to create the single archive document under a specific parent. Without `--send`, the script only writes local return files.
+
+Expected return files:
+
+- `analysis/route_done.json`
+- `analysis/feishu_meeting_document.md`
+- `analysis/feishu_index_entry.md`
+- `analysis/source_paths_for_feishu.md`
+- `analysis/feishu_return_message.md`
+- `analysis/feishu_return_manifest.json`
+
+If writing to an existing Feishu document or index page, read the current document first and preserve existing reviewed content. The index should point to the single formal archive document, not to duplicated per-artifact docs.
+
+If `finalize_route.py` or `return_to_feishu.py` reports a provenance/transcript gate failure, stop. Do not mark `review_approved`, do not create a return package, and do not send to Feishu until `source/meeting_transcript.md` is present and non-empty.
+
+### 6. Optional: Publish As A Live Webpage (AirDrop)
+
+Use this only when the user asks for the meeting output as a webpage — a shareable live URL, not just a local HTML file. Deploy reviewed HTML from the case `html/` directory with the AirDrop CLI (`@zh-ai/airdrop-cli`, global binary `airdrop`).
+
+Authentication is a one-time human step, not something this skill runs: `airdrop login` is interactive (it prompts for an API token on stdin), and the token then persists in `~/.airdrop/config.json` (0600). Do not run `airdrop login` from the automated flow. Only check auth:
+
+```bash
+airdrop whoami       # confirm authentication; never print the token
+```
+
+If `whoami` reports "Not authenticated", stop and ask the user to run `airdrop login` once themselves (or to set `AIRDROP_TOKEN`); then continue.
+
+Before deploying: confirm with the user (publishing is outward-facing and shareable), and re-scan the HTML for secret-like markers (see Validation) so no Feishu private links, signed media URLs, or tokens go public.
+
+```bash
+airdrop deploy "<case-dir>/html/report.html" --json          # a single HTML file
+airdrop deploy "<case-dir>/html" --json                      # a directory or a .zip
+airdrop deploy "<case-dir>/html" -p "<slug>" --json          # new version of an existing project
+```
+
+`deploy` accepts a single HTML file, a directory, or a ZIP. `--json` prints a result object; the public link is the `url` field (e.g. `https://airdrop.z-h-ai.com/p/<slug>`), and `slug` is the project id to pass back via `-p` for later versions. Record the `url` (and the `slug` for redeploys) in the case — for example in `analysis/feishu_return_message.md` or `analysis/feishu_index_entry.md` — so the Feishu archive can link to the live page. Record only the URL and slug, never the token.
 
 ## Validation
 
 Before final handoff:
 
-- Run Python compile checks for edited scripts.
-- Run the bundled offline self-test (no lark-cli or network needed). It covers transcript detection, AI-notes link extraction, meeting classification, the re-run no-clobber guarantee, and Feishu private-URL redaction:
-
-```bash
-python3 "$SKILL_DIR/scripts/selftest.py"
-```
-
+- If scripts changed, run Python compile checks and `python3 "$SKILL_DIR/scripts/selftest.py"`. The self-test covers the mandatory provenance gate, resolver negative provenance, return-package blocking, source path redaction, and output routing.
+- For docs-only changes, inspect references and route/output terminology for drift.
 - Scan generated public artifacts for secret-like markers:
 
 ```bash
 rg -n "authcode|internal-api-drive-stream|app_secret|credentials|\\.env|secret|token=|<script" "<output-path>"
 ```
 
-Report absolute paths to the transcript, case, analysis Markdown, and HTML.
+Report absolute paths to the transcript, case, analysis Markdown, HTML, and Feishu return manifest.

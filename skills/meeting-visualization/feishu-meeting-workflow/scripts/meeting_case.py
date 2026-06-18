@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """Create a meeting visualization case scaffold.
 
-This script creates local case files only. It does not call Feishu/Lark APIs,
-does not call external consultation skills, and does not read credential files.
+This script creates local case files, normalizes local transcript input, and
+automatically resolves supported remote meeting sources into runtime
+provenance. It does not generate meeting analysis.
 """
 
 from __future__ import annotations
@@ -10,6 +11,7 @@ from __future__ import annotations
 import argparse
 import datetime as dt
 import getpass
+import json
 import os
 from pathlib import Path
 import re
@@ -18,13 +20,14 @@ import sys
 from typing import Literal
 
 from _safety import has_secret_content, is_secret_file
+import resolve_meeting_source as rms
 
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 DEFAULT_RUNTIME_ROOT = Path.cwd() / "meeting-runtime"
 DEFAULT_PRE_CONSULT_GIT_URL = "https://github.com/jeffzh0802/skill_pre-consult.git"
 
-MeetingType = Literal["internal", "presales", "customer_collaboration", "special"]
+MeetingType = Literal["internal", "presales", "customer_collaboration", "partner", "special"]
 
 
 def slugify(value: str) -> str:
@@ -47,6 +50,19 @@ PRESALES_STRONG_SIGNALS = ["客户", "customer", "拜访", "售前", "成果页"
 # Support signals (weight 1) only count toward presales when a customer is present.
 PRESALES_SUPPORT_SIGNALS = ["ai 落地", "ai落地", "咨询", "方案", "解决方案", "客户会议", "诊断", "老板"]
 COLLABORATION_SIGNALS = ["合作", "共创", "双方", "伙伴", "联合", "分工", "对接"]
+PARTNER_SIGNALS = [
+    "合作方",
+    "合作伙伴",
+    "合作会议",
+    "partner",
+    "战略伙伴",
+    "生态合作",
+    "渠道合作",
+    "技术合作",
+    "联合开发",
+    "战略合作",
+    "学校合作",
+]
 INTERNAL_SIGNALS = [
     "内部",
     "周会",
@@ -76,9 +92,11 @@ def classify_meeting(text: str, explicit: str = "auto") -> MeetingType:
         presales += sum(1 for s in PRESALES_SUPPORT_SIGNALS if s in lower)
     internal = sum(1 for s in INTERNAL_SIGNALS if s in lower)
     collaboration = sum(1 for s in COLLABORATION_SIGNALS if s in lower)
+    partner = sum(1 for s in PARTNER_SIGNALS if s in lower)
 
     scores: dict[MeetingType, int] = {
         "internal": internal,
+        "partner": partner,
         "customer_collaboration": collaboration,
         "presales": presales,
     }
@@ -87,7 +105,7 @@ def classify_meeting(text: str, explicit: str = "auto") -> MeetingType:
         return "special"
     # Tie-break order favours the non-CRM route to avoid accidental customer-facing
     # generation; the AI is expected to pass --meeting-type explicitly when known.
-    for candidate in ("internal", "customer_collaboration", "presales"):
+    for candidate in ("internal", "partner", "customer_collaboration", "presales"):
         if scores[candidate] == best_score:
             return candidate
     return "special"
@@ -238,6 +256,15 @@ def route_for(
             "pre_consult_skill_path": "",
             "pre_consult_workspace": "",
         }
+    if meeting_type == "partner":
+        return {
+            "customer_page_generator": "none",
+            "crm_skill_path": crm_skill_path,
+            "crm_stage": "none",
+            "pre_consult_flow": "none",
+            "pre_consult_skill_path": "",
+            "pre_consult_workspace": "",
+        }
     return {
         "customer_page_generator": "none",
         "crm_skill_path": crm_skill_path,
@@ -266,6 +293,109 @@ def write_if_absent(path: Path, content: str, force: bool, statuses: list[tuple[
         return
     path.write_text(content, encoding="utf-8")
     statuses.append((path.name, "overwrote" if has_content else "wrote"))
+
+
+def source_ref_value(raw: str) -> str:
+    value = raw.strip()
+    prefix_match = re.match(r"^([A-Za-z_][A-Za-z0-9_-]*):\s+(.+)$", value)
+    if prefix_match and prefix_match.group(1) in {"primary_transcript", "source", "ai_notes", "transcript"}:
+        return prefix_match.group(2).strip()
+    return value
+
+
+def primary_source_ref(source_refs: list[str]) -> str:
+    for raw in source_refs:
+        value = source_ref_value(raw)
+        if value:
+            return value
+    return ""
+
+
+def should_auto_resolve_source(source_kind: str, source_ref: str) -> bool:
+    lower = source_ref.lower()
+    return (
+        source_kind in {"feishu_docx", "feishu_minutes", "getbiji_note"}
+        or "/docx/" in lower
+        or bool(rms.extract_minute_token(source_ref))
+        or rms.is_getbiji_source(source_ref)
+    )
+
+
+def write_local_source_provenance(
+    runtime_dir: Path,
+    source_kind: str,
+    source_text: str,
+    source_ref: str,
+    source_path: str,
+    force: bool,
+    statuses: list[tuple[str, str]],
+) -> str:
+    if not source_text.strip():
+        return ""
+    source_dir = runtime_dir / "source"
+    transcript_path = source_dir / "meeting_transcript.md"
+    resolution_path = source_dir / "source_resolution.json"
+    source_dir.mkdir(parents=True, exist_ok=True)
+
+    has_transcript = transcript_path.exists() and transcript_path.read_text(encoding="utf-8", errors="ignore").strip()
+    if not has_transcript or force:
+        transcript_path.write_text(source_text, encoding="utf-8")
+        statuses.append(("source/meeting_transcript.md", "overwrote" if has_transcript else "wrote"))
+    else:
+        statuses.append(("source/meeting_transcript.md", "skipped (exists)"))
+
+    resolution_has_content = resolution_path.exists() and resolution_path.read_text(encoding="utf-8", errors="ignore").strip()
+    if not resolution_has_content or force:
+        payload = {
+            "case_id": runtime_dir.name,
+            "source_ref": source_ref or source_path,
+            "source_kind": source_kind,
+            "source_host": "",
+            "profile": None,
+            "entry_identity": "local",
+            "transcript_identity": "local",
+            "input_is_transcript": True,
+            "transcript_url": source_path or source_ref,
+            "transcript_title": "",
+            "transcript_path": str(transcript_path),
+            "resolution_path": str(resolution_path),
+            "transcript_available": True,
+            "reason": "",
+            "attempts": {},
+        }
+        resolution_path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        statuses.append(("source/source_resolution.json", "overwrote" if resolution_has_content else "wrote"))
+    else:
+        statuses.append(("source/source_resolution.json", "skipped (exists)"))
+    return str(transcript_path)
+
+
+def auto_resolve_primary_source(
+    args: argparse.Namespace,
+    case_id: str,
+    source_refs: list[str],
+    runtime_dir: Path,
+    statuses: list[tuple[str, str]],
+) -> None:
+    source_ref = primary_source_ref(source_refs)
+    if not source_ref or not should_auto_resolve_source(args.source_kind, source_ref):
+        return
+    resolve_args = argparse.Namespace(
+        source_ref=source_ref,
+        profile=getattr(args, "source_profile", None),
+        identity=getattr(args, "source_identity", None),
+        case_id=case_id,
+        runtime_dir=str(runtime_dir),
+        config=getattr(args, "source_config", None) or str(rms.DEFAULT_CONFIG),
+        minutes_artifact=getattr(args, "minutes_artifact", None),
+    )
+    result = rms.resolve_source(resolve_args)
+    if result.get("transcript_available") is False:
+        reason = str(result.get("reason") or "transcript unavailable")
+        statuses.append(("source/source_resolution.json", f"wrote negative provenance ({reason})"))
+    else:
+        statuses.append(("source/meeting_transcript.md", "resolved"))
+        statuses.append(("source/source_resolution.json", "resolved"))
 
 
 def write_case_yaml(
@@ -377,6 +507,8 @@ def write_internal_brief(
         lines.append("- Presales customer scenario: legacy CRM route is available, but pre-consult is the preferred customer-page generator.")
     elif meeting_type == "customer_collaboration":
         lines.append("- Customer collaboration: use meeting visualization draft path, not CRM by default.")
+    elif meeting_type == "partner":
+        lines.append("- Partner meeting: collaboration with a strategic/technical partner, not a customer sale. No CRM or customer-facing page by default.")
     elif meeting_type == "internal":
         lines.append("- Internal meeting: no customer-facing page by default.")
     else:
@@ -534,6 +666,20 @@ def create_case(args: argparse.Namespace) -> tuple[Path, list[tuple[str, str]]]:
     case_dir.mkdir(parents=True, exist_ok=True)
     runtime_dir.mkdir(parents=True, exist_ok=True)
     pre_consult_workspace = runtime_dir / "pre-consult"
+    force = bool(getattr(args, "force", False))
+    statuses: list[tuple[str, str]] = []
+    source_refs = list(args.source_ref or [])
+    local_transcript_path = write_local_source_provenance(
+        runtime_dir=runtime_dir,
+        source_kind=args.source_kind,
+        source_text=source_text,
+        source_ref=primary_source_ref(source_refs),
+        source_path=transcript_path,
+        force=force,
+        statuses=statuses,
+    )
+    if local_transcript_path:
+        transcript_path = local_transcript_path
 
     meeting_type = classify_meeting(source_text + "\n" + args.title, args.meeting_type)
     pre_consult_git_url = args.pre_consult_git_url
@@ -561,9 +707,6 @@ def create_case(args: argparse.Namespace) -> tuple[Path, list[tuple[str, str]]]:
         pre_consult_workspace,
     )
 
-    force = bool(getattr(args, "force", False))
-    statuses: list[tuple[str, str]] = []
-    source_refs = list(args.source_ref or [])
     write_case_yaml(
         case_dir=case_dir,
         case_id=case_id,
@@ -578,6 +721,7 @@ def create_case(args: argparse.Namespace) -> tuple[Path, list[tuple[str, str]]]:
         force=force,
         statuses=statuses,
     )
+    auto_resolve_primary_source(args, case_id, source_refs, runtime_dir, statuses)
     write_source_index(case_dir, args.source_kind, source_refs, runtime_dir, force, statuses)
     write_internal_brief(case_dir, meeting_type, route, args.title, force, statuses)
     write_customer_material(case_dir, meeting_type, args.title, source_text, force, statuses)
@@ -604,15 +748,19 @@ def main() -> int:
     parser.add_argument(
         "--source-kind",
         required=True,
-        choices=["feishu_docx", "feishu_meeting", "feishu_minutes", "local_media", "manual_text"],
+        choices=["feishu_docx", "feishu_meeting", "feishu_minutes", "getbiji_note", "local_media", "manual_text"],
     )
     parser.add_argument("--source-ref", action="append")
+    parser.add_argument("--source-profile", help="Optional lark-cli profile passed to resolve_meeting_source.py.")
+    parser.add_argument("--source-identity", choices=["user", "bot"], help="Optional lark-cli identity passed to resolve_meeting_source.py.")
+    parser.add_argument("--source-config", help="Optional resolver profile routing JSON.")
+    parser.add_argument("--minutes-artifact", help="Optional transcript artifact for Feishu minutes resolution.")
     parser.add_argument("--input-text")
     parser.add_argument("--input-file")
     parser.add_argument(
         "--meeting-type",
         default="auto",
-        choices=["auto", "internal", "presales", "customer_collaboration", "special"],
+        choices=["auto", "internal", "presales", "customer_collaboration", "partner", "special"],
     )
     parser.add_argument("--customer-short-name")
     parser.add_argument("--crm-stage", choices=["会前", "纪要", "提问", "成果", "问卷"])

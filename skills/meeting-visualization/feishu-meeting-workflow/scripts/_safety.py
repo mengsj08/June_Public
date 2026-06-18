@@ -54,6 +54,7 @@ _SCRUB_RES = [
     re.compile(r"\b(?:u|t)-[A-Za-z0-9_]{20,}\b"),
     re.compile(r"\bAKIA[0-9A-Z]{16}\b"),
     re.compile(r"\bauthcode=[^&\s\"']+"),
+    re.compile(r"\b(?:cli|oc|om|ou)_[A-Za-z0-9_-]+\b"),
 ]
 
 

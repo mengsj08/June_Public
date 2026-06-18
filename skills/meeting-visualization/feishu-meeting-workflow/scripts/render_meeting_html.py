@@ -16,6 +16,7 @@ import re
 from typing import Iterable
 
 from _safety import has_secret_content, is_secret_file
+from provenance_gate import ensure_transcript_available
 
 
 DEFAULT_INPUT = Path.cwd() / "meeting-cases" / "analysis.md"
@@ -525,6 +526,8 @@ def update_case_output_path(case_path: Path | None, output_path: Path) -> None:
 def render(input_path: Path, output_path: Path, case_path: Path | None) -> Path:
     if is_secret_file(input_path) or is_secret_file(output_path):
         raise SystemExit("Refusing to read or write a secret-like path.")
+    if case_path and case_path.exists():
+        ensure_transcript_available(case_path.parent, "render meeting HTML")
     markdown = input_path.read_text(encoding="utf-8")
     metadata = read_case_metadata(case_path)
     html_doc = build_html(markdown, metadata, input_path, case_path)
