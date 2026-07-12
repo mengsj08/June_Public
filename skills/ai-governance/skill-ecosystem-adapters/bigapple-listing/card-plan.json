@@ -1,0 +1,15 @@
+{
+  "slug": "skill-ecosystem-adapters",
+  "displayName": "Skill Ecosystem Adapters",
+  "intro": "用带证据等级的统一接口读取 Codex、Claude、WorkBuddy 与 BigApple 的 Skill 运行事实。",
+  "examples": [
+    "检查多个 AI 工具中的 Skill 实际状态",
+    "在隔离配置目录中核验启停能力",
+    "区分原生能力、只读发现与未知能力"
+  ],
+  "cards": [
+    {"order": 1, "mainText": "别再把扫描结果当运行事实", "supportText": "四个生态，一套有证据的 Adapter", "labels": ["标准库", "可配置路径", "零上传"], "preparedPath": null},
+    {"order": 2, "mainText": "发现 → 修改 → 重读", "supportText": "隔离 home 冒烟，不碰真实配置", "labels": ["CODEX_HOME", "CLAUDE_CONFIG_DIR", "临时目录"], "preparedPath": null},
+    {"order": 3, "mainText": "unknown 就是尚未核验", "supportText": "每项能力都有等级、时间和证据指针", "labels": ["native", "read_only", "unsupported"], "preparedPath": null}
+  ]
+}

@@ -9,6 +9,9 @@ Public skill collection and landing pages.
 
 ## Skills
 
+- `skills/ai-governance/skill-ecosystem-adapters/`
+  跨生态 Skill 治理 Adapter：盘点 Codex、Claude、WorkBuddy、BigApple 及通用工具中的 Skill 部署和原生状态；只对已验证的原生能力开放受控写入。
+
 - `skills/team-operations/workbuddy-team-sync-reporter/` - WorkBuddy 团队同步日报：在团队成员自己的 Mac 上同步指定 GitHub 仓库和 Feishu/Wiki 本地导出结果，生成可审阅中文日报，并在测试确认后交给 WorkBuddy 定时发送到飞书群。
 
 - `skills/meeting-visualization/feishu-meeting-workflow/`  
