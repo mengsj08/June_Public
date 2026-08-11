@@ -1,4 +1,0 @@
-interface:
-  display_name: "WorkBuddy Team Sync Reporter"
-  short_description: "Set up WorkBuddy daily GitHub and Feishu sync reports."
-  default_prompt: "Set up a WorkBuddy daily team sync reporter on this computer, including account checks, local sync, report generation, and Feishu delivery."

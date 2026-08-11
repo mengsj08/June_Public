@@ -9,3 +9,7 @@ __pycache__/
 .env
 *.log
 
+
+# 仓库内 agent 规则文件：本地生效，不公开发布〔june-directed 2026-08-11〕
+AGENTS.md
+CLAUDE.md

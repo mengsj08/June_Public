@@ -1,4 +1,0 @@
-interface:
-  display_name: "飞书会议分析工作流"
-  short_description: "引导完成工作目录、CRM 来源、Lark CLI 配置与权限检查，再解析飞书会议原文并生成分析产物。"
-  default_prompt: "使用飞书会议分析工作流，先引导我完成目录、CRM skill 和 Lark CLI 配置检查，再从飞书链接或本地会议文档建立分析 case。"
