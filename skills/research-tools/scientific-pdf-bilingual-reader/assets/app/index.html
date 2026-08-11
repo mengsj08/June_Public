@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>科研长 PDF 双语阅读器</title>
+  <link rel="stylesheet" href="/styles.css?v=20260810-4">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <a class="brand" id="brandLibrary" href="#libraryPanel" aria-label="打开论文库">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 32 32" role="img">
+            <path d="M6 7.5c4.3 0 7.6 1.4 10 4.2 2.4-2.8 5.7-4.2 10-4.2v17c-4.2 0-7.5 1.2-10 3.7-2.5-2.5-5.8-3.7-10-3.7z"/>
+            <path d="M16 11.7v16.5M9.7 12.2c2.3.3 4.1 1 5.4 2.2M22.3 12.2c-2.3.3-4.1 1-5.4 2.2"/>
+          </svg>
+        </span>
+        <span class="brand-copy">
+          <strong>科研长 PDF 双语阅读器</strong>
+          <small>Scientific PDF Bilingual Reader</small>
+        </span>
+      </a>
+
+      <nav class="top-nav" aria-label="工作区导航">
+        <button class="active" id="navLibrary" type="button" aria-controls="libraryPanel">论文库</button>
+        <button id="navReader" type="button" aria-controls="reader" disabled>双语阅读</button>
+        <button id="navReview" type="button" aria-controls="review" disabled>质量检查</button>
+      </nav>
+
+      <div class="top-actions">
+        <details class="health-menu">
+          <summary><span class="health-dot"></span>本机处理</summary>
+          <div class="status" id="health">正在检查本机环境…</div>
+        </details>
+        <button class="quiet-button" id="shutdown">退出</button>
+      </div>
+    </header>
+
+    <main class="workspace">
+      <aside class="library-panel" id="libraryPanel">
+        <section class="control collapsed" id="control">
+          <button class="upload-trigger" id="toggleControl">
+            <span aria-hidden="true">＋</span>
+            上传 PDF
+          </button>
+          <div class="control-body">
+            <div class="intake-heading">
+              <div>
+                <span class="eyebrow">NEW DOCUMENT</span>
+                <h2>放入英文 PDF</h2>
+              </div>
+              <span class="privacy-badge">仅本机</span>
+            </div>
+            <p class="intake-copy">文本型或扫描件，最大 500 MB。原文件不会被改写。</p>
+            <label class="drop" id="dropZone">
+              <input id="file" type="file" accept="application/pdf">
+              <span class="drop-icon" aria-hidden="true">↥</span>
+              <strong id="picked">选择或拖入 PDF</strong>
+              <small>只接受英文 PDF</small>
+            </label>
+            <label class="ocr-pages">
+              强制 OCR 页（可选）
+              <input id="forceOcrPages" type="text" placeholder="例如：3, 8-10">
+              <small>仅在自动页面路由漏判时使用。</small>
+            </label>
+            <div class="actions">
+              <label>
+                <span>处理引擎</span>
+                <select id="provider">
+                  <option value="codex">Codex · 主验收</option>
+                  <option value="claude">Claude · 兼容</option>
+                </select>
+              </label>
+              <button id="start" disabled>开始处理</button>
+            </div>
+            <p class="note">可靠文本层直接提取；扫描或稀疏文本页按需进入 PaddleOCR。首次安装 OCR 会单独征求确认。</p>
+          </div>
+        </section>
+
+        <section class="tasks">
+          <div class="section-title">
+            <div>
+              <span class="eyebrow">LOCAL LIBRARY</span>
+              <h2>论文与任务</h2>
+              <small id="taskCount">正在读取任务…</small>
+            </div>
+            <button class="icon-button" id="refresh" title="刷新任务" aria-label="刷新任务">↻</button>
+          </div>
+          <div id="tasks" aria-live="polite"></div>
+        </section>
+
+        <div class="library-note">
+          <span class="health-dot"></span>
+          <span>本机保存 · 原文不上传</span>
+        </div>
+      </aside>
+
+      <section class="reader-area">
+        <button class="edge-toggle library-edge-toggle" id="libraryFold" type="button" aria-controls="libraryPanel" aria-expanded="true" title="收起论文库">
+          <span aria-hidden="true">‹</span><span class="sr-only">收起论文库</span>
+        </button>
+        <section class="reader-empty" id="readerEmpty">
+          <div class="empty-page">
+            <span class="page-number">01</span>
+            <span class="eyebrow">BILINGUAL READING DESK</span>
+            <h1>选择一份论文，<br>开始同页双语阅读。</h1>
+            <p>左侧打开已完成任务；处理中的论文会持续保留状态。质量问题只在需要你判断时出现。</p>
+            <div class="empty-steps" aria-label="处理流程">
+              <span>解析</span><i></i><span>页面路由</span><i></i><span>翻译</span><i></i><span>QA</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="reader" id="reader">
+          <div class="reader-head" id="readerHeadContent">
+            <div class="reader-title">
+              <span class="eyebrow">CURRENT PAPER</span>
+              <h2 id="readerTitle">中英左右并排阅读</h2>
+            </div>
+            <div class="pager" aria-label="页面导航">
+              <button class="icon-button" id="prev" aria-label="上一页">←</button>
+              <span aria-live="polite">第 <b id="page">1</b> / <b id="pageTotal">1</b> 页</span>
+              <button class="icon-button" id="next" aria-label="下一页">→</button>
+            </div>
+            <div class="reader-state" role="group" aria-label="预览版本">
+              <button class="view-option active" type="button" data-view="dual" aria-pressed="true">双语</button>
+              <button class="view-option" type="button" data-view="original" aria-pressed="false">原文</button>
+              <button class="view-option" type="button" data-view="translated" aria-pressed="false">中文</button>
+            </div>
+            <button class="paper-fold" id="paperFold" type="button" aria-controls="readerHeadContent" aria-expanded="true" title="收起论文信息条">
+              <span aria-hidden="true">⌃</span><span class="sr-only">收起论文信息条</span>
+            </button>
+          </div>
+
+          <div class="reader-workspace">
+            <div class="panes single">
+              <article>
+                <div class="pdf-viewer" id="pdfViewer">
+                  <div class="pdf-toolbar">
+                    <div class="paper-labels" id="paperLabels">
+                      <span>EN / 原文</span>
+                      <span>ZH / 中文</span>
+                    </div>
+                    <div class="pdf-toolbar-actions" aria-label="PDF 显示设置">
+                      <button class="pdf-tool" id="zoomOut" type="button" title="缩小">−</button>
+                      <span class="zoom-value" id="zoomValue">适宽</span>
+                      <button class="pdf-tool" id="zoomIn" type="button" title="放大">＋</button>
+                      <button class="pdf-tool text-tool" id="fitWidth" type="button">适宽</button>
+                      <a class="pdf-tool text-tool" id="openCurrent" href="#" target="_blank" rel="noopener">原始查看</a>
+                      <a class="pdf-tool text-tool" id="downloadCurrent" href="#" download>下载</a>
+                    </div>
+                  </div>
+                  <div class="pdf-stage">
+                    <aside class="pdf-thumbnails" id="pdfThumbnails" aria-label="页面缩略图">
+                      <div class="thumbnail-list" id="thumbnailList"></div>
+                    </aside>
+                    <button class="thumbnail-fold" id="thumbnailFold" type="button" aria-controls="pdfThumbnails" aria-expanded="true" title="收起页面缩略图">
+                      <span aria-hidden="true">‹</span><span class="sr-only">收起页面缩略图</span>
+                    </button>
+                    <section class="pdf-page-viewport" id="pdfPageViewport" tabindex="0" aria-label="PDF 页面">
+                      <div class="pdf-loading" id="pdfLoading">正在载入论文页面…</div>
+                      <div class="pdf-page-shell" id="pdfPageShell" hidden>
+                        <canvas id="pdfCanvas"></canvas>
+                        <div class="text-layer" id="pdfTextLayer"></div>
+                      </div>
+                    </section>
+                  </div>
+                </div>
+              </article>
+            </div>
+
+            <button class="edge-toggle review-edge-toggle" id="reviewFold" type="button" aria-controls="review" aria-expanded="false" title="打开质量复核" hidden>
+              <span aria-hidden="true">‹</span><span class="sr-only">打开质量复核</span>
+            </button>
+            <aside class="review" id="review" aria-hidden="true">
+              <div class="review-shell">
+                <div class="review-head">
+                  <div>
+                    <span class="eyebrow">HUMAN REVIEW GATE</span>
+                    <h2 id="reviewTitle">质量复核</h2>
+                    <p id="reviewSummary"></p>
+                  </div>
+                  <button class="icon-button review-close" id="closeReview" aria-label="收起质量复核">×</button>
+                </div>
+                <div class="review-page-picker">
+                  <label for="reviewPageSelect">问题页</label>
+                  <select id="reviewPageSelect"></select>
+                </div>
+                <section class="review-detail">
+                  <div id="reviewDetail" class="review-empty">选择一个问题页开始复核。系统只分析你选择的问题，不会自动修改整份 PDF。</div>
+                  <div id="repairHistory"></div>
+                </section>
+              </div>
+            </aside>
+          </div>
+        </section>
+      </section>
+    </main>
+  </div>
+  <script type="module" src="/pdf-viewer.js?v=20260810-4"></script>
+  <script src="/app.js?v=20260810-4"></script>
+</body>
+</html>

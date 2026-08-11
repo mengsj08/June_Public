@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "runtime_version": "1",
+  "uv_version": "0.11.28",
+  "python": "3.12",
+  "packages": [
+    "paddlepaddle==3.3.1",
+    "paddleocr==3.7.0",
+    "paddlex[ocr-core]==3.7.2",
+    "pymupdf==1.25.2"
+  ],
+  "required_imports": [
+    "paddle",
+    "paddleocr",
+    "paddlex",
+    "fitz",
+    "cv2"
+  ],
+  "pipeline": {
+    "language": "en",
+    "ocr_version": "PP-OCRv5",
+    "text_detection_model": "PP-OCRv5_mobile_det",
+    "text_recognition_model": "PP-OCRv5_mobile_rec",
+    "use_doc_orientation_classify": true,
+    "use_doc_unwarping": true,
+    "use_textline_orientation": true,
+    "render_dpi": 220
+  },
+  "storage_estimate": "about 1-2 GB including Python runtime, packages, and cached OCR models",
+  "sources": [
+    {
+      "name": "PaddleOCR",
+      "url": "https://github.com/PaddlePaddle/PaddleOCR",
+      "license": "Apache-2.0"
+    },
+    {
+      "name": "PaddlePaddle",
+      "url": "https://github.com/PaddlePaddle/Paddle",
+      "license": "Apache-2.0"
+    }
+  ]
+}

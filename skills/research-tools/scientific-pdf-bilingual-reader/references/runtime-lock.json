@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "runtime_version": "1",
+  "uv_version": "0.11.28",
+  "python": "3.12",
+  "pdf2zh": {
+    "name": "pdf2zh",
+    "version": "1.9.11",
+    "source": "https://github.com/PDFMathTranslate/PDFMathTranslate",
+    "commit": "44c4d5b332705797c1df17fadde2022e7c49f5de",
+    "archive": "https://github.com/PDFMathTranslate/PDFMathTranslate/archive/44c4d5b332705797c1df17fadde2022e7c49f5de.tar.gz",
+    "license": "AGPL-3.0"
+  },
+  "constraints": [
+    "babeldoc==0.2.33",
+    "pymupdf==1.25.2",
+    "tencentcloud-sdk-python-tmt==3.0.1000"
+  ],
+  "required_imports": [
+    "fitz",
+    "babeldoc",
+    "onnxruntime",
+    "cv2",
+    "pdf2zh",
+    "pdf2zh.translator",
+    "pdf2zh.high_level"
+  ],
+  "prefetch": {
+    "provider": "scripts/prefetch_assets.py",
+    "includes": [
+      "document-layout ONNX model",
+      "Simplified Chinese serif font",
+      "multilingual fallback font",
+      "gpt-4o tokenizer cache"
+    ]
+  }
+}

@@ -9,6 +9,9 @@ Public skill collection and landing pages.
 
 ## Skills
 
+- `skills/research-tools/scientific-pdf-bilingual-reader/`
+  科研长 PDF 双语阅读工作台（macOS，本地运行）：文本页直提、扫描页 PaddleOCR，经本机 Codex/Claude CLI 登录态翻译，产出中文 PDF 与同页左右双语 PDF。AGPL-3.0，v0.1.0。
+
 - `skills/ai-governance/skill-ecosystem-adapters/`
   跨生态 Skill 治理 Adapter：盘点 Codex、Claude、WorkBuddy、BigApple 及通用工具中的 Skill 部署和原生状态；只对已验证的原生能力开放受控写入。
 

@@ -1,0 +1,4 @@
+interface:
+  display_name: "科研长 PDF 双语阅读器"
+  short_description: "在本地翻译大型英文科研 PDF，并提供中英左右对照阅读"
+  default_prompt: "先检查受管 Python 3.12、PDF 引擎和预下载模型；缺失时说明长期约 1.0–1.3 GB 磁盘成本并征得我确认，完成后用受管启动器打开本地科研 PDF 双语阅读器。"

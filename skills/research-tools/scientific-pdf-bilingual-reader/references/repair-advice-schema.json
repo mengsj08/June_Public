@@ -1,0 +1,108 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "is_repairable",
+    "problem_family",
+    "strategy_summary",
+    "execution_family",
+    "bounded_steps",
+    "validation_expectations",
+    "risks",
+    "alternatives"
+  ],
+  "properties": {
+    "schema": {
+      "const": "claude-repair-strategy-advice/v1"
+    },
+    "is_repairable": {
+      "type": "boolean"
+    },
+    "problem_family": {
+      "type": "string"
+    },
+    "strategy_summary": {
+      "type": "string",
+      "minLength": 1
+    },
+    "execution_family": {
+      "type": "string",
+      "enum": [
+        "unexpected_text",
+        "toc_layout",
+        "rotation_layout",
+        "table_layout",
+        "table_untranslated",
+        "form_untranslated",
+        "layout",
+        "untranslated_region"
+      ]
+    },
+    "bounded_steps": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 8,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "validation_expectations": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 6,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "risks": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 6,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "alternatives": {
+      "type": "array",
+      "maxItems": 3,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "strategy_id",
+          "label",
+          "boundary",
+          "risk",
+          "cost"
+        ],
+        "properties": {
+          "strategy_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1
+          },
+          "boundary": {
+            "type": "string",
+            "minLength": 1
+          },
+          "risk": {
+            "type": "string",
+            "minLength": 1
+          },
+          "cost": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    }
+  }
+}

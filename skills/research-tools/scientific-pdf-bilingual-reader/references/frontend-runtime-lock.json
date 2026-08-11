@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "purpose": "Local deterministic PDF rendering for the workbench UI",
+  "package": {
+    "name": "pdfjs-dist",
+    "version": "6.1.200",
+    "license": "Apache-2.0",
+    "source": "https://registry.npmjs.org/pdfjs-dist/-/pdfjs-dist-6.1.200.tgz",
+    "npm_integrity": "sha512-o8MolyzirkkLrcdsae/HEOiIcXWI7DS5zGpvqW8xTC2YUsW30rltFw2bDGvw/fskUdEMrQm2br68jzDS5BH2vw==",
+    "tarball_sha256": "2e46aa56491f6576ec95b9f87bcf5ae52e97e3f09652ed2181f12405c3f0d30a"
+  },
+  "vendored": {
+    "root": "assets/app/vendor/pdfjs",
+    "pdf_mjs_sha256": "4ba2f15599b03fde8755ad91349920c21dadd3e8fd6b6460a7663d46d4cf21b5",
+    "worker_mjs_sha256": "2ab9e09667296dab1a618868b3ce6e6c23d5b8f48120ae7c5b34e7e335ed01fa",
+    "license_sha256": "0d542e0c8804e39aa7f37eb00da5a762149dc682d7829451287e11b938e94594",
+    "support_asset_tree_sha256": "3a5e5dd643d85a606ddddecb7866b4366df02cc4e5a86ed33b07a07df08b963f",
+    "support_asset_counts": {
+      "cmaps": 169,
+      "standard_fonts": 16,
+      "wasm": 13
+    }
+  }
+}
