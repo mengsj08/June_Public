@@ -1,11 +1,27 @@
 # June Public
 
-Public skill collection.
+Public skill collection and the AI4LifeScience site.
+
+## Site
+
+Published via GitHub Pages from [`docs/`](docs/): **https://mengsj08.github.io/June_Public/**
+
+- **Source Atlas** ([`docs/index.html`](docs/index.html)) — curated, browsable map of
+  AI4LifeScience information sources (companies, discovery tools, venues, datasets,
+  guidelines). Data in [`docs/sources.json`](docs/sources.json).
+- **Author Literature Map** ([`docs/author-map.html`](docs/author-map.html)) — landing page
+  for the evidence-gated per-author literature map toolkit.
+- [Bookmark provenance note](docs/bookmark-provenance-2026-05-28.md) — how the atlas was derived.
+
+Migrated from `mengsj08/AI4LifeScience_Public` on 2026-08-11; that repository is archived.
 
 ## Skills
 
 - `skills/research-tools/scientific-pdf-bilingual-reader/`
   科研长 PDF 双语阅读工作台（macOS，本地运行）：文本页直提、扫描页 PaddleOCR，经本机 Codex/Claude CLI 登录态翻译，产出中文 PDF 与同页左右双语 PDF。AGPL-3.0，v0.1.0。
+
+- `skills/research-tools/author-literature-map/`
+  作者文献地图工具包：为单个作者构建每条论断都可追溯到可验证记录的文献地图，证据门控。MIT 许可。
 
 - `skills/ip-operations/xiaohongshu-skills/`
   小红书自动化技能集合：认证、搜索、发布、互动、复合运营，以及 topic2feishu 采集写入飞书 Base。

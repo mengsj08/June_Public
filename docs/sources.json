@@ -1,0 +1,711 @@
+{
+  "sections": [
+    {
+      "title": "AI4Science Companies",
+      "summary": "Frontier labs and companies turning AI into scientific discovery systems, from autonomous research agents to drug design and biomedical foundation models.",
+      "tags": ["frontier labs", "AI4Science", "company updates"],
+      "why_follow": "这些源代表 AI for science 从论文、demo 走向真实研发平台的前沿信号。",
+      "best_for": "跟踪顶尖公司进展、研究发布、产品化方向和潜在合作/竞品信号。",
+      "monitoring_mode": "official updates",
+      "source_origin": "both",
+      "sources": [
+        {
+          "name": "FutureHouse",
+          "url": "https://www.futurehouse.org/research",
+          "type": "company research",
+          "origin": "both",
+          "note": "AI scientist and autonomous discovery lab; research and announcements are high-priority signals."
+        },
+        {
+          "name": "Lila Sciences",
+          "url": "https://www.lila.ai/news",
+          "type": "company news",
+          "origin": "both",
+          "note": "Scientific superintelligence company; news/blog stream is useful for tracking company direction."
+        },
+        {
+          "name": "Isomorphic Labs",
+          "url": "https://www.isomorphiclabs.com/news",
+          "type": "AI drug discovery",
+          "origin": "both",
+          "note": "DeepMind-origin AI drug discovery company; monitor announcements and vision pieces first."
+        },
+        {
+          "name": "Phylo / Biomni Lab",
+          "url": "https://phylo.bio/announcement",
+          "type": "biomedical AI agent",
+          "origin": "bookmark",
+          "note": "Follow-up entry for Biomni/IBE direction; keep as watchlist until stable research/blog pages mature."
+        },
+        {
+          "name": "Biomni GitHub",
+          "url": "https://github.com/snap-stanford/Biomni",
+          "type": "open-source agent",
+          "origin": "bookmark",
+          "note": "Open-source biomedical AI agent repo; useful for tracking capability and community activity."
+        },
+        {
+          "name": "Google DeepMind Publications",
+          "url": "https://deepmind.google/research/publications/",
+          "type": "research publications",
+          "origin": "Scientific_InfoHub",
+          "note": "Core frontier AI lab already covered by Scientific_InfoHub source rules."
+        },
+        {
+          "name": "Anthropic Research",
+          "url": "https://www.anthropic.com/research",
+          "type": "AI research",
+          "origin": "Scientific_InfoHub",
+          "note": "Important for LLM/agent/evaluation methods that affect research workflows."
+        },
+        {
+          "name": "Microsoft Research AI for Science",
+          "url": "https://www.microsoft.com/en-us/research/lab/microsoft-research-ai-for-science/publications",
+          "type": "AI4Science publications",
+          "origin": "Scientific_InfoHub",
+          "note": "Institutional AI4Science publications and program signal."
+        },
+        {
+          "name": "IBM Research Publications",
+          "url": "https://research.ibm.com/publications",
+          "type": "research publications",
+          "origin": "Scientific_InfoHub",
+          "note": "Enterprise research output; useful as a broad AI/biomedical technology signal."
+        },
+        {
+          "name": "Insilico Medicine",
+          "url": "https://insilico.com/",
+          "type": "AI drug discovery",
+          "origin": "Scientific_InfoHub",
+          "note": "AI drug discovery company tracked through PubMed affiliation and web-side signals."
+        }
+      ]
+    },
+    {
+      "title": "AI Research Discovery",
+      "summary": "Paper discovery, evidence search, preprint streams, and AI-assisted literature tools for finding new work faster.",
+      "tags": ["papers", "search", "preprints"],
+      "why_follow": "AI4LifeScience 信息更新快，单一数据库不够；需要组合论文源、预印本和 AI 搜索工具。",
+      "best_for": "找论文、做主题雷达、快速判断方向热度和候选深读材料。",
+      "monitoring_mode": "paper discovery",
+      "source_origin": "both",
+      "sources": [
+        {
+          "name": "HuggingFace Papers",
+          "url": "https://huggingface.co/papers",
+          "type": "paper discovery",
+          "origin": "Scientific_InfoHub",
+          "note": "Fast AI paper signal and community attention surface."
+        },
+        {
+          "name": "Cool Papers",
+          "url": "https://papers.cool/",
+          "type": "paper discovery",
+          "origin": "both",
+          "note": "Visual and immersive paper discovery; useful as a manual AI paper radar."
+        },
+        {
+          "name": "PubMed",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/",
+          "type": "biomedical literature",
+          "origin": "Scientific_InfoHub",
+          "note": "Main biomedical literature base for cancer AI, multimodal omics, and clinical AI queries."
+        },
+        {
+          "name": "arXiv",
+          "url": "https://arxiv.org/",
+          "type": "preprint search",
+          "origin": "Scientific_InfoHub",
+          "note": "Core source for AI, agents, foundation models, and scientific machine learning."
+        },
+        {
+          "name": "bioRxiv",
+          "url": "https://www.biorxiv.org/",
+          "type": "life-science preprints",
+          "origin": "Scientific_InfoHub",
+          "note": "Preprint server for biology and computational life science."
+        },
+        {
+          "name": "medRxiv",
+          "url": "https://www.medrxiv.org/",
+          "type": "medical preprints",
+          "origin": "Scientific_InfoHub",
+          "note": "Preprint server for clinical and medical research."
+        },
+        {
+          "name": "AMiner",
+          "url": "https://www.aminer.cn/",
+          "type": "academic intelligence",
+          "origin": "bookmark",
+          "note": "Academic search and science-intelligence aggregation."
+        },
+        {
+          "name": "Consensus",
+          "url": "https://consensus.app/search/",
+          "type": "AI evidence search",
+          "origin": "bookmark",
+          "note": "Use as an evidence-search tool; prefer tool integration over scraping."
+        },
+        {
+          "name": "Elicit",
+          "url": "https://elicit.com/",
+          "type": "AI literature assistant",
+          "origin": "bookmark",
+          "note": "Useful for literature triage, reports, systematic-review support, and alerts."
+        },
+        {
+          "name": "SciSpace",
+          "url": "https://scispace.com/chat",
+          "type": "AI paper assistant",
+          "origin": "bookmark",
+          "note": "Paper reading and academic assistant surface."
+        },
+        {
+          "name": "Scite",
+          "url": "https://scite.ai/",
+          "type": "citation intelligence",
+          "origin": "bookmark",
+          "note": "Citation context and research claim support."
+        },
+        {
+          "name": "Paper Digest",
+          "url": "https://www.paperdigest.org/",
+          "type": "digest service",
+          "origin": "bookmark",
+          "note": "Topic tracking and paper digest service; secondary aggregation rather than original source."
+        },
+        {
+          "name": "Scopus AI",
+          "url": "https://www.elsevier.com/products/scopus/scopus-ai",
+          "type": "research discovery product",
+          "origin": "bookmark",
+          "note": "Elsevier discovery product, useful to know but not an original content source."
+        },
+        {
+          "name": "Read by QxMD",
+          "url": "https://read.qxmd.com/",
+          "type": "clinical paper discovery",
+          "origin": "bookmark",
+          "note": "Clinical featured-paper discovery and reading queue signal."
+        }
+      ]
+    },
+    {
+      "title": "AI Agents & Research Workflows",
+      "summary": "Agent frameworks, workflow orchestration, retrieval stacks, and protocols that shape how AI-assisted research systems are built.",
+      "tags": ["agents", "workflow", "protocols"],
+      "why_follow": "AI4LifeScience 不只是找论文；真正的产能来自可验证、可复用的研究 agent 和 workflow。",
+      "best_for": "搭建 deep research、文献综述、数据提取、评估和自动化研究助手。",
+      "monitoring_mode": "workflow tooling",
+      "source_origin": "bookmark",
+      "sources": [
+        {
+          "name": "DSPy",
+          "url": "https://dspy.ai/",
+          "type": "programming framework",
+          "origin": "bookmark",
+          "note": "Declarative framework for optimizing LM pipelines."
+        },
+        {
+          "name": "AutoGen",
+          "url": "https://www.microsoft.com/en-us/research/project/autogen/",
+          "type": "agent framework",
+          "origin": "bookmark",
+          "note": "Microsoft multi-agent research and framework signal."
+        },
+        {
+          "name": "LangChain",
+          "url": "https://www.langchain.com/",
+          "type": "agent platform",
+          "origin": "bookmark",
+          "note": "General agent and application framework."
+        },
+        {
+          "name": "LangGraph",
+          "url": "https://www.langchain.com/langgraph",
+          "type": "workflow graph",
+          "origin": "bookmark",
+          "note": "Graph-based agent orchestration, useful for controlled research workflows."
+        },
+        {
+          "name": "LlamaIndex",
+          "url": "https://www.llamaindex.ai/",
+          "type": "data/agent framework",
+          "origin": "bookmark",
+          "note": "Document, retrieval, and workflow tooling for knowledge-heavy systems."
+        },
+        {
+          "name": "Semantic Kernel",
+          "url": "https://learn.microsoft.com/en-us/semantic-kernel/overview/",
+          "type": "agent SDK",
+          "origin": "bookmark",
+          "note": "Microsoft agent orchestration SDK."
+        },
+        {
+          "name": "CAMEL-AI",
+          "url": "https://www.camel-ai.org/",
+          "type": "multi-agent framework",
+          "origin": "bookmark",
+          "note": "Multi-agent research framework and community."
+        },
+        {
+          "name": "MetaGPT",
+          "url": "https://github.com/FoundationAgents/MetaGPT",
+          "type": "multi-agent framework",
+          "origin": "bookmark",
+          "note": "Software-company style multi-agent framework."
+        },
+        {
+          "name": "Rasa",
+          "url": "https://rasa.com/",
+          "type": "conversational agent platform",
+          "origin": "bookmark",
+          "note": "Production-oriented conversational agent tooling."
+        },
+        {
+          "name": "Atomic Agents",
+          "url": "https://github.com/BrainBlend-AI/atomic-agents",
+          "type": "agent framework",
+          "origin": "bookmark",
+          "note": "Small composable agent framework."
+        },
+        {
+          "name": "Model Context Protocol",
+          "url": "https://modelcontextprotocol.io/docs/getting-started/intro",
+          "type": "agent protocol",
+          "origin": "bookmark",
+          "note": "Tool/context protocol increasingly relevant for research assistant systems."
+        },
+        {
+          "name": "A2A Protocol",
+          "url": "https://a2a-protocol.org/latest/",
+          "type": "agent protocol",
+          "origin": "bookmark",
+          "note": "Agent-to-agent protocol reference."
+        },
+        {
+          "name": "Agent Network Protocol",
+          "url": "https://agent-network-protocol.com/",
+          "type": "agent protocol",
+          "origin": "bookmark",
+          "note": "Protocol reference for interoperable agent networks."
+        },
+        {
+          "name": "Hamel Husain",
+          "url": "https://hamel.dev/",
+          "type": "evaluation/workflow writing",
+          "origin": "bookmark",
+          "note": "Practical essays on evals, AI workflows, and applied LLM systems."
+        },
+        {
+          "name": "DeepWiki",
+          "url": "https://deepwiki.com/",
+          "type": "codebase knowledge tool",
+          "origin": "bookmark",
+          "note": "Repository documentation and code understanding assistant."
+        },
+        {
+          "name": "BioRender",
+          "url": "https://www.biorender.com/",
+          "type": "scientific communication tool",
+          "origin": "bookmark",
+          "note": "Scientific figure and communication tool, useful in research workflows."
+        }
+      ]
+    },
+    {
+      "title": "Biomedical AI Venues",
+      "summary": "High-signal journals, institutional streams, and medical AI venues that anchor biomedical AI monitoring.",
+      "tags": ["clinical AI", "journals", "institutions"],
+      "why_follow": "这些源帮助把 AI 方法信号和真实临床/医学工程语境连接起来。",
+      "best_for": "追踪高置信医学 AI 论文、机构新闻、医学影像 AI 和数字医学进展。",
+      "monitoring_mode": "official updates",
+      "source_origin": "both",
+      "sources": [
+        {
+          "name": "npj Digital Medicine",
+          "url": "https://www.nature.com/npjdigitalmed/",
+          "type": "journal",
+          "origin": "bookmark",
+          "note": "Digital medicine journal; PubMed abbreviation NPJ Digit Med."
+        },
+        {
+          "name": "Nature Biomedical Engineering",
+          "url": "https://www.nature.com/natbiomedeng/",
+          "type": "journal",
+          "origin": "bookmark",
+          "note": "Biomedical engineering journal; PubMed abbreviation Nat Biomed Eng."
+        },
+        {
+          "name": "Radiology",
+          "url": "https://pubs.rsna.org/journal/radiology",
+          "type": "journal",
+          "origin": "bookmark",
+          "note": "RSNA flagship radiology journal; useful for imaging AI context."
+        },
+        {
+          "name": "Radiology: Artificial Intelligence",
+          "url": "https://pubs.rsna.org/journal/ai",
+          "type": "journal",
+          "origin": "Scientific_InfoHub",
+          "note": "RSNA AI-focused journal; PubMed abbreviation Radiol Artif Intell."
+        },
+        {
+          "name": "RSNA News",
+          "url": "https://www.rsna.org/news",
+          "type": "institutional news",
+          "origin": "Scientific_InfoHub",
+          "note": "Medical imaging society news stream already represented in Scientific_InfoHub."
+        },
+        {
+          "name": "Mayo Clinic AI & Informatics",
+          "url": "https://www.mayoclinic.org/",
+          "type": "institutional signal",
+          "origin": "Scientific_InfoHub",
+          "note": "Institutional clinical AI and informatics signal."
+        },
+        {
+          "name": "Stanford Machine Learning Group",
+          "url": "https://stanfordmlgroup.github.io/",
+          "type": "academic lab",
+          "origin": "both",
+          "note": "Clinical AI lab and biomedical ML signal."
+        },
+        {
+          "name": "MIT Sloan Ideas Made to Matter",
+          "url": "https://mitsloan.mit.edu/ideas-made-to-matter",
+          "type": "research news",
+          "origin": "Scientific_InfoHub",
+          "note": "Research and management-facing technology signal."
+        },
+        {
+          "name": "Stanford AIMI",
+          "url": "https://aimi.stanford.edu/",
+          "type": "medical AI institute",
+          "origin": "bookmark",
+          "note": "Medical AI institute and research community signal."
+        },
+        {
+          "name": "SYSU AI-Health Lab",
+          "url": "https://biomed.nscc-gz.cn/",
+          "type": "academic lab",
+          "origin": "bookmark",
+          "note": "China-based AI health research signal."
+        }
+      ]
+    },
+    {
+      "title": "Cancer & Multi-omics Infrastructure",
+      "summary": "Cancer genomics, proteomics, imaging, mutation, survival, and dependency resources that support AI-ready oncology research.",
+      "tags": ["cancer", "omics", "infrastructure"],
+      "why_follow": "生命科学 AI 的很多问题最终落在数据基础设施上；这些入口决定可复现和可解释的边界。",
+      "best_for": "查数据、查突变、查队列、查依赖关系，支撑 cancer AI 和 multi-omics 分析。",
+      "monitoring_mode": "manual reference",
+      "source_origin": "bookmark",
+      "sources": [
+        {
+          "name": "The Cancer Genome Atlas",
+          "url": "http://www.genome.gov/Funded-Programs-Projects/Cancer-Genome-Atlas",
+          "type": "cancer genomics program",
+          "origin": "bookmark",
+          "note": "Canonical TCGA program reference."
+        },
+        {
+          "name": "GDC",
+          "url": "https://portal.gdc.cancer.gov/",
+          "type": "cancer data portal",
+          "origin": "bookmark",
+          "note": "Genomic Data Commons portal for cancer datasets."
+        },
+        {
+          "name": "cBioPortal",
+          "url": "http://www.cbioportal.org/",
+          "type": "cancer genomics portal",
+          "origin": "bookmark",
+          "note": "Interactive cancer genomics exploration."
+        },
+        {
+          "name": "ICGC",
+          "url": "https://icgc.org/",
+          "type": "cancer genomics consortium",
+          "origin": "bookmark",
+          "note": "International Cancer Genome Consortium."
+        },
+        {
+          "name": "CPTAC",
+          "url": "https://proteomics.cancer.gov/programs/cptac",
+          "type": "cancer proteomics",
+          "origin": "bookmark",
+          "note": "Clinical Proteomic Tumor Analysis Consortium."
+        },
+        {
+          "name": "The Cancer Imaging Archive",
+          "url": "https://www.cancerimagingarchive.net/",
+          "type": "cancer imaging data",
+          "origin": "bookmark",
+          "note": "Cancer imaging archive for radiology and imaging AI."
+        },
+        {
+          "name": "SEER",
+          "url": "https://seer.cancer.gov/data/",
+          "type": "cancer incidence data",
+          "origin": "bookmark",
+          "note": "Cancer epidemiology and incidence data."
+        },
+        {
+          "name": "DepMap",
+          "url": "https://depmap.org/portal/",
+          "type": "cancer dependency",
+          "origin": "bookmark",
+          "note": "Cancer dependency map and functional genomics resource."
+        },
+        {
+          "name": "COSMIC",
+          "url": "https://cancer.sanger.ac.uk/cosmic/",
+          "type": "mutation database",
+          "origin": "bookmark",
+          "note": "Catalogue of Somatic Mutations in Cancer."
+        },
+        {
+          "name": "Cancer Hotspots",
+          "url": "https://www.cancerhotspots.org/#/home",
+          "type": "mutation hotspots",
+          "origin": "bookmark",
+          "note": "Cancer mutation hotspot reference."
+        },
+        {
+          "name": "UCSC Xena",
+          "url": "https://xenabrowser.net/datapages/",
+          "type": "omics data browser",
+          "origin": "bookmark",
+          "note": "Cross-cohort omics data browser."
+        },
+        {
+          "name": "LinkedOmics",
+          "url": "http://www.linkedomics.org/admin.php",
+          "type": "omics analysis portal",
+          "origin": "bookmark",
+          "note": "Multi-omics analysis portal."
+        },
+        {
+          "name": "TIMER",
+          "url": "https://cistrome.shinyapps.io/timer/",
+          "type": "tumor immunology portal",
+          "origin": "bookmark",
+          "note": "Tumor immune estimation and exploration."
+        },
+        {
+          "name": "CIBERSORT",
+          "url": "https://cibersort.stanford.edu/index.php",
+          "type": "immune deconvolution",
+          "origin": "bookmark",
+          "note": "Immune deconvolution reference tool."
+        }
+      ]
+    },
+    {
+      "title": "Clinical, Imaging & Dataset Radar",
+      "summary": "Clinical registries, physiologic signals, GI imaging challenges, and dataset portals for translational AI use cases.",
+      "tags": ["datasets", "clinical trials", "imaging"],
+      "why_follow": "公开数据集、挑战赛和试验注册决定了一个 AI 方向能否被验证和落地。",
+      "best_for": "找 benchmark、找临床试验、看数据集发布和医学影像任务入口。",
+      "monitoring_mode": "manual reference",
+      "source_origin": "bookmark",
+      "sources": [
+        {
+          "name": "PhysioNet",
+          "url": "https://physionet.org/content/?topic=ECG&orderby=relevance-desc",
+          "type": "physiological signal datasets",
+          "origin": "bookmark",
+          "note": "ECG and physiologic signal datasets."
+        },
+        {
+          "name": "MIT-BIH Database",
+          "url": "http://ecg.mit.edu/",
+          "type": "ECG dataset",
+          "origin": "bookmark",
+          "note": "Classic ECG database reference."
+        },
+        {
+          "name": "WFDB",
+          "url": "https://wfdb.readthedocs.io/en/latest/",
+          "type": "signal processing toolkit",
+          "origin": "bookmark",
+          "note": "Python toolkit for physiologic waveform data."
+        },
+        {
+          "name": "Grand Challenge",
+          "url": "https://grand-challenge.org/challenges/",
+          "type": "medical imaging challenges",
+          "origin": "bookmark",
+          "note": "Challenge discovery portal for medical imaging tasks."
+        },
+        {
+          "name": "Kvasir Dataset",
+          "url": "https://datasets.simula.no/kvasir/",
+          "type": "GI imaging dataset",
+          "origin": "bookmark",
+          "note": "Endoscopy image dataset reference."
+        },
+        {
+          "name": "SUN Colonoscopy Video Database",
+          "url": "http://amed8k.sundatabase.org/",
+          "type": "colonoscopy video dataset",
+          "origin": "bookmark",
+          "note": "Colonoscopy video database for polyp and GI vision tasks."
+        },
+        {
+          "name": "CVC-Colon",
+          "url": "http://www.cvc.uab.es/CVC-Colon/index.php/databases/",
+          "type": "colonoscopy datasets",
+          "origin": "bookmark",
+          "note": "GI computer vision dataset collection."
+        },
+        {
+          "name": "C3VD",
+          "url": "https://durrlab.github.io/C3VD/",
+          "type": "3D colonoscopy dataset",
+          "origin": "bookmark",
+          "note": "Colonoscopy 3D vision dataset."
+        },
+        {
+          "name": "LDPolypVideo",
+          "url": "https://github.com/dashishi/LDPolypVideo-Benchmark",
+          "type": "polyp video benchmark",
+          "origin": "bookmark",
+          "note": "Endoscopic video benchmark for polyp detection."
+        },
+        {
+          "name": "ClinicalTrials.gov",
+          "url": "https://www.clinicaltrials.gov/ct2/home",
+          "type": "clinical trial registry",
+          "origin": "bookmark",
+          "note": "Clinical trial registry for intervention and status monitoring."
+        },
+        {
+          "name": "ChiCTR",
+          "url": "http://www.chictr.org.cn/index.aspx",
+          "type": "clinical trial registry",
+          "origin": "bookmark",
+          "note": "Chinese Clinical Trial Registry."
+        },
+        {
+          "name": "Cochrane",
+          "url": "https://www.cochrane.org/welcome",
+          "type": "evidence synthesis",
+          "origin": "bookmark",
+          "note": "Systematic review and evidence synthesis reference."
+        },
+        {
+          "name": "NCI-MATCH",
+          "url": "https://www.cancer.gov/about-cancer/treatment/clinical-trials/nci-supported/nci-match",
+          "type": "precision medicine trial",
+          "origin": "bookmark",
+          "note": "Precision oncology trial reference."
+        }
+      ]
+    },
+    {
+      "title": "Guidelines & Translational References",
+      "summary": "Drug, target, pharmacogenomics, and clinical guideline sources that connect discovery signals to translational decisions.",
+      "tags": ["guidelines", "drug discovery", "translation"],
+      "why_follow": "AI 发现最终要回到药物、靶点、临床指南和真实决策语境。",
+      "best_for": "查药物/靶点知识、指南更新、协会建议和临床转化边界。",
+      "monitoring_mode": "manual reference",
+      "source_origin": "bookmark",
+      "sources": [
+        {
+          "name": "DrugBank",
+          "url": "https://go.drugbank.com/",
+          "type": "drug database",
+          "origin": "bookmark",
+          "note": "Drug and target information reference."
+        },
+        {
+          "name": "ChEMBL",
+          "url": "https://www.ebi.ac.uk/chembl/",
+          "type": "bioactivity database",
+          "origin": "Scientific_InfoHub",
+          "note": "Compound and bioactivity database, also available through tool integration."
+        },
+        {
+          "name": "PharmGKB",
+          "url": "https://www.pharmgkb.org/",
+          "type": "pharmacogenomics",
+          "origin": "bookmark",
+          "note": "Pharmacogenomics knowledgebase."
+        },
+        {
+          "name": "OncoKB",
+          "url": "http://oncokb.org/",
+          "type": "precision oncology",
+          "origin": "bookmark",
+          "note": "Precision oncology knowledgebase."
+        },
+        {
+          "name": "JAX CKB",
+          "url": "https://ckb.jax.org/",
+          "type": "clinical knowledgebase",
+          "origin": "bookmark",
+          "note": "Clinical knowledgebase for cancer variants and therapies."
+        },
+        {
+          "name": "NCCN",
+          "url": "https://www.nccn.org/",
+          "type": "guideline organization",
+          "origin": "bookmark",
+          "note": "Cancer guideline source."
+        },
+        {
+          "name": "ESMO",
+          "url": "https://www.esmo.org/",
+          "type": "oncology society",
+          "origin": "bookmark",
+          "note": "European oncology guideline and society signal."
+        },
+        {
+          "name": "NICE",
+          "url": "https://www.nice.org.uk/",
+          "type": "guideline organization",
+          "origin": "bookmark",
+          "note": "UK health technology and clinical guideline source."
+        },
+        {
+          "name": "AGA",
+          "url": "https://www.gastro.org/",
+          "type": "gastroenterology society",
+          "origin": "bookmark",
+          "note": "Digestive disease society and guideline signal."
+        },
+        {
+          "name": "BSG Guidelines",
+          "url": "https://www.bsg.org.uk/resource-type/guidelines/",
+          "type": "guidelines",
+          "origin": "bookmark",
+          "note": "British Society of Gastroenterology guideline source."
+        },
+        {
+          "name": "ESGE",
+          "url": "https://www.esge.com/",
+          "type": "endoscopy society",
+          "origin": "bookmark",
+          "note": "European GI endoscopy society signal."
+        },
+        {
+          "name": "JGES",
+          "url": "https://www.jges.net/english",
+          "type": "endoscopy society",
+          "origin": "bookmark",
+          "note": "Japan Gastroenterological Endoscopy Society."
+        },
+        {
+          "name": "IARC",
+          "url": "https://www.iarc.who.int/",
+          "type": "cancer agency",
+          "origin": "bookmark",
+          "note": "WHO cancer agency and cancer prevention reference."
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,805 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI4LifeScience 信息源地图</title>
+  <meta name="description" content="我长期收藏、筛选和使用的生命科学 AI 信息源地图：公司进展、论文发现、agent 工具链、临床数据、组学数据库和指南入口。">
+  <style>
+    :root {
+      --ink: #18211f;
+      --muted: #5e6c67;
+      --paper: #f7f4ec;
+      --panel: rgba(255, 252, 244, 0.88);
+      --line: rgba(24, 33, 31, 0.14);
+      --moss: #385a4b;
+      --teal: #0d716f;
+      --amber: #d59634;
+      --coral: #c95d47;
+      --blue: #315c91;
+      --shadow: 0 18px 45px rgba(28, 43, 39, 0.14);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 15% 18%, rgba(213, 150, 52, 0.18), transparent 28%),
+        radial-gradient(circle at 85% 8%, rgba(13, 113, 111, 0.14), transparent 30%),
+        linear-gradient(180deg, #fbf8ef 0%, #f0eee7 52%, #e9eee9 100%);
+      font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+      letter-spacing: 0;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.28;
+      background-image:
+        linear-gradient(rgba(24, 33, 31, 0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(24, 33, 31, 0.035) 1px, transparent 1px);
+      background-size: 34px 34px;
+      z-index: -2;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .hero {
+      position: relative;
+      min-height: 92vh;
+      display: grid;
+      align-items: end;
+      overflow: hidden;
+      border-bottom: 1px solid var(--line);
+    }
+
+    #radar-canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      background:
+        linear-gradient(115deg, rgba(247, 244, 236, 0.9), rgba(231, 238, 233, 0.42)),
+        radial-gradient(circle at 65% 40%, rgba(49, 92, 145, 0.16), transparent 34%);
+    }
+
+    .hero-inner {
+      width: min(1160px, calc(100% - 40px));
+      margin: 0 auto;
+      padding: 96px 0 52px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 12px;
+      border: 1px solid rgba(56, 90, 75, 0.28);
+      background: rgba(255, 252, 244, 0.74);
+      color: var(--moss);
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      backdrop-filter: blur(10px);
+    }
+
+    .eyebrow::before {
+      content: "";
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--amber);
+      box-shadow: 0 0 0 6px rgba(213, 150, 52, 0.16);
+    }
+
+    h1 {
+      max-width: 880px;
+      margin: 28px 0 18px;
+      font-size: clamp(48px, 8vw, 104px);
+      line-height: 0.92;
+      letter-spacing: 0;
+      font-weight: 700;
+    }
+
+    .lead {
+      max-width: 720px;
+      margin: 0;
+      color: #35433f;
+      font-size: clamp(18px, 2.2vw, 24px);
+      line-height: 1.55;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 34px;
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 44px;
+      padding: 0 16px;
+      border: 1px solid var(--ink);
+      background: var(--ink);
+      color: #fffaf0;
+      font-family: ui-sans-serif, "Avenir Next", "Gill Sans", Helvetica, sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease;
+    }
+
+    .button.secondary {
+      background: rgba(255, 252, 244, 0.8);
+      color: var(--ink);
+    }
+
+    .button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 24px rgba(24, 33, 31, 0.16);
+    }
+
+    .feature-strip {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 1px;
+      margin-top: 42px;
+      max-width: 980px;
+      border: 1px solid rgba(24, 33, 31, 0.16);
+      background: rgba(24, 33, 31, 0.12);
+      box-shadow: 0 18px 40px rgba(24, 33, 31, 0.12);
+    }
+
+    .feature-card {
+      min-height: 122px;
+      padding: 18px;
+      background: rgba(255, 252, 244, 0.78);
+      backdrop-filter: blur(10px);
+    }
+
+    .feature-card strong {
+      display: block;
+      font-family: ui-sans-serif, "Avenir Next", "Gill Sans", Helvetica, sans-serif;
+      font-size: 15px;
+      letter-spacing: 0;
+    }
+
+    .feature-card span {
+      display: block;
+      margin-top: 12px;
+      color: #47544f;
+      font-size: 14px;
+      line-height: 1.55;
+    }
+
+    main {
+      width: min(1160px, calc(100% - 40px));
+      margin: 0 auto;
+      padding: 56px 0 80px;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 1px;
+      margin-bottom: 52px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      background: var(--line);
+      box-shadow: var(--shadow);
+    }
+
+    .stat {
+      min-height: 126px;
+      padding: 22px;
+      background: rgba(255, 252, 244, 0.84);
+    }
+
+    .stat strong {
+      display: block;
+      font-family: ui-sans-serif, "Avenir Next", "Gill Sans", Helvetica, sans-serif;
+      font-size: 38px;
+      line-height: 1;
+    }
+
+    .stat span {
+      display: block;
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
+    .section-head {
+      display: grid;
+      grid-template-columns: 0.85fr 1.15fr;
+      gap: 36px;
+      align-items: end;
+      margin: 0 0 24px;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: clamp(34px, 4.1vw, 50px);
+      line-height: 0.98;
+      letter-spacing: 0;
+    }
+
+    .section-head p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 17px;
+      line-height: 1.7;
+    }
+
+    .toolbar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 14px;
+      padding: 14px 0;
+      margin-bottom: 20px;
+      background: linear-gradient(180deg, rgba(240, 238, 231, 0.96), rgba(240, 238, 231, 0.72));
+      backdrop-filter: blur(12px);
+    }
+
+    .filter-bar {
+      grid-column: 1 / -1;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .filter-button {
+      min-height: 34px;
+      padding: 0 11px;
+      border: 1px solid rgba(24, 33, 31, 0.2);
+      background: rgba(255, 252, 244, 0.7);
+      color: var(--ink);
+      font-family: ui-sans-serif, "Avenir Next", "Gill Sans", Helvetica, sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .filter-button[aria-pressed="true"] {
+      background: var(--ink);
+      color: #fffaf0;
+      border-color: var(--ink);
+    }
+
+    .search {
+      width: 100%;
+      min-height: 46px;
+      padding: 0 14px;
+      border: 1px solid rgba(24, 33, 31, 0.24);
+      border-radius: 0;
+      background: rgba(255, 252, 244, 0.9);
+      color: var(--ink);
+      font-size: 16px;
+      font-family: ui-sans-serif, "Avenir Next", "Gill Sans", Helvetica, sans-serif;
+      outline: none;
+    }
+
+    .search:focus {
+      border-color: var(--teal);
+      box-shadow: 0 0 0 3px rgba(13, 113, 111, 0.14);
+    }
+
+    .view-md {
+      white-space: nowrap;
+    }
+
+    .atlas {
+      display: grid;
+      gap: 18px;
+    }
+
+    .domain {
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      gap: 1px;
+      border: 1px solid var(--line);
+      background: var(--line);
+      box-shadow: var(--shadow);
+    }
+
+    .domain-info,
+    .domain-links {
+      background: var(--panel);
+      backdrop-filter: blur(8px);
+    }
+
+    .domain-info {
+      padding: 24px;
+      position: relative;
+      min-height: 220px;
+    }
+
+    .domain-info::before {
+      content: attr(data-index);
+      position: absolute;
+      right: 20px;
+      top: 16px;
+      color: rgba(24, 33, 31, 0.14);
+      font-family: ui-sans-serif, "Avenir Next", "Gill Sans", Helvetica, sans-serif;
+      font-size: 42px;
+      font-weight: 800;
+    }
+
+    .domain h3 {
+      margin: 0 52px 14px 0;
+      font-size: 27px;
+      line-height: 1.1;
+    }
+
+    .domain-summary {
+      margin: 0;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.62;
+    }
+
+    .domain-context {
+      display: grid;
+      gap: 10px;
+      margin-top: 16px;
+      color: #3f4b47;
+      font-family: ui-sans-serif, "Avenir Next", "Gill Sans", Helvetica, sans-serif;
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .domain-context b {
+      color: var(--ink);
+    }
+
+    .tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin-top: 18px;
+    }
+
+    .tag {
+      padding: 5px 8px;
+      border: 1px solid rgba(24, 33, 31, 0.15);
+      color: #3f4b47;
+      background: rgba(255, 255, 255, 0.42);
+      font-family: ui-sans-serif, "Avenir Next", "Gill Sans", Helvetica, sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .domain-links {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(245px, 1fr));
+      align-content: start;
+      gap: 1px;
+      background: rgba(24, 33, 31, 0.10);
+    }
+
+    .source-link {
+      min-height: 152px;
+      padding: 15px;
+      background: rgba(255, 252, 244, 0.9);
+      border: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      transition: background 140ms ease, transform 140ms ease;
+    }
+
+    .source-link:hover {
+      background: #fffdf7;
+      transform: translateY(-1px);
+    }
+
+    .source-name {
+      font-size: 16px;
+      line-height: 1.25;
+      font-weight: 700;
+    }
+
+    .source-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .source-meta span {
+      padding: 4px 7px;
+      border: 1px solid rgba(24, 33, 31, 0.14);
+      background: rgba(255, 255, 255, 0.42);
+      color: #3f4b47;
+      font-family: ui-sans-serif, "Avenir Next", "Gill Sans", Helvetica, sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .source-note {
+      color: #46534f;
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .source-host {
+      margin-top: 12px;
+      color: var(--muted);
+      font-family: ui-sans-serif, "Avenir Next", "Gill Sans", Helvetica, sans-serif;
+      font-size: 12px;
+      overflow-wrap: anywhere;
+    }
+
+    .manifesto {
+      margin-top: 56px;
+      padding: 34px;
+      border: 1px solid var(--line);
+      background: rgba(24, 33, 31, 0.92);
+      color: #fffaf0;
+      box-shadow: var(--shadow);
+    }
+
+    .manifesto h2 {
+      max-width: 780px;
+      color: #fffaf0;
+    }
+
+    .manifesto p {
+      max-width: 800px;
+      margin: 18px 0 0;
+      color: rgba(255, 250, 240, 0.78);
+      font-size: 18px;
+      line-height: 1.7;
+    }
+
+    .empty {
+      display: none;
+      padding: 28px;
+      border: 1px solid var(--line);
+      background: rgba(255, 252, 244, 0.86);
+      color: var(--muted);
+      font-size: 17px;
+    }
+
+    footer {
+      border-top: 1px solid var(--line);
+      padding: 26px 0;
+      color: var(--muted);
+      font-family: ui-sans-serif, "Avenir Next", "Gill Sans", Helvetica, sans-serif;
+      font-size: 13px;
+    }
+
+    .footer-inner {
+      width: min(1160px, calc(100% - 40px));
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      flex-wrap: wrap;
+    }
+
+    @media (max-width: 820px) {
+      .hero {
+        min-height: 86vh;
+      }
+
+      h1 {
+        font-size: 42px;
+        line-height: 1.04;
+      }
+
+      .lead {
+        font-size: 17px;
+        line-height: 1.62;
+      }
+
+      .stats,
+      .feature-strip,
+      .section-head,
+      .domain,
+      .toolbar {
+        grid-template-columns: 1fr;
+      }
+
+      .stat {
+        min-height: 100px;
+      }
+
+      .domain-info {
+        min-height: auto;
+      }
+
+      .hero-inner,
+      main,
+      .footer-inner {
+        width: min(100% - 28px, 1160px);
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <canvas id="radar-canvas" aria-hidden="true"></canvas>
+    <div class="hero-inner">
+      <div class="eyebrow">AI4LifeScience Source Atlas</div>
+      <h1>AI4LifeScience 信息源地图</h1>
+      <p class="lead">我长期收藏、筛选和使用的生命科学 AI 信息源：公司进展、论文发现、agent 工具链、临床数据、组学数据库和指南入口。</p>
+      <div class="hero-actions">
+        <a class="button" href="#atlas">浏览信息源</a>
+      </div>
+      <div class="feature-strip" aria-label="精选入口">
+        <div class="feature-card">
+          <strong>Follow frontier labs</strong>
+          <span>FutureHouse / Lila / Isomorphic / DeepMind / Anthropic</span>
+        </div>
+        <div class="feature-card">
+          <strong>Find papers faster</strong>
+          <span>HuggingFace Papers / PubMed / Cool Papers / Consensus / Elicit</span>
+        </div>
+        <div class="feature-card">
+          <strong>Build research agents</strong>
+          <span>DSPy / LangGraph / LlamaIndex / MCP / AutoGen</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="stats" aria-label="Source collection summary">
+      <div class="stat"><strong id="stat-domains">7</strong><span>主题板块，AI 公司和论文发现前置。</span></div>
+      <div class="stat"><strong id="stat-links">90</strong><span>公开入口，保留用途和来源上下文。</span></div>
+      <div class="stat"><strong id="stat-ai">4</strong><span>AI-first 板块：公司、发现、agent、医学 AI venue。</span></div>
+      <div class="stat"><strong>1</strong><span>适合分享的公开信息源地图。</span></div>
+    </section>
+
+    <section class="section-head" id="atlas">
+      <h2>从收藏夹到研究雷达</h2>
+      <p>每个板块都保留原始入口，同时解释为什么值得关注、适合解决什么问题，以及更适合官方更新、论文发现、人工查询还是 workflow tooling。</p>
+    </section>
+
+    <div class="toolbar">
+      <input id="search" class="search" type="search" placeholder="搜索 FutureHouse、LangGraph、PubMed、TCGA、NCCN..." aria-label="搜索信息源">
+      <div class="filter-bar" aria-label="按类型筛选">
+        <button class="filter-button" type="button" data-filter="All" aria-pressed="true">All</button>
+        <button class="filter-button" type="button" data-filter="Companies" aria-pressed="false">Companies</button>
+        <button class="filter-button" type="button" data-filter="Discovery" aria-pressed="false">Discovery</button>
+        <button class="filter-button" type="button" data-filter="Agents" aria-pressed="false">Agents</button>
+        <button class="filter-button" type="button" data-filter="Biomedical" aria-pressed="false">Biomedical</button>
+        <button class="filter-button" type="button" data-filter="Data" aria-pressed="false">Data</button>
+        <button class="filter-button" type="button" data-filter="Guidelines" aria-pressed="false">Guidelines</button>
+      </div>
+    </div>
+
+    <div id="empty" class="empty">没有匹配的信息源。换一个关键词试试。</div>
+    <section id="source-atlas" class="atlas" aria-live="polite"></section>
+
+    <section class="manifesto">
+      <h2>整理原则：少一点收藏夹噪声，多一点可复用判断。</h2>
+      <p>这份页面把长期收藏的信息源变成可共享的入口地图。它刻意区分“人工查询入口”“官方进展监测”和“未来可自动监测的主题”，避免把所有链接一股脑塞进自动化系统。真正进入 workflow 之前，仍需要明确目标、范围、频率、交付和验证标准。</p>
+    </section>
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+      <span>AI4LifeScience Public Source Atlas</span>
+      <span>Curated for research operations, not exhaustive coverage.</span>
+    </div>
+  </footer>
+
+  <script>
+    const atlas = document.getElementById("source-atlas");
+    const empty = document.getElementById("empty");
+    const search = document.getElementById("search");
+    const filterButtons = Array.from(document.querySelectorAll(".filter-button"));
+    let domains = [];
+    let activeFilter = "All";
+
+    function getHost(url) {
+      try {
+        return new URL(url).hostname.replace(/^www\./, "");
+      } catch {
+        return url;
+      }
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function categoryFor(title) {
+      if (title.includes("Companies")) return "Companies";
+      if (title.includes("Discovery")) return "Discovery";
+      if (title.includes("Agents")) return "Agents";
+      if (title.includes("Biomedical")) return "Biomedical";
+      if (title.includes("Cancer") || title.includes("Clinical") || title.includes("Dataset")) return "Data";
+      if (title.includes("Guidelines")) return "Guidelines";
+      return "All";
+    }
+
+    function sourceHaystack(domain, source) {
+      return [
+        domain.title,
+        domain.summary,
+        domain.tags.join(" "),
+        domain.why_follow,
+        domain.best_for,
+        domain.monitoring_mode,
+        domain.source_origin,
+        source.name,
+        source.url,
+        source.type,
+        source.origin,
+        source.note
+      ].join(" ").toLowerCase();
+    }
+
+    function render() {
+      const q = search.value.trim().toLowerCase();
+      atlas.innerHTML = "";
+      let visibleDomains = 0;
+      let visibleLinks = 0;
+
+      for (const domain of domains) {
+        if (activeFilter !== "All" && domain.category !== activeFilter) continue;
+
+        const links = domain.sources.filter(source => {
+          return !q || sourceHaystack(domain, source).includes(q);
+        });
+        if (!links.length) continue;
+
+        visibleDomains += 1;
+        visibleLinks += links.length;
+
+        const article = document.createElement("article");
+        article.className = "domain";
+
+        const info = document.createElement("div");
+        info.className = "domain-info";
+        info.dataset.index = String(domain.index).padStart(2, "0");
+        info.innerHTML = `
+          <h3>${escapeHtml(domain.title)}</h3>
+          <p class="domain-summary">${escapeHtml(domain.summary)}</p>
+          <div class="domain-context">
+            <span><b>Why follow:</b> ${escapeHtml(domain.why_follow)}</span>
+            <span><b>Best for:</b> ${escapeHtml(domain.best_for)}</span>
+            <span><b>Mode:</b> ${escapeHtml(domain.monitoring_mode)} · <b>Origin:</b> ${escapeHtml(domain.source_origin)}</span>
+          </div>
+          <div class="tag-row">${domain.tags.map(tag => `<span class="tag">${escapeHtml(tag)}</span>`).join("")}</div>
+        `;
+
+        const list = document.createElement("div");
+        list.className = "domain-links";
+        list.innerHTML = links.map(source => `
+          <a class="source-link" href="${escapeHtml(source.url)}" target="_blank" rel="noreferrer">
+            <span class="source-name">${escapeHtml(source.name)}</span>
+            <span class="source-meta">
+              <span>${escapeHtml(source.type)}</span>
+              <span>${escapeHtml(source.origin)}</span>
+            </span>
+            <span class="source-note">${escapeHtml(source.note)}</span>
+            <span class="source-host">${escapeHtml(getHost(source.url))}</span>
+          </a>
+        `).join("");
+
+        article.append(info, list);
+        atlas.appendChild(article);
+      }
+
+      empty.style.display = visibleLinks ? "none" : "block";
+      document.getElementById("stat-domains").textContent = domains.length;
+      document.getElementById("stat-links").textContent = domains.reduce((sum, d) => sum + d.sources.length, 0);
+      document.getElementById("stat-ai").textContent = domains.filter(d => ["Companies", "Discovery", "Agents", "Biomedical"].includes(d.category)).length;
+    }
+
+    async function boot() {
+      try {
+        const response = await fetch("sources.json", { cache: "no-store" });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const data = await response.json();
+        domains = data.sections.map((section, index) => ({
+          ...section,
+          index: index + 1,
+          category: categoryFor(section.title),
+          sources: section.sources.map(source => ({ ...source }))
+        }));
+        render();
+      } catch (error) {
+        atlas.innerHTML = "<p class='empty' style='display:block'>页面需要通过本地或 GitHub Pages 的 HTTP 服务打开，才能读取 sources.json。</p>";
+      }
+    }
+
+    search.addEventListener("input", render);
+    filterButtons.forEach(button => {
+      button.addEventListener("click", () => {
+        activeFilter = button.dataset.filter;
+        filterButtons.forEach(item => item.setAttribute("aria-pressed", String(item === button)));
+        render();
+      });
+    });
+    boot();
+
+    const canvas = document.getElementById("radar-canvas");
+    const ctx = canvas.getContext("2d");
+    const palette = ["#385a4b", "#0d716f", "#d59634", "#c95d47", "#315c91"];
+    let points = [];
+
+    function resizeCanvas() {
+      const ratio = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width = Math.floor(canvas.clientWidth * ratio);
+      canvas.height = Math.floor(canvas.clientHeight * ratio);
+      ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+      const count = Math.max(34, Math.floor(canvas.clientWidth / 28));
+      points = Array.from({ length: count }, (_, i) => ({
+        x: Math.random() * canvas.clientWidth,
+        y: Math.random() * canvas.clientHeight,
+        r: 2 + Math.random() * 4,
+        phase: Math.random() * Math.PI * 2,
+        color: palette[i % palette.length]
+      }));
+    }
+
+    function draw(t) {
+      const w = canvas.clientWidth;
+      const h = canvas.clientHeight;
+      ctx.clearRect(0, 0, w, h);
+      ctx.globalAlpha = 0.86;
+      points.forEach((p, i) => {
+        const x = p.x + Math.cos(t / 1800 + p.phase) * 12;
+        const y = p.y + Math.sin(t / 2100 + p.phase) * 10;
+        for (let j = i + 1; j < points.length; j++) {
+          const q = points[j];
+          const qx = q.x + Math.cos(t / 1800 + q.phase) * 12;
+          const qy = q.y + Math.sin(t / 2100 + q.phase) * 10;
+          const dx = x - qx;
+          const dy = y - qy;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < 155) {
+            ctx.strokeStyle = `rgba(24, 33, 31, ${0.11 * (1 - dist / 155)})`;
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+            ctx.lineTo(qx, qy);
+            ctx.stroke();
+          }
+        }
+        ctx.fillStyle = p.color;
+        ctx.globalAlpha = 0.42;
+        ctx.beginPath();
+        ctx.arc(x, y, p.r, 0, Math.PI * 2);
+        ctx.fill();
+      });
+      ctx.globalAlpha = 1;
+      requestAnimationFrame(draw);
+    }
+
+    window.addEventListener("resize", resizeCanvas);
+    resizeCanvas();
+    requestAnimationFrame(draw);
+  </script>
+</body>
+</html>

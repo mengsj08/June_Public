@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>作者文献地图 · Author Literature Map</title>
+  <meta name="description" content="给一位研究者做一张每条都可溯源的文献地图——身份消歧交给人拍板,每个数字都可机器核验。开源自包含工具包。">
+  <style>
+    :root {
+      --ink: #101417; --carbon: #1d262b; --slate: #34414a; --mist: #e9edf0;
+      --paper: #f8f5ef; --white: #fffdf8; --line: rgba(16, 20, 23, 0.14);
+      --green: #2f6d5f; --cobalt: #2e5c8c; --red: #a94335; --gold: #c18b39;
+      --shadow: 0 24px 70px rgba(16, 20, 23, 0.14);
+      --sans: "Avenir Next", "Gill Sans", "Helvetica Neue", Helvetica, sans-serif;
+      --serif: "Songti SC", "Noto Serif CJK SC", "Iowan Old Style", Georgia, serif;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; color: var(--ink); font-family: var(--serif); line-height: 1.75;
+      background:
+        radial-gradient(1200px 600px at 82% -8%, rgba(46,92,140,0.10), transparent 60%),
+        radial-gradient(900px 520px at 8% 108%, rgba(47,109,95,0.10), transparent 60%),
+        var(--paper);
+      background-attachment: fixed;
+    }
+    .wrap { max-width: 980px; margin: 0 auto; padding: 0 26px; }
+    header { padding: 74px 0 20px; }
+    .kicker { font-family: var(--sans); font-size: 12.5px; letter-spacing: 0.22em;
+      text-transform: uppercase; color: var(--slate); margin: 0 0 18px; }
+    h1 { font-size: clamp(34px, 6vw, 60px); line-height: 1.08; margin: 0 0 18px; font-weight: 600; }
+    h1 .en { display: block; font-family: var(--sans); font-weight: 500;
+      font-size: clamp(15px, 2.4vw, 20px); letter-spacing: 0.02em; color: var(--slate); margin-top: 12px; }
+    .lede { font-size: clamp(17px, 2.5vw, 21px); max-width: 720px; color: var(--carbon); margin: 0 0 30px; }
+    .cta { font-family: var(--sans); display: inline-flex; gap: 10px; flex-wrap: wrap; }
+    .btn { display: inline-block; text-decoration: none; font-size: 14.5px; letter-spacing: 0.02em;
+      padding: 12px 20px; border-radius: 999px; transition: transform 180ms ease, box-shadow 180ms ease; }
+    .btn.primary { background: var(--ink); color: var(--white); box-shadow: var(--shadow); }
+    .btn.ghost { background: rgba(255,253,248,0.7); color: var(--ink); border: 1px solid var(--line); }
+    .btn:hover { transform: translateY(-2px); }
+    section { padding: 30px 0; }
+    .rule { height: 1px; background: var(--line); border: 0; margin: 8px 0 0; }
+    h2 { font-family: var(--sans); font-size: 12.5px; letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--slate); font-weight: 600; margin: 34px 0 16px; }
+    h3 { font-size: 22px; margin: 0 0 6px; font-weight: 600; }
+    p { margin: 0 0 16px; }
+    .grid { display: grid; gap: 20px; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); }
+    .card { background: rgba(255,253,248,0.66); border: 1px solid var(--line); border-radius: 16px;
+      padding: 22px 22px 20px; }
+    .card .n { font-family: var(--sans); font-size: 12px; letter-spacing: 0.14em; color: var(--gold); margin: 0 0 10px; }
+    .card p { font-size: 15.5px; margin: 0; color: var(--carbon); }
+    .steps { counter-reset: s; display: grid; gap: 14px; }
+    .step { display: grid; grid-template-columns: 40px 1fr; gap: 16px; align-items: start;
+      background: rgba(255,253,248,0.5); border: 1px solid var(--line); border-radius: 14px; padding: 18px 20px; }
+    .step::before { counter-increment: s; content: counter(s); font-family: var(--sans); font-weight: 600;
+      color: var(--white); background: var(--ink); width: 32px; height: 32px; border-radius: 50%;
+      display: grid; place-items: center; font-size: 15px; }
+    .step h3 { font-size: 17px; }
+    .step p { font-size: 15px; margin: 4px 0 0; color: var(--slate); }
+    pre { font-family: "SF Mono", ui-monospace, Menlo, Consolas, monospace; font-size: 13px; line-height: 1.7;
+      background: var(--carbon); color: #e7edf1; border-radius: 14px; padding: 18px 20px; overflow-x: auto;
+      box-shadow: var(--shadow); }
+    pre .c { color: #8aa0ad; }
+    .note { font-family: var(--sans); font-size: 14px; color: var(--slate);
+      border-left: 3px solid var(--gold); padding: 4px 0 4px 16px; margin: 18px 0; }
+    ul.plain { list-style: none; padding: 0; margin: 0; }
+    ul.plain li { padding: 10px 0; border-bottom: 1px solid var(--line); font-size: 15.5px; }
+    ul.plain li b { font-family: var(--sans); font-size: 13.5px; letter-spacing: 0.02em; }
+    footer { font-family: var(--sans); font-size: 13px; color: var(--slate); padding: 40px 0 70px; }
+    footer a { color: var(--cobalt); }
+    a.inline { color: var(--cobalt); }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <p class="kicker">开源工具包 · Evidence-gated</p>
+      <h1>作者文献地图
+        <span class="en">Author Literature Map — one researcher, every claim traceable</span>
+      </h1>
+      <p class="lede">给一位研究者做一张文献地图,难的从来不是画图,是<strong>"这些论文到底是不是同一个人的"</strong>。
+        这套工具把身份消歧交给人拍板,把每一个数字都做成可机器核验的账本——换个人,同一套流程。</p>
+      <p class="cta">
+        <a class="btn primary" href="https://github.com/mengsj08/June_Public/tree/main/skills/research-tools/author-literature-map">查看工具包 &amp; 源码 →</a>
+        <a class="btn ghost" href="https://github.com/mengsj08/June_Public/tree/main/skills/research-tools/author-literature-map/README.md">README / 快速上手</a>
+      </p>
+    </header>
+    <hr class="rule">
+
+    <section>
+      <h2>为什么这么设计</h2>
+      <div class="grid">
+        <div class="card"><p class="n">01 / 身份交给人</p>
+          <p>数据库会把一个人拆成好几个作者 ID,也会混进同名的陌生人。所以"哪些 ID 是同一个人"由人确认,一个门禁脚本在没确认前拒绝出"已确认"的图。</p></div>
+        <div class="card"><p class="n">02 / 一本账</p>
+          <p>每个计数只在 <code>AUTHOR_MAP.json</code> 里算一次,网页只是它的投影——指标、年份直方图、论文表永远对得上,不会打架。</p></div>
+        <div class="card"><p class="n">03 / 可复查的溯源</p>
+          <p>账本给每个输入文件记一个 SHA256。底层证据一变,重新渲染时页面自动打上 <b>STALE</b> 过期标记。</p></div>
+        <div class="card"><p class="n">04 / 多源可插拔</p>
+          <p>PubMed、Semantic Scholar 作为补充腿接入,按 DOI/PMID 跨源去重;身份不明的行(如纯姓名搜索)自动路由到人工复核,绝不上主线。</p></div>
+      </div>
+    </section>
+
+    <section>
+      <h2>两遍法 + 一道人工门</h2>
+      <div class="steps">
+        <div class="step"><div><h3>身份遍</h3><p>收集候选作者 ID,并为每个 ID 摆出可观察证据:与已知 DOI 种子的重合度(最强信号)、机构、主题、同名他域信号。</p></div></div>
+        <div class="step"><div><h3>人工修正门(必经)</h3><p>人确认哪些 ID 是同一个人,产出 <code>profile.yaml</code>。门禁脚本用代码强制:没确认就不许出"已确认"的图。</p></div></div>
+        <div class="step"><div><h3>全量遍</h3><p>按确认口径拉全量,分成三桶:主线(已确认)/ 待复核 / 排除(同名)。你自带这三桶,本工具负责核验与渲染。</p></div></div>
+        <div class="step"><div><h3>账本 + 渲染</h3><p>生成单一事实源 <code>AUTHOR_MAP.json</code>,再从它渲染一张静态 HTML 地图——每条带来源标签,数字自洽,证据变了会标过期。</p></div></div>
+      </div>
+    </section>
+
+    <section>
+      <h2>30 秒试跑(离线,无需联网)</h2>
+      <pre><span class="c"># 从内置示例构建账本,再渲染 HTML 地图</span>
+python3 scripts/build_author_map_verdict.py --run-dir example --author "Jane Doe"
+python3 scripts/render_author_map.py       --run-dir example --author "Jane Doe"
+open example/index.html</pre>
+      <p class="note">这是<strong>开源自包含</strong>的那一块:账本 + 渲染器 + 补充腿(PubMed / Semantic Scholar)+ 身份门。
+        你<strong>自带已确认的作者 ID 列表和一份作品 CSV</strong>(如 OpenAlex 导出);产出这三桶的身份消歧引擎不在本包内。</p>
+    </section>
+
+    <section>
+      <h2>包里有什么</h2>
+      <ul class="plain">
+        <li><b>build_author_map_verdict.py</b> — 单一事实源账本:所有计数只此一处 + 分源明细 + 输入 SHA256</li>
+        <li><b>render_author_map.py</b> — 只从账本渲染静态 HTML;证据漂移显 STALE</li>
+        <li><b>pubmed_author_supplement.py</b> — PubMed 年份补充腿(公开 E-utilities,纯标准库)</li>
+        <li><b>s2_author_supplement.py</b> — Semantic Scholar 补充腿(锚定→主线,姓名搜→复核)</li>
+        <li><b>assert_profile_confirmed.py</b> — 身份门前置断言:未确认则非零退出</li>
+        <li><b>references/method.md</b> — 完整方法:两遍法、人工门、exclude_keywords 的坑、显示规则</li>
+      </ul>
+    </section>
+
+    <footer>
+      <hr class="rule" style="margin-bottom:22px">
+      MIT License · 纯 Python 标准库(PyYAML 可选)· 源码在
+      <a href="https://github.com/mengsj08/June_Public/tree/main/skills/research-tools/author-literature-map">/author-literature-map</a> ·
+      返回 <a href="./index.html">AI4LifeScience 信息源地图</a>
+    </footer>
+  </div>
+</body>
+</html>

@@ -1,0 +1,6 @@
+status,year,title,venue,theme,doi,pmid,openalex_author_ids
+confirmed,2024,Deep learning for colonoscopy polyp detection,Endoscopy,AI in endoscopy,10.1000/example.2024.001,40000001,A5000000001
+confirmed,2023,A multi-omics atlas of colorectal adenoma progression,Gut,Tumor genomics,10.1000/example.2023.014,39000014,A5000000001
+confirmed,2023,Real-time computer-aided detection during screening colonoscopy,Gastroenterology,AI in endoscopy,10.1000/example.2023.009,39000009,A5000000002
+confirmed,2022,Adenoma detection rate as a quality metric: a meta-analysis,Clinical Gastroenterology and Hepatology,Screening quality,10.1000/example.2022.031,38000031,A5000000001
+confirmed,2021,Serrated polyps and interval cancer risk,Gut,Screening quality,10.1000/example.2021.077,37000077,A5000000002
