@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- 新增 `AGENT_SETUP.md`，为 Codex、Claude 及其他本地 coding agent 提供可发现的安装、
+  启动、验活和安全停止条件；README 增加可直接转发给 Agent 的入口提示。
+
 ## v0.1.1 — 2026-08-12
 
 - 公共目录从 `skills/research-tools/` 迁至仓库根层 `workbenches/`，明确它是带浏览器
