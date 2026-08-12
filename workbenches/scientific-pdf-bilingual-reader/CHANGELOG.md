@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.1.1 — 2026-08-12
+
+- 公共目录从 `skills/research-tools/` 迁至仓库根层 `workbenches/`，明确它是带浏览器
+  工作台的本地应用；`SKILL.md` 继续作为一种启动入口保留。
+- 默认端口 8765 被占用时自动在 8876–8895 中选择可用端口，并显示实际 URL；显式
+  `--port` 保持原语义。
+- 修复翻译底稿处理合法纯空白页时 PyMuPDF 抛出
+  `ValueError: nothing to show - source page empty` 的回归；空白页保持页序与尺寸。
+- canonical 受管 Python 回归 59/59 通过；翻译与 OCR doctor 均通过。
+
 ## v0.1.0 — 2026-08-11
 
 首个公开版本（macOS）。

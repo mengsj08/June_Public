@@ -1,0 +1,385 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Comma Review Studio · 本地 Markdown 评审</title>
+  <link rel="stylesheet" href="/static/editor.css">
+</head>
+<body>
+  <header class="doc-header">
+    <div class="doc-brand" aria-label="Comma Review">
+      <span class="studio-mark" aria-hidden="true">,</span>
+      <span class="studio-name">Comma Review</span>
+    </div>
+    <details id="doc-file-menu" class="doc-file-menu" aria-label="切换主稿">
+      <summary class="doc-file-menu-trigger" aria-label="打开主稿菜单">
+        <span id="doc-name">paper.md</span>
+        <span id="doc-meta" class="doc-meta"></span>
+      </summary>
+      <aside id="doc-file-popover" class="doc-file-popover" aria-label="主稿列表">
+        <header><strong>切换主稿</strong><small>原文稿、批注、版本和讨论会保留在各自文稿下。</small></header>
+        <div id="doc-file-list" class="doc-file-list"><p>正在读取主稿…</p></div>
+      </aside>
+    </details>
+    <nav id="doc-primary-actions" class="doc-actions" aria-label="高频操作"></nav>
+    <div class="doc-utility-actions">
+      <div class="cli-status-wrap">
+        <button id="cli-status" class="cli-status checking" type="button" aria-label="查看本机 CLI 状态" aria-haspopup="dialog" aria-expanded="false">
+          <i aria-hidden="true"></i><span>CLI · 检测中</span>
+        </button>
+        <aside id="cli-popover" class="cli-popover" aria-label="本机 CLI 状态" hidden>
+          <header><div><strong>本机 AI CLI</strong><small>状态与快速解释、讨论和完整评审共用</small></div></header>
+          <div id="cli-popover-list" class="cli-popover-list"><p>正在检测 BigApple、Codex 与 Claude…</p></div>
+          <footer><button id="cli-redetect" type="button">重新检测</button></footer>
+        </aside>
+      </div>
+      <details id="doc-more-menu" class="doc-more-menu">
+        <summary aria-label="更多操作">···</summary>
+        <div id="doc-more-actions" class="doc-more-actions">
+          <div id="doc-more-editor-actions" class="doc-more-editor-actions"></div>
+          <button id="btn-versions" type="button" title="查看自动快照、命名版本和冲突草稿">版本 <span id="version-count">0</span></button>
+          <button id="btn-export" type="button" title="导出正文、评审包、DOCX 或 PDF">导出</button>
+          <button id="btn-conversations" type="button" title="查看已建立的选区讨论">讨论记录 <span id="conversation-count">0</span></button>
+          <button id="btn-review-history" type="button">评审记录</button>
+        </div>
+      </details>
+    </div>
+  </header>
+
+  <aside id="ai-tools-popover" class="ai-tools-popover" aria-label="AI 工具" data-disabled-until="SKL-101" hidden>
+    <header><strong>AI 工具</strong><small>SKL-101 命令模板落地后恢复。</small></header>
+  </aside>
+
+  <section id="import-modal" class="import-modal" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="import-title" hidden>
+    <header class="import-head">
+      <div><div class="eyebrow">MANUSCRIPT INTAKE</div><h2 id="import-title">导入科研主稿</h2></div>
+      <button id="import-close" class="icon-button" type="button" aria-label="关闭导入">×</button>
+    </header>
+    <div class="import-policy">
+      <span>一次性进入</span>
+      <div><strong>创建后，Markdown 是唯一工作主稿</strong><p>原文件保留为不可变来源；此流程不覆盖现有文档，也不与 Word 双向同步。</p></div>
+    </div>
+    <section id="import-picker" class="import-picker">
+      <input id="import-file" type="file" accept=".docx,.md,.markdown" hidden>
+      <div class="import-picker-mark" aria-hidden="true">↥</div>
+      <h3>选择本地 Word 或 Markdown</h3>
+      <p>DOCX 会先做宏、外链、ZIP 与修订检查，再在禁网沙箱中转换；UTF-8 Markdown 会原样归档后进入预览。</p>
+      <button id="import-choose" type="button">选择文件</button>
+    </section>
+    <section id="import-preview" class="import-preview" hidden>
+      <div class="import-source-row">
+        <div><span>SOURCE</span><strong id="import-source-name">—</strong><small id="import-source-meta"></small></div>
+        <b id="import-stage-status">STAGED</b>
+      </div>
+      <label class="import-target-label" for="import-target"><span>NEW CANONICAL MARKDOWN</span>新主稿文件名</label>
+      <input id="import-target" type="text" maxlength="200" spellcheck="false">
+      <div id="import-normalizations" class="import-normalizations" hidden></div>
+      <pre id="import-preview-content" aria-label="导入预览"></pre>
+    </section>
+    <div id="import-error" class="import-error" hidden></div>
+    <footer class="import-actions">
+      <button id="import-another" type="button" hidden>另选文件</button>
+      <span id="import-progress">选择文件后只会暂存和预览，不会立即创建主稿。</span>
+      <button id="import-commit" class="primary" type="button" disabled>确认创建主稿</button>
+    </footer>
+  </section>
+  <div id="import-scrim" class="import-scrim" hidden></div>
+
+  <aside id="evidence-drawer" class="evidence-drawer" aria-hidden="true" aria-label="参考资料">
+    <header class="evidence-head">
+      <div><div class="eyebrow">EVIDENCE SOURCES</div><h2>参考资料</h2></div>
+      <button id="evidence-close" class="icon-button" type="button" aria-label="关闭参考资料">×</button>
+    </header>
+    <section class="evidence-boundary">
+      <strong>PDF 不会并入 Markdown</strong>
+      <p>逐页文本和页码只在本地提取。添加后也不会自动发送给 AI；只有在某次讨论中显式勾选，才进入那一轮上下文。</p>
+    </section>
+    <section class="evidence-upload">
+      <input id="evidence-file" type="file" accept=".pdf,application/pdf" hidden>
+      <div><span>ADD LOCAL PDF</span><strong>添加上下文 PDF</strong><small>支持带文本层 PDF；v0 不做 OCR。</small></div>
+      <button id="evidence-choose" type="button">选择 PDF</button>
+    </section>
+    <section class="evidence-summary-policy">
+      <label>AI 摘要工具
+        <select id="evidence-summary-tool"><option value="codex">Codex</option><option value="bigapple">BigApple</option><option value="claude">Claude</option></select>
+      </label>
+      <p>添加 PDF 时不调用 AI。只有逐份点击“生成摘要”并确认后，提取出的 PDF 文本才会交给所选 CLI/provider。</p>
+    </section>
+    <div id="evidence-upload-state" class="evidence-upload-state" hidden></div>
+    <section class="evidence-list-section">
+      <div class="archive-section-title"><span>ATTACHED TO THIS MANUSCRIPT</span><strong>已添加资料</strong></div>
+      <div id="evidence-list" class="evidence-list"><p class="archive-loading">正在读取参考资料…</p></div>
+    </section>
+  </aside>
+  <div id="evidence-scrim" class="evidence-scrim" hidden></div>
+
+  <main class="doc-main comma-host-main">
+    <section class="doc-pane comma-host-pane">
+      <comma-editor id="comma-editor" actor="June" theme="scientific" lang="zh-CN" embedded-chrome></comma-editor>
+    </section>
+  </main>
+
+  <aside id="overview-drawer" class="overview-drawer" aria-hidden="true" aria-label="文章总览">
+    <header class="overview-head">
+      <div><div class="eyebrow">VERSION-BOUND OVERVIEW</div><h2>文章总览</h2></div>
+      <button id="overview-close" class="icon-button" type="button" aria-label="关闭文章总览">×</button>
+    </header>
+    <section class="overview-version-card">
+      <span>当前稿件</span>
+      <strong id="overview-doc-name">paper.md</strong>
+      <code id="overview-rev">—</code>
+      <small id="overview-stats"></small>
+    </section>
+    <section id="overview-muted-review" class="overview-review-ledger" hidden>
+      <div class="eyebrow">MUTED AI FINDINGS</div>
+      <h3>已屏蔽 AI 建议</h3>
+      <div id="overview-muted-list"></div>
+    </section>
+    <section id="overview-state" class="overview-empty-state">
+      <div class="overview-mark" aria-hidden="true">§</div>
+      <div>
+        <h3 id="overview-state-title">正在核对此版本的结构化总览</h3>
+        <p id="overview-state-copy">打开总览只读取本地台账，不会自动调用 CLI，也不会改动 Markdown 或批注。</p>
+        <div class="overview-generate-row">
+          <label>生成工具
+            <select id="overview-tool" aria-label="文章总览生成工具">
+              <option value="codex">Codex</option>
+              <option value="bigapple">BigApple</option>
+              <option value="claude">Claude</option>
+            </select>
+          </label>
+          <button id="overview-generate" type="button">生成此版本总览</button>
+        </div>
+      </div>
+    </section>
+    <section id="overview-content" class="overview-content" hidden>
+      <div class="overview-status-row"><span id="overview-status">READY</span><time id="overview-created-at"></time></div>
+      <h3>3–6 句速览</h3>
+      <ol id="overview-summary-list"></ol>
+      <article><h3>核心论点</h3><p id="overview-thesis"></p></article>
+      <article><h3>证据范围</h3><ul id="overview-evidence-scope"></ul></article>
+      <article><h3>主要结论</h3><ul id="overview-conclusions"></ul></article>
+      <article><h3>限制</h3><ul id="overview-limitations"></ul></article>
+      <article><h3>待核查来源</h3><ul id="overview-source-targets"></ul></article>
+      <button id="overview-regenerate" type="button">重新生成当前版本</button>
+    </section>
+    <section class="capability-boundary-card">
+      <div class="eyebrow">READING BOUNDARY</div>
+      <h3>本地 AI 阅读边界</h3>
+      <ul>
+        <li>未读取图片或图表像素；只处理正文、图注和交叉引用文本。</li>
+        <li>未获取或全文核验所引用的文献。</li>
+        <li>未重新计算统计结果。</li>
+      </ul>
+    </section>
+  </aside>
+  <div id="overview-scrim" class="overview-scrim" hidden></div>
+
+  <section id="review-preflight-modal" class="review-preflight-modal" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="review-preflight-title" hidden>
+    <header class="preflight-head">
+      <div><div class="eyebrow">DETERMINISTIC PREFLIGHT</div><h2 id="review-preflight-title">复审预检</h2></div>
+      <button id="review-preflight-close" class="icon-button" type="button" aria-label="关闭复审预检">×</button>
+    </header>
+    <div class="preflight-route-band">
+      <span id="review-preflight-route-code">CHECKING</span>
+      <div><strong id="review-preflight-route">正在核对版本</strong><small id="review-preflight-scope">不会调用模型</small></div>
+    </div>
+    <div class="preflight-report-grid">
+      <article>
+        <span>MANUSCRIPT DELTA</span>
+        <strong id="review-preflight-document">—</strong>
+        <p id="review-preflight-sections">正在读取块级 hash…</p>
+      </article>
+      <article>
+        <span>COMMENT DELTA</span>
+        <strong id="review-preflight-comments">—</strong>
+        <p id="review-preflight-comment-detail">正在核对 comments_rev…</p>
+      </article>
+      <article>
+        <span>ANCHOR HEALTH</span>
+        <strong id="review-preflight-anchors">—</strong>
+        <p id="review-preflight-anchor-detail">正在重新定位批注锚点…</p>
+      </article>
+    </div>
+    <section class="preflight-boundary">
+      <div><span>ROUTING BASIS</span><strong id="review-preflight-baseline">尚未确定基线</strong></div>
+      <p id="review-preflight-reason">预检只比较 revision、块 hash、批注事件与锚点；此阶段不调用 BigApple、Codex 或 Claude。</p>
+    </section>
+    <footer class="preflight-actions">
+      <button id="review-preflight-cancel" type="button">取消</button>
+      <button id="review-preflight-view" type="button" hidden>查看最近评审</button>
+      <button id="review-preflight-incremental" class="downgrade" type="button" hidden>仍按增量复审</button>
+      <button id="review-preflight-force" type="button" hidden>强制全文复审</button>
+      <button id="review-preflight-primary" class="primary" type="button" disabled>继续</button>
+    </footer>
+  </section>
+  <div id="review-preflight-scrim" class="review-preflight-scrim" hidden></div>
+
+  <aside id="review-drawer" class="review-drawer" aria-hidden="true">
+    <div class="review-drawer-head">
+      <div><div class="eyebrow">REVIEW SESSION</div><h2>审稿台账</h2></div>
+      <button id="review-close" class="icon-button" type="button" aria-label="关闭评审台账">×</button>
+    </div>
+
+    <div class="review-launcher">
+      <div class="review-launch-row">
+        <div class="tool-switch" aria-label="AI 工具">
+          <label><input type="radio" name="review-tool" value="bigapple"><span>BigApple</span></label>
+          <label><input type="radio" name="review-tool" value="codex" checked><span>Codex</span></label>
+          <label><input type="radio" name="review-tool" value="claude"><span>Claude</span></label>
+        </div>
+        <div class="review-policy"><strong>APR</strong><span>首轮生成预览 · 显式加入主评审</span></div>
+      </div>
+      <textarea id="review-instruction" rows="2" placeholder="可选：补充这轮评审重点，例如“重点核查临床外推和引文边界”"></textarea>
+      <div class="review-launch-actions">
+        <button id="review-new" type="button">清空当前视图</button>
+        <button id="review-start" class="review-run-button" type="button"><span>✦</span> 重新预检</button>
+      </div>
+      <div id="review-run-state" class="review-run-state" hidden></div>
+      <p class="review-capability-note">评审只读取正文、图注和引用文本；不读取图片像素、不全文核验文献、不重新计算统计结果。</p>
+    </div>
+
+    <div id="review-empty" class="review-empty">
+      <div class="review-empty-glyph">¶</div>
+      <h3>从文章到可写回批注</h3>
+      <p>AI 会先生成结构化 findings，逐条核对原文锚点，再把唯一、可靠的条目写入公共编辑器批注。原文不会被 AI 直接改写。</p>
+    </div>
+
+    <div id="review-session" class="review-session" hidden>
+      <section class="session-summary-card">
+        <div class="session-meta-row"><span id="review-status" class="review-status"></span><span id="review-session-meta" class="session-meta"></span></div>
+        <p id="review-summary"></p>
+        <div id="review-stats" class="review-stats"></div>
+      </section>
+
+      <section class="ledger-section">
+        <div class="section-heading-row">
+          <div><div id="review-ledger-eyebrow" class="eyebrow">FINDINGS LEDGER</div><h3 id="review-ledger-title">评审清单</h3></div>
+          <div class="operation-confirm-actions">
+            <button id="review-accept-all" type="button" hidden>接受全部非阻断</button>
+            <button id="review-writeback" type="button">同步已接受批注</button>
+          </div>
+        </div>
+        <div id="review-operation-selection" class="operation-selection" hidden></div>
+        <div id="review-findings" class="review-findings"></div>
+      </section>
+
+      <section class="review-conversation">
+        <div class="eyebrow">REVIEW DIALOGUE</div>
+        <h3>继续讨论</h3>
+        <div id="review-messages" class="review-messages"></div>
+        <textarea id="review-message" rows="3" placeholder="例如：标题这一条不改；把重点转到引文和临床表述，再同步批注。"></textarea>
+        <button id="review-send" class="review-send" type="button">更新评审预览</button>
+      </section>
+    </div>
+
+    <section class="review-history-section">
+      <div class="eyebrow">HISTORY</div>
+      <div id="review-history" class="review-history"></div>
+    </section>
+  </aside>
+  <div id="review-scrim" class="review-scrim" hidden></div>
+
+  <aside id="archive-drawer" class="archive-drawer" aria-hidden="true" aria-label="版本与导出中心">
+    <header class="archive-head">
+      <div><div class="eyebrow">DOCUMENT ARCHIVE</div><h2>版本与导出</h2></div>
+      <button id="archive-close" class="icon-button" type="button" aria-label="关闭版本与导出中心">×</button>
+    </header>
+    <nav class="archive-tabs" aria-label="版本与导出">
+      <button id="archive-tab-versions" class="active" type="button" data-archive-tab="versions">版本历史</button>
+      <button id="archive-tab-exports" type="button" data-archive-tab="exports">导出中心</button>
+    </nav>
+    <section id="archive-versions" class="archive-pane">
+      <div class="archive-current">
+        <div><span>CURRENT REVISION</span><strong id="archive-current-rev">—</strong></div>
+        <small>正文每次成功保存都会生成快照；恢复会新增一条记录，不删除后续历史。</small>
+      </div>
+      <div id="draft-section" class="draft-section" hidden>
+        <div class="archive-section-title"><span>RECOVERY DRAFTS</span><strong>待处理冲突草稿</strong></div>
+        <div id="draft-list" class="draft-list"></div>
+      </div>
+      <div class="checkpoint-box">
+        <label for="checkpoint-label"><span>NAMED CHECKPOINT</span>给当前版本一个容易识别的名字</label>
+        <div><input id="checkpoint-label" type="text" maxlength="120" placeholder="例如：完成引文核查"><button id="checkpoint-create" type="button">保存命名版本</button></div>
+      </div>
+      <div class="archive-section-title"><span>VERSION TIMELINE</span><strong>版本时间线</strong></div>
+      <div id="version-list" class="version-list"><p class="archive-loading">正在读取版本…</p></div>
+      <section id="version-diff" class="version-diff" hidden>
+        <header><div><span>UNIFIED DIFF</span><strong id="diff-title">与当前版本比较</strong></div><button id="diff-close" type="button">×</button></header>
+        <pre id="diff-output"></pre>
+      </section>
+    </section>
+    <section id="archive-exports" class="archive-pane" hidden>
+      <div class="export-intro"><span>PORTABLE OUTPUTS</span><h3>把正文与评审痕迹带出去</h3><p>所有导出都从当前已保存版本生成，不改动原始 Markdown。</p></div>
+      <div id="export-list" class="export-list">
+        <button type="button" data-export-format="markdown"><span>MD</span><strong>当前 Markdown</strong><small>原样导出当前正文</small><b>下载</b></button>
+        <button type="button" data-export-format="reviewed-markdown"><span>MD+</span><strong>带批注 Markdown</strong><small>正文后附结构化 review comments</small><b>下载</b></button>
+        <button type="button" data-export-format="package"><span>ZIP</span><strong>Review Package</strong><small>正文、图片、批注、讨论与版本快照</small><b>下载</b></button>
+        <button type="button" data-export-format="docx"><span>DOCX</span><strong>Word 文档</strong><small data-export-detail="docx">正在检测转换器…</small><b>下载</b></button>
+        <button type="button" data-export-format="pdf"><span>PDF</span><strong>科研白底 PDF</strong><small data-export-detail="pdf">正在检测转换器…</small><b>下载</b></button>
+      </div>
+      <p class="export-note">DOCX/PDF 会尽量保留标题、表格、图片、引用和代码块；复杂数学公式与高度定制的 HTML 仍以 Markdown 原文为准。</p>
+    </section>
+  </aside>
+  <div id="archive-scrim" class="archive-scrim" hidden></div>
+
+  <aside id="conversation-dock" class="conversation-dock" hidden aria-label="选区讨论工作台">
+    <header class="conversation-head">
+      <div class="conversation-identity">
+        <div class="eyebrow">QUOTE-SCOPED REVIEW</div>
+        <div><strong>选区讨论</strong><span id="conversation-status">围绕原文展开，不直接改稿</span></div>
+      </div>
+      <div class="conversation-head-actions">
+        <button id="conversation-collapse" type="button" aria-label="收起讨论">⌄</button>
+        <button id="conversation-close" type="button" aria-label="关闭讨论">×</button>
+      </div>
+    </header>
+    <div class="conversation-body">
+      <button id="conversation-source" class="conversation-source" type="button" hidden>
+        <span>原文引用</span><q id="conversation-quote"></q><small>点击回到正文</small>
+      </button>
+      <div class="conversation-toolbar">
+        <div class="tool-switch conversation-tool-switch" aria-label="讨论所用 AI">
+          <label><input type="radio" name="conversation-tool" value="bigapple"><span>BigApple</span></label>
+          <label><input type="radio" name="conversation-tool" value="codex" checked><span>Codex</span></label>
+          <label><input type="radio" name="conversation-tool" value="claude"><span>Claude</span></label>
+        </div>
+        <button id="conversation-evidence-open" class="conversation-evidence-open" type="button">+ 参考资料</button>
+        <div id="conversation-history" class="conversation-history"></div>
+      </div>
+      <div id="conversation-empty" class="conversation-empty">
+        <strong>先在正文选中一段内容</strong>
+        <p>选择“选区讨论”后，这里会保留引用、多轮追问和分支；只有明确点击“写回批注”才会进入文档。</p>
+      </div>
+      <div id="conversation-tree" class="conversation-tree" hidden></div>
+      <section id="conversation-writeback-editor" class="conversation-writeback-editor" hidden>
+        <div><span>写回为原文批注</span><small>可在确认前编辑内容</small></div>
+        <textarea id="conversation-writeback-content" rows="4"></textarea>
+        <div class="conversation-inline-actions">
+          <button id="conversation-writeback-cancel" type="button">取消</button>
+          <button id="conversation-writeback-confirm" class="primary" type="button">确认写回</button>
+        </div>
+      </section>
+      <footer id="conversation-composer" class="conversation-composer" hidden>
+        <div id="conversation-context" class="conversation-context">开始一段引用式讨论</div>
+        <textarea id="conversation-message" rows="3" placeholder="这段的证据边界是什么？"></textarea>
+        <div class="conversation-compose-actions">
+          <button id="conversation-context-cancel" type="button" hidden>取消定位</button>
+          <span>⌘/Ctrl + Enter 发送</span>
+          <button id="conversation-send" class="primary" type="button">开始讨论</button>
+        </div>
+      </footer>
+    </div>
+  </aside>
+
+  <section id="quick-explain" class="quick-explain" hidden aria-live="polite">
+    <header><div><span>QUICK EXPLAIN</span><strong>快速解释</strong></div><button id="quick-close" type="button">×</button></header>
+    <q id="quick-quote"></q>
+    <div id="quick-output" class="quick-output"></div>
+    <footer><button id="quick-deepen" type="button">转入选区讨论 →</button></footer>
+  </section>
+
+  <script type="module" src="/static/app.js"></script>
+</body>
+</html>

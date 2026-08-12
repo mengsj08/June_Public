@@ -1,0 +1,15 @@
+node_modules/
+dist/
+release/
+test-artifacts/
+.DS_Store
+*.log
+__pycache__/
+.pytest_cache/
+*.py[cod]
+
+# Review Studio keeps user documents, review ledgers, comments, and AI traces
+# local. Only the deterministic paper.md fixture is source-controlled.
+apps/review-studio/data/*
+!apps/review-studio/data/paper.md
+apps/review-studio/.local/

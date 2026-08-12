@@ -18,9 +18,12 @@ Codex 或 Claude CLI 登录态翻译成中文，产出中文 PDF 与同页左右
 python3 scripts/bootstrap.py doctor
 python3 scripts/bootstrap.py install --yes   # doctor 未就绪时
 
-# 2. 启动本地工作台（默认 http://127.0.0.1:8765）
+# 2. 启动本地工作台
 python3 scripts/launch.py start --open
 ```
+
+启动器优先使用 `127.0.0.1:8765`；端口已占用时会在 `8876–8895` 中选择首个
+可用端口，并在终端打印实际 URL。也可用 `--port` 显式指定端口。
 
 浏览器打开工作台后上传 PDF。扫描页首次需要 OCR 时，页面会请求确认安装约 1–2 GB 的
 独立 PaddleOCR 运行时（英文 PP-OCRv5，安装一次离线复用）。

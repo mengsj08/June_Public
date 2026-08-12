@@ -1,0 +1,11 @@
+:root { color: #1d211c; background: #d8d6cb; font-family: "Iowan Old Style", "Baskerville", "Songti SC", serif; }
+* { box-sizing: border-box; }
+body { margin: 0; min-width: 340px; min-height: 100vh; background: #d8d6cb; }
+.chrome-bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 14px; border-bottom: 1px solid rgba(47,54,43,.16); background: #f7f4eb; }
+.chrome-bar div { display: grid; gap: 3px; }
+.chrome-bar strong { font-size: 17px; font-weight: 520; }
+.eyebrow { color: #405f4c; font: 700 8px/1 ui-monospace, monospace; letter-spacing: .12em; text-transform: uppercase; }
+button { padding: 9px 12px; border: 1px solid #405f4c; border-radius: 999px; color: #f7f4eb; background: #405f4c; cursor: pointer; font: 10px/1 ui-monospace, monospace; }
+button:disabled { opacity: .55; cursor: wait; }
+.chrome-status { margin: 0; padding: 8px 14px; color: #62685f; background: #e9e6da; font: 9px/1.35 ui-monospace, monospace; }
+comma-editor { min-height: calc(100vh - 86px); --comma-shadow: none; }

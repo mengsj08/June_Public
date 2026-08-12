@@ -329,6 +329,12 @@ def build_translation_source(source: Path, plan: dict, ocr_results: dict, destin
             index = int(page_plan["page"])
             source_page = original[index - 1]
             target = output.new_page(width=source_page.rect.width, height=source_page.rect.height)
+            if page_plan["route"] == "blank":
+                # PyMuPDF rejects show_pdf_page() when the source page has no
+                # drawable contents. The target page was already created with
+                # the same dimensions, so leaving it empty preserves the page
+                # contract without turning a legitimate blank into a failure.
+                continue
             if page_plan["route"] != "ocr":
                 target.show_pdf_page(target.rect, original, index - 1)
                 continue

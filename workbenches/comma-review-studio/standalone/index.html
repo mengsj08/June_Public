@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Comma Editor · Standalone</title>
+    <style>
+      :root { color: #1d211c; background: #d8d6cb; font-family: "Iowan Old Style", "Baskerville", "Songti SC", serif; }
+      * { box-sizing: border-box; }
+      body { margin: 0; min-width: 320px; min-height: 100vh; background: radial-gradient(circle at 90% 10%, #edf1e8, transparent 28%), #d8d6cb; }
+      .page { width: min(1460px, calc(100% - 36px)); margin: 0 auto; padding: 32px 0 54px; }
+      .masthead { display: flex; align-items: end; justify-content: space-between; gap: 24px; margin: 0 4px 20px; }
+      .masthead p { max-width: 620px; margin: 0; color: #596057; font-size: 14px; line-height: 1.5; }
+      .host-tools { display: flex; align-items: center; gap: 8px; }
+      .host-state { color: #405f4c; font: 700 10px/1 ui-monospace, monospace; letter-spacing: .08em; text-transform: uppercase; }
+      button { padding: 9px 13px; border: 1px solid rgba(47,54,43,.2); border-radius: 999px; color: #1d211c; background: rgba(255,255,255,.55); cursor: pointer; font: 11px/1 ui-monospace, monospace; }
+      button:hover { background: #fff; }
+      @media (max-width: 700px) { .page { width: 100%; padding-top: 0; } .masthead { display: none; } }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <header class="masthead">
+        <p><strong>Standalone host.</strong> The document and comments stay in this browser. This page demonstrates that Comma Editor owns no storage or AI permissions.</p>
+        <div class="host-tools"><span class="host-state" id="host-state">host ready</span><button id="reset" type="button">Reset sample</button></div>
+      </header>
+      <comma-editor id="editor" actor="june"></comma-editor>
+    </div>
+    <script type="module" src="./main.js"></script>
+  </body>
+</html>

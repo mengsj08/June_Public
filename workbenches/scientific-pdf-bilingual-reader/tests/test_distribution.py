@@ -114,12 +114,20 @@ class DistributionTest(unittest.TestCase):
         with (
             patch.object(launch, "runtime_paths", return_value=fake),
             patch.object(launch, "probe_runtime", return_value={"ready": True}),
+            patch.object(launch, "port_available", side_effect=lambda _host, port: port == 8876),
             patch.object(sys, "argv", ["launch.py", "start", "--dry-run", "--open"]),
             contextlib.redirect_stdout(output),
         ):
             launch.main()
         self.assertIn(str(fake["venv_python"]), output.getvalue())
         self.assertIn("workbench.py", output.getvalue())
+        self.assertIn("--port 8876", output.getvalue())
+        self.assertIn("自动使用 8876", output.getvalue())
+
+    def test_explicit_launch_port_is_preserved(self):
+        with patch.object(launch, "port_available") as available:
+            self.assertEqual(launch.resolve_port("127.0.0.1", 9001), 9001)
+        available.assert_not_called()
 
     def test_runtime_lock_is_pinned(self):
         lock = json.loads((SOURCE / "references" / "runtime-lock.json").read_text())

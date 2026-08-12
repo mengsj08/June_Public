@@ -1,0 +1,30 @@
+{
+  "schema_version": "comma-review-agent-manifest/v1",
+  "adapter_id": "academic-paper-review",
+  "adapter_version": "internal-gate3",
+  "trust": "internal",
+  "kind": "declarative-profile",
+  "profile_id": "primary",
+  "rubric_version": "sha256:3b247cac76feb8508445cb3b1eaa8d68f4bbb57a8eed74f47e4c512185352a48",
+  "output_schema_version": "academic-paper-review-result/v1",
+  "reviews": {
+    "canonical_document": true,
+    "original_materials": "optional-evidence-sources"
+  },
+  "writeback_default": "preview",
+  "rubric_source": {
+    "path": "rubrics/academic-paper-review.md",
+    "sha256": "sha256:1d554b019b15ff6c4462e3e6a6b1a6c320b2539ba1a1c06bfda5681424d6d9fe"
+  },
+  "rubric_lookup_order": [
+    "installed academic-paper-review skill",
+    "bundled manifest rubric copy"
+  ],
+  "forbidden_capabilities": [
+    "shell",
+    "direct_comment_write",
+    "direct_document_write",
+    "third_party_install",
+    "web_search"
+  ]
+}

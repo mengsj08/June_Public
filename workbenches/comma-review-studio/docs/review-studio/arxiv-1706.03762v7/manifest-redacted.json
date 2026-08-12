@@ -1,0 +1,196 @@
+{
+  "abs_metadata": {
+    "authors": [
+      "Ashish Vaswani",
+      "Noam Shazeer",
+      "Niki Parmar",
+      "Jakob Uszkoreit",
+      "Llion Jones",
+      "Aidan N. Gomez",
+      "Lukasz Kaiser",
+      "Illia Polosukhin"
+    ],
+    "cite_as": "arXiv:1706.03762 [cs.CL]",
+    "comments": "15 pages, 5 figures",
+    "dateline": "[Submitted on 12 Jun 2017 (v1), last revised 2 Aug 2023 (this version, v7)]",
+    "subjects": "Computation and Language (cs.CL); Machine Learning (cs.LG)",
+    "this_version": "arXiv:1706.03762v7 [cs.CL]",
+    "title": "Attention Is All You Need"
+  },
+  "arxiv_id": "1706.03762v7",
+  "conversion": {
+    "converter": {
+      "name": "scripts/convert_attention_arxiv.py",
+      "python_version": "3.13.12",
+      "version": "0.4.0"
+    },
+    "rasterizer": {
+      "fallback": "pdftoppm not used",
+      "tool": "sips",
+      "version": "sips-316"
+    },
+    "strategy": "recursive TeX input expansion with partial LaTeX-to-Markdown transforms; official PDF retained for audit."
+  },
+  "counts": {
+    "equations": 3,
+    "figure_assets": 8,
+    "figure_rasterized_assets": 5,
+    "figures": 5,
+    "footnotes": 5,
+    "heading_levels": [
+      2,
+      3,
+      4
+    ],
+    "inline_citation_commands": 63,
+    "inline_math_spans": 133,
+    "references": 40,
+    "sections": 23,
+    "tables": 4
+  },
+  "downloaded_at_utc": "2026-07-20T13:41:19Z",
+  "input_hashes_sha256": {
+    "abs_html": "3ae4cd73c30cd6ffb79ccda0f7b3e2c3be36c2ebbe8af42b096ba6a64bef6e84",
+    "pdf": "bdfaa68d8984f0dc02beaca527b76f207d99b666d31d1da728ee0728182df697",
+    "source_tar": "2e7a7d9ee2520d22eb23dae0cb148e167be02a30d6cb3f11b1c67723194339c6"
+  },
+  "math_token_guard": {
+    "deltas": {
+      "cdot": 0,
+      "frac": 0,
+      "mathrm": 0,
+      "sqrt": 0,
+      "sum": 0
+    },
+    "failures": [],
+    "markdown_counts": {
+      "cdot": 27,
+      "frac": 3,
+      "mathrm": 12,
+      "sqrt": 5,
+      "sum": 1
+    },
+    "tex_counts": {
+      "cdot": 27,
+      "frac": 3,
+      "mathrm": 12,
+      "sqrt": 5,
+      "sum": 1
+    },
+    "tokens": [
+      "sqrt",
+      "frac",
+      "sum",
+      "mathrm",
+      "cdot"
+    ]
+  },
+  "private_outputs": {
+    "assets_dir": "apps/review-studio/data/arxiv-1706.03762v7/converted/assets",
+    "expanded_tex": "apps/review-studio/data/arxiv-1706.03762v7/converted/expanded-ms.tex",
+    "renderer_stress_md": "apps/review-studio/data/arxiv-1706.03762v7/converted/attention-is-all-you-need-renderer-stress.md",
+    "source_md": "apps/review-studio/data/arxiv-1706.03762v7/converted/attention-is-all-you-need-source.md"
+  },
+  "redaction_note": "No manuscript body, long captions, images, PDF, or source package content is committed.",
+  "source_package_files": [
+    {
+      "path": "Figures/ModalNet-19.png",
+      "sha256": "6d40a44e2ec3f0cdab207c768a9085b6b908bbefa82c5af6613dc8233bee6a42"
+    },
+    {
+      "path": "Figures/ModalNet-20.png",
+      "sha256": "ba8a3ede5d40183ce8c18de249be60bec692646d53db108a3df51797a3c8634a"
+    },
+    {
+      "path": "Figures/ModalNet-21.png",
+      "sha256": "56d69ccc192b90c3b93e5e285ff892f74753f970103939b40291945e106e9f79"
+    },
+    {
+      "path": "Figures/ModalNet-22.png",
+      "sha256": "938988a43c0758e19cd57c4749b8859589cd0e5b8fe8dfc56e2fb35a915bb673"
+    },
+    {
+      "path": "Figures/ModalNet-23.png",
+      "sha256": "b6713b33692fc282e879c6f155eb4901dc16f795bca4adc160a8422123ccaa75"
+    },
+    {
+      "path": "Figures/ModalNet-32.png",
+      "sha256": "f9e73fa67da314706a08fb9ac9470ed719ecbba60fbc6a283515054bd4e992ff"
+    },
+    {
+      "path": "background.tex",
+      "sha256": "4293e7032a2f4f653cb340854b23dae41a1801ea6b487270732db19723918618"
+    },
+    {
+      "path": "introduction.tex",
+      "sha256": "ece15efaec8325b6e88d2b90a3d7be0ee08b6b4c631d858877b806f862bd6553"
+    },
+    {
+      "path": "model_architecture.tex",
+      "sha256": "d524e853dc5f98bb482ee7289908b9640ee9e6ea38586c14c7c1ea0a5c0f5fdf"
+    },
+    {
+      "path": "ms.tex",
+      "sha256": "69a159fa848798bee868a9d394913745e3996ae274f2bc7cfc6d5fcd7a7438a0"
+    },
+    {
+      "path": "nips_2017.sty",
+      "sha256": "f1af9ca822eac10140e9e55ca2f20a59ce20605c3bc32670d9108de95da7ff01"
+    },
+    {
+      "path": "parameter_attention.tex",
+      "sha256": "c698e2bfec0a0acfa2a6447ceabc920aa4b631df1a291647b7124ae9688aff5d"
+    },
+    {
+      "path": "results.tex",
+      "sha256": "da5281baf549caad349c796d51404537674acb72baec0ef9509c95748499b4c8"
+    },
+    {
+      "path": "sqrt_d_trick.tex",
+      "sha256": "db2dfbf394ad8b07c882f77735838f4f2dfbe585b0b5c69ef361e43daa7c906d"
+    },
+    {
+      "path": "training.tex",
+      "sha256": "34fa70917e3f58d02743393ff651be8d679a27cd51a4027180a0efc5ddd913e1"
+    },
+    {
+      "path": "vis/anaphora_resolution2_new.pdf",
+      "sha256": "c0ae1f58eaeeb7638d35c81de72937385bc3646a6bf0107f51426c2544b860cd"
+    },
+    {
+      "path": "vis/anaphora_resolution_new.pdf",
+      "sha256": "adbd1c70e65ad463b8f405f805349144bef0aaa7efd9cb8da9874d2880fef348"
+    },
+    {
+      "path": "vis/attending_to_head2_new.pdf",
+      "sha256": "70e5f99d3dea638e1974c29f91a8fc394fa1d7862e9205044f339f911c69d6b3"
+    },
+    {
+      "path": "vis/attending_to_head_new.pdf",
+      "sha256": "f7e2a6931e8735af0fdd2ed71c219f769d7866edaf28ab19d3aebe9a0d032722"
+    },
+    {
+      "path": "vis/making_more_difficult5_new.pdf",
+      "sha256": "4533259d2f0e05bbbe5893d62af639c578d6e16c5077759a4645fae829a55d89"
+    },
+    {
+      "path": "vis/making_more_difficult_new.pdf",
+      "sha256": "99e0024b1019aee2c012d5ce1b75d4499a9ea8acf0d5ab22675f21f046cdc085"
+    },
+    {
+      "path": "visualizations.tex",
+      "sha256": "3833fb2220d95a20c1fe4f82264f8f95e2e7ea7f78383d8285a89cae9e6c2178"
+    },
+    {
+      "path": "why_self_attention.tex",
+      "sha256": "b0f2e5cb18558766558c02387cafa4813dcd00c980e3676e5fc249029b6acab8"
+    }
+  ],
+  "title": "Attention Is All You Need",
+  "urls": {
+    "abs": "https://arxiv.org/abs/1706.03762v7",
+    "pdf": "https://arxiv.org/pdf/1706.03762v7",
+    "source": "https://arxiv.org/e-print/1706.03762v7"
+  },
+  "version": "v7"
+}

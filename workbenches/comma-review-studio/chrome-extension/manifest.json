@@ -1,0 +1,23 @@
+{
+  "manifest_version": 3,
+  "name": "Comma Editor Side Panel",
+  "version": "0.3.0",
+  "description": "Capture the current page into a local-first Markdown review side panel.",
+  "minimum_chrome_version": "116",
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "sidePanel",
+    "storage"
+  ],
+  "action": {
+    "default_title": "Open Comma Editor"
+  },
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "side_panel": {
+    "default_path": "sidepanel.html"
+  }
+}

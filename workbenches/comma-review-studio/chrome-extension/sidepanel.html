@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Comma Editor</title>
+    <link rel="stylesheet" href="sidepanel.css" />
+  </head>
+  <body>
+    <header class="chrome-bar">
+      <div>
+        <span class="eyebrow">Current tab → Markdown</span>
+        <strong>Comma capture</strong>
+      </div>
+      <button id="capture" type="button">Capture page</button>
+    </header>
+    <p class="chrome-status" id="chrome-status">Nothing is read until you click Capture page.</p>
+    <comma-editor id="editor" actor="chrome-user"></comma-editor>
+    <script type="module" src="sidepanel.js"></script>
+  </body>
+</html>
