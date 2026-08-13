@@ -35,6 +35,10 @@ If a precondition is missing, report the exact missing item and stop. Do not use
 modify shell startup files, install into system Python, or work around provider login by
 reading credentials.
 
+The server and task files stay local, but model use is not offline: translation and review
+send the necessary text or page screenshots to the selected Codex or Claude service. State
+this boundary accurately before processing confidential material.
+
 ## Installation flow
 
 ### 1. Read-only preflight
@@ -116,4 +120,5 @@ The user can hand this repository to an agent with:
 
 > Read `AGENT_SETUP.md` completely, then inspect, install and start the workbench for me.
 > Perform safe checks yourself. Ask before large downloads, replacing an existing Skill, or
-> installing OCR. Do not read credentials or expose my PDFs.
+> installing OCR. Do not read credentials. Tell me what text or screenshots the selected
+> model service will receive before I process confidential PDFs.

@@ -24,6 +24,13 @@ macOS 默认位置：
 
 安装器不使用 `sudo`，不改 shell profile，不读取 Codex 或 Claude 的凭据。模型调用继续使用用户现有的本机登录态。
 
+## 隐私与模型调用
+
+- PDF、译文和任务状态保存在本机任务目录，不随 Skill 安装或升级复制。
+- 选择 Codex 或 Claude 翻译/审阅时，完成任务所需的文字或页面截图会发送给相应模型服务；工作台不得表述为“原文不上传”。
+- Codex 翻译与审阅运行在空白临时工作目录，并禁用 Shell、统一执行、应用、浏览器与多 Agent 工具；Claude 文本翻译禁用工具，截图审阅在空白临时目录中只开放 Read 两张复制图片，所有 Claude 调用均禁用会话持久化。
+- 真实回归页面与 OCR 文本必须位于 Skill 目录之外；只有显式设置 `PDF_READER_PRIVATE_REGRESSION_DIR` 时才参与本机测试。
+
 ## 第三方底座
 
 - PDFMathTranslate / pdf2zh 1.9.11，固定到提交 `44c4d5b332705797c1df17fadde2022e7c49f5de`，AGPL-3.0。

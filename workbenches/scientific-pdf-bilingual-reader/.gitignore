@@ -1,0 +1,8 @@
+.DS_Store
+__pycache__/
+.pytest_cache/
+*.py[cod]
+
+# Real PDF pages, screenshots, OCR text and task pointers are private receipts.
+references/regression/*
+!references/regression/README.md

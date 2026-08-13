@@ -1,4 +1,5 @@
 import json
+import os
 import sys
 import tempfile
 import unittest
@@ -6,11 +7,16 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
+PRIVATE_REGRESSION = Path(os.environ.get(
+    "PDF_READER_PRIVATE_REGRESSION_DIR", ROOT / "references" / "regression",
+)).expanduser()
 sys.path.insert(0, str(ROOT / "scripts"))
 
 from qa_contract import (  # noqa: E402
-    build_contract, classify_issue, score_precision_recall, verify_contract,
+    build_contract, classify_issue, new_deterministic_visual_violations,
+    score_precision_recall, verify_contract,
 )
+from qa_alpha import audit  # noqa: E402
 
 
 class QaContractTest(unittest.TestCase):
@@ -99,10 +105,64 @@ class QaContractTest(unittest.TestCase):
         self.assertEqual(score["actual_red_pages"], ["doc-red-p6"])
         self.assertEqual(score["missed_red_pages"], [])
 
+    def test_skl_209_real_regression_detects_visual_damage_without_incremental_false_positive(self):
+        root = PRIVATE_REGRESSION / "skl-209-516bd41c7ce9"
+        if not root.is_dir():
+            self.skipTest("SKL-209 private regression samples not present")
+        before = audit(root / "page-001-original.pdf", root / "page-001-before-repair-translated.pdf")
+        current = audit(root / "page-001-original.pdf", root / "page-001-current-translated.pdf")
+        current_types = {issue["issue_type"] for page in current["pages"] for issue in page["issues"]}
+        self.assertIn("rendered_text_overlap", current_types)
+        self.assertIn("rendered_text_clipped", current_types)
+        self.assertEqual(new_deterministic_visual_violations(before, current, 1), [])
+
+        before_page8 = audit(root / "page-008-original.pdf", root / "page-008-before-repair-translated.pdf")
+        current_page8 = audit(root / "page-008-original.pdf", root / "page-008-current-translated.pdf")
+        self.assertEqual(new_deterministic_visual_violations(before_page8, current_page8, 1), [])
+
+    def test_new_deterministic_visual_issue_type_is_incremental(self):
+        before = {"pages": [{"pdf_page": 1, "issues": []}]}
+        after = {"pages": [{"pdf_page": 1, "issues": [
+            {"issue_type": "rendered_text_overlap", "severity": "red", "evidence": "overlap", "region": [10, 10, 30, 30]},
+        ]}]}
+        self.assertEqual(
+            new_deterministic_visual_violations(before, after, 1)[0]["issue_type"],
+            "rendered_text_overlap",
+        )
+        existing = {"pages": [{"pdf_page": 1, "issues": [
+            {"issue_type": "rendered_text_overlap", "severity": "red", "evidence": "old overlap", "region": [10, 10, 30, 30]},
+        ]}]}
+        same_region = {"pages": [{"pdf_page": 1, "issues": [
+            {"issue_type": "rendered_text_overlap", "severity": "red", "evidence": "same overlap", "region": [11, 9, 30, 31]},
+        ]}]}
+        self.assertEqual(new_deterministic_visual_violations(existing, same_region, 1), [])
+
+    def test_existing_same_type_plus_new_region_is_incremental(self):
+        before = {"pages": [{"pdf_page": 1, "issues": [
+            {"issue_type": "rendered_text_overlap", "severity": "orange", "evidence": "old", "region": [10, 10, 30, 30]},
+        ]}]}
+        after = {"pages": [{"pdf_page": 1, "issues": [
+            {"issue_type": "rendered_text_overlap", "severity": "orange", "evidence": "old", "region": [10, 10, 30, 30]},
+            {"issue_type": "rendered_text_overlap", "severity": "orange", "evidence": "new", "region": [80, 80, 120, 120]},
+        ]}]}
+        violations = new_deterministic_visual_violations(before, after, 1)
+        self.assertEqual(len(violations), 1)
+        self.assertEqual(violations[0]["region"], [80, 80, 120, 120])
+
+    def test_same_signature_count_increase_is_incremental(self):
+        before = {"pages": [{"pdf_page": 1, "issues": [
+            {"issue_type": "rendered_text_overlap", "severity": "orange", "evidence": "old", "region": [10, 10, 30, 30]},
+        ]}]}
+        after = {"pages": [{"pdf_page": 1, "issues": [
+            {"issue_type": "rendered_text_overlap", "severity": "orange", "evidence": "old", "region": [10, 10, 30, 30]},
+            {"issue_type": "rendered_text_overlap", "severity": "orange", "evidence": "duplicate new", "region": [11, 10, 31, 29]},
+        ]}]}
+        self.assertEqual(len(new_deterministic_visual_violations(before, after, 1)), 1)
+
 
 class RegressionManifestTest(unittest.TestCase):
     def test_short_sprint_manifest_is_desensitized_and_draft_only(self):
-        manifest_path = ROOT / "references" / "regression" / "fixture-manifest.json"
+        manifest_path = PRIVATE_REGRESSION / "fixture-manifest.json"
         if not manifest_path.is_file():
             # 私有回归 fixture 清单不随公开分发包发布；缺失时跳过而非失败。
             self.skipTest("private regression fixture manifest not present in this distribution")

@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import time
 from collections import defaultdict
 from pathlib import Path
@@ -17,7 +18,12 @@ from qa_contract import (
 
 
 ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_MANIFEST = ROOT / "references" / "regression" / "fixture-manifest.json"
+DEFAULT_MANIFEST = Path(
+    os.environ.get(
+        "PDF_READER_PRIVATE_REGRESSION_DIR",
+        ROOT / "references" / "regression",
+    )
+).expanduser() / "fixture-manifest.json"
 DEFAULT_DATA = Path("~/.local/share/scientific-pdf-bilingual-reader").expanduser()
 
 

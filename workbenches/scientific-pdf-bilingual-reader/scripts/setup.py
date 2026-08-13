@@ -32,7 +32,7 @@ def main() -> None:
     install_skill(DEFAULT_SOURCE, args.targets, force=args.force, dry_run=args.dry_run)
     install_runtime(yes=confirmed, dry_run=args.dry_run, skip_assets=args.skip_assets)
     if not args.dry_run:
-        print("安装完成。现在可在 Codex 或 Claude 中说：启动科研长 PDF 双语阅读器。")
+        print("安装完成。现在可在 Codex 或 Claude 中说：启动长 PDF 双语阅读器。")
 
 
 if __name__ == "__main__":

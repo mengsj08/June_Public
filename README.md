@@ -23,7 +23,8 @@ the repository root rather than under `skills/`, even when a package also contai
 
 - [`workbenches/scientific-pdf-bilingual-reader/`](workbenches/scientific-pdf-bilingual-reader/)
   Scientific long-PDF translation workspace for macOS: native text extraction, optional
-  PaddleOCR for scanned pages, Chinese PDF output and side-by-side bilingual reading.
+  PaddleOCR for scanned pages, Chinese PDF output, side-by-side bilingual reading, Comment /
+  Agent review and human-gated batch repair.
 
 See [`workbenches/README.md`](workbenches/README.md) for the classification rule and
 snapshot boundaries.

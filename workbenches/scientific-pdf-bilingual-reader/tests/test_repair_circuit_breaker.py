@@ -9,10 +9,16 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 import review_workflow  # noqa: E402
 from qa_contract import build_contract  # noqa: E402
 from review_workflow import (  # noqa: E402
+    ADVISOR_RECOVERY_STRATEGY_ID,
+    ProviderInvocationError,
     build_review,
     create_diagnosis,
     decide_escalation,
     diagnose,
+    enforce_execution_readiness,
+    inspect_execution_readiness,
+    normalize_advice,
+    revise_advisor_failure_report,
     run_repair,
     start_repair,
     write_json,
@@ -116,6 +122,78 @@ class RepairCircuitBreakerTest(unittest.TestCase):
         self.assertIn('"status": "awaiting_acceptance"', record)
         self.assertIn('"machine_gate": "pass"', record)
 
+    def test_visual_feedback_can_refine_generic_untranslated_family_to_table(self):
+        refined = advice()
+        refined.update(problem_family="table_untranslated", execution_family="table_untranslated")
+        normalized = normalize_advice(refined, "untranslated_region")
+        self.assertEqual(normalized["execution_family"], "table_untranslated")
+
+    def test_visual_feedback_cannot_jump_to_incompatible_family(self):
+        incompatible = advice()
+        incompatible.update(problem_family="toc_layout", execution_family="toc_layout")
+        with self.assertRaisesRegex(RuntimeError, "untranslated_region -> toc_layout"):
+            normalize_advice(incompatible, "untranslated_region")
+
+    def test_diagnosis_updates_executor_to_advisor_refined_family(self):
+        issue_id = build_review(self.folder, self.task)["pages"][0]["issues"][0]["issue_id"]
+        record = create_diagnosis(self.folder, self.task, 1, [issue_id], "claude", "table visual feedback")
+
+        def refined_advice():
+            payload = advice()
+            payload.update(problem_family="table_untranslated", execution_family="table_untranslated")
+            return payload
+
+        diagnose(
+            self.folder, self.task, record["repair_id"], 1, [issue_id], "claude",
+            "table visual feedback", advice_provider=refined_advice,
+        )
+        saved = review_workflow.read_json(
+            self.folder / "repairs" / record["repair_id"] / "repair.json", {}
+        )
+        self.assertEqual(saved["status"], "diagnosed")
+        self.assertEqual(saved["execution_strategy"]["family"], "table_untranslated")
+        self.assertEqual(saved["execution_strategy"]["advisor_refinement"], {
+            "from_family": "layout",
+            "to_family": "table_untranslated",
+            "changed": True,
+        })
+
+    def test_table_strategy_preflight_blocks_page_without_detected_grid(self):
+        import fitz
+
+        document = fitz.open()
+        page = document.new_page()
+        page.insert_text((72, 72), "Quantity Growth Initial Conditions")
+        document.save(self.folder / "original.pdf")
+        document.close()
+        readiness = inspect_execution_readiness(self.folder, self.task, {
+            "pdf_page": 1,
+            "execution_strategy": {"family": "table_untranslated"},
+        })
+        self.assertFalse(readiness["ready"])
+        self.assertEqual(readiness["reason_code"], "strict_table_detection_missing")
+
+    def test_failed_executor_preflight_escalates_without_candidate(self):
+        repair_id = self.make_attempt()
+        record_path = self.folder / "repairs" / repair_id / "repair.json"
+        record = review_workflow.read_json(record_path, {})
+        blocked = {
+            "schema": "repair-execution-readiness/v1",
+            "checked": True,
+            "ready": False,
+            "reason_code": "strict_table_detection_missing",
+            "reason": "no deterministic table cells",
+        }
+        with mock.patch.object(review_workflow, "inspect_execution_readiness", return_value=blocked):
+            result = enforce_execution_readiness(self.folder, self.task, record)
+        self.assertEqual(result["status"], "repair_escalated")
+        self.assertEqual(result["failure_stage"], "executor_capability")
+        self.assertFalse((self.folder / "repairs" / repair_id / "candidate").exists())
+        report = review_workflow.read_json(
+            self.folder / "repairs" / repair_id / "failure-report.json", {}
+        )
+        self.assertEqual(report["execution_readiness"], blocked)
+
     def test_generation_failure_escalates_with_report(self):
         repair_id = self.make_attempt()
         start_repair(self.folder, repair_id)
@@ -164,6 +242,24 @@ class RepairCircuitBreakerTest(unittest.TestCase):
         next_record = result["created_attempt"]
         self.assertIsNotNone(next_record)
         self.assertEqual(next_record["previous_failure_report_id"], repair_id)
+        self.assertEqual(next_record["feedback"], "use tighter bounds")
+
+    def test_successor_attempt_preserves_prior_visual_feedback(self):
+        repair_id = self.make_attempt()
+        repair_path = self.folder / "repairs" / repair_id / "repair.json"
+        record = review_workflow.read_json(repair_path, {})
+        record["feedback"] = "表头中文悬浮，必须原位替换"
+        write_json(repair_path, record)
+        start_repair(self.folder, repair_id)
+        run_repair(self.folder, self.task, repair_id, repair_executor=self.executor([1]))
+        result = decide_escalation(
+            self.folder, self.task, repair_id,
+            {"choice": "manual_overlay", "note": "已修复兼容族迁移"},
+        )
+        self.assertEqual(
+            result["created_attempt"]["feedback"],
+            "表头中文悬浮，必须原位替换\n\n本次补充：已修复兼容族迁移",
+        )
 
     def test_claude_missing_fail_closed_without_fake_provider(self):
         repair_id = self.make_attempt()
@@ -173,6 +269,53 @@ class RepairCircuitBreakerTest(unittest.TestCase):
         record = (self.folder / "repairs" / repair_id / "repair.json").read_text()
         self.assertIn('"status": "repair_escalated"', record)
         self.assertIn("CLI 可用", record)
+
+    def test_advisor_failure_persists_bounded_retry_events_and_recovery_option(self):
+        issue_id = build_review(self.folder, self.task)["pages"][0]["issues"][0]["issue_id"]
+        record = create_diagnosis(self.folder, self.task, 1, [issue_id], "claude", "")
+
+        def failing_advisor():
+            raise ProviderInvocationError("schema rejected")
+
+        diagnose(
+            self.folder, self.task, record["repair_id"], 1, [issue_id], "claude", "",
+            advice_provider=failing_advisor,
+        )
+        repair_dir = self.folder / "repairs" / record["repair_id"]
+        failed = review_workflow.read_json(repair_dir / "repair.json", {})
+        report = review_workflow.read_json(repair_dir / "failure-report.json", {})
+        self.assertEqual(failed["status"], "repair_escalated")
+        self.assertEqual([event["attempt"] for event in failed["provider_retry_events"]], [1, 2])
+        self.assertTrue(all(event["kind"] == "provider_or_network_error" for event in failed["provider_retry_events"]))
+        self.assertEqual(report["provider_retry_events"], failed["provider_retry_events"])
+        self.assertEqual(report["feedback"], "")
+        self.assertIsNone(report["previous_failure_report_id"])
+        self.assertIn(
+            ADVISOR_RECOVERY_STRATEGY_ID,
+            [item["strategy_id"] for item in report["options"]["alternatives"]],
+        )
+
+    def test_revised_legacy_advisor_report_can_create_referenced_attempt(self):
+        issue_id = build_review(self.folder, self.task)["pages"][0]["issues"][0]["issue_id"]
+        record = create_diagnosis(self.folder, self.task, 1, [issue_id], "claude", "")
+        record.update(status="repair_escalated", failure_stage="claude_advice", error="legacy failure")
+        write_json(self.folder / "repairs" / record["repair_id"] / "repair.json", record)
+        legacy_report = review_workflow.make_failure_report(
+            record, failure_stage="candidate_generation", error="legacy failure"
+        )
+        legacy_report["failure_stage"] = "claude_advice"
+        legacy_report["options"]["alternatives"] = []
+        write_json(self.folder / "repairs" / record["repair_id"] / "failure-report.json", legacy_report)
+
+        revised = revise_advisor_failure_report(self.folder, record["repair_id"], "compatibility fix")
+        self.assertEqual(revised["revision_history"][0]["kind"], "advisor_recovery_option_added")
+        result = decide_escalation(
+            self.folder,
+            self.task,
+            record["repair_id"],
+            {"choice": ADVISOR_RECOVERY_STRATEGY_ID, "note": "retry read-only advice"},
+        )
+        self.assertEqual(result["created_attempt"]["previous_failure_report_id"], record["repair_id"])
 
 
 if __name__ == "__main__":

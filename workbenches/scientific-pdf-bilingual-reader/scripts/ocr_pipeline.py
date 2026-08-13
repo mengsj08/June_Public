@@ -12,6 +12,7 @@ from pathlib import Path
 
 import fitz
 from ocr_runtime import runtime_paths as ocr_runtime_paths
+from scan_translate_pipeline import deskew_record_image, line_geometry, line_pdf_rect
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -204,19 +205,14 @@ def run_worker(source: Path, plan: dict, ocr_python: Path, results: Path, image_
 
 def _insert_invisible_text(page: fitz.Page, record: dict) -> list[dict]:
     target_rect = fitz.Rect(record.get("target_rect_pdf") or page.rect)
-    width_scale = target_rect.width / max(float(record["image_width"]), 1.0)
-    height_scale = target_rect.height / max(float(record["image_height"]), 1.0)
     warnings = []
     for line in record.get("lines", []):
-        x0, y0, x1, y1 = (float(value) for value in line["box_px"])
-        box = fitz.Rect(
-            target_rect.x0 + x0 * width_scale, target_rect.y0 + y0 * height_scale,
-            target_rect.x0 + x1 * width_scale, target_rect.y0 + y1 * height_scale,
-        )
-        box &= target_rect
+        box = line_pdf_rect(record, line, target_rect)
         if box.is_empty or box.width < 1 or box.height < 1:
             warnings.append({"page": record["page"], "code": "invalid_text_box", "text": line["text"][:80]})
             continue
+        if not line.get("polygon_px"):
+            warnings.append({"page": record["page"], "code": "missing_polygon_fallback", "text": line["text"][:80]})
         unit_width = max(fitz.get_text_length(line["text"], fontname="helv", fontsize=1), 0.1)
         font_size = max(1.0, min(36.0, box.height * 0.72, box.width * 0.95 / unit_width))
         inserted = page.insert_textbox(
@@ -261,6 +257,7 @@ def build_searchable_pdf(source: Path, plan: dict, ocr_results: dict, destinatio
             output.close()
             original.close()
             raise RuntimeError(f"OCR 结果缺少第 {index} 页；拒绝静默生成空页")
+        record = deskew_record_image(record, destination.parent / "ocr-deskew")
         image = Path(record["image_file"])
         if not image.is_file():
             output.close()
@@ -281,7 +278,7 @@ def _ocr_box_area_ratio(record: dict) -> float:
     page_area = max(float(record.get("image_width", 0)) * float(record.get("image_height", 0)), 1.0)
     area = 0.0
     for line in record.get("lines", []):
-        x0, y0, x1, y1 = (float(value) for value in line["box_px"])
+        x0, y0, x1, y1 = line_geometry(line).rect_px
         area += max(0.0, x1 - x0) * max(0.0, y1 - y0)
     return min(1.0, area / page_area)
 
@@ -304,13 +301,8 @@ def _white_out_ocr_lines(page: fitz.Page, record: dict) -> None:
     # A small margin covers anti-aliased glyph pixels just outside PaddleOCR's box.
     margin_x, margin_y = 2.0 * width_scale, 2.0 * height_scale
     for line in record.get("lines", []):
-        x0, y0, x1, y1 = (float(value) for value in line["box_px"])
-        box = fitz.Rect(
-            target_rect.x0 + x0 * width_scale - margin_x,
-            target_rect.y0 + y0 * height_scale - margin_y,
-            target_rect.x0 + x1 * width_scale + margin_x,
-            target_rect.y0 + y1 * height_scale + margin_y,
-        ) & target_rect
+        rect = line_pdf_rect(record, line, target_rect)
+        box = fitz.Rect(rect.x0 - margin_x, rect.y0 - margin_y, rect.x1 + margin_x, rect.y1 + margin_y) & target_rect
         if not box.is_empty:
             page.draw_rect(box, color=None, fill=(1, 1, 1), overlay=True)
 

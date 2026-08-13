@@ -92,6 +92,117 @@ def has_nearby_cjk(record: dict, records: list[dict]) -> bool:
     )
 
 
+def is_single_cjk_line(record: dict) -> bool:
+    text = normalized_text(record.get("text", ""))
+    return cjk_count(text) == 1 and len(re.sub(r"\s", "", text)) <= 2
+
+
+def union_region(*rects: fitz.Rect) -> list[float]:
+    merged = fitz.Rect(rects[0])
+    for rect in rects[1:]:
+        merged |= rect
+    return list(merged)
+
+
+def compact_letters(text: str) -> str:
+    return re.sub(r"[^0-9A-Za-z\u3400-\u9fff]+", "", text).casefold()
+
+
+def same_physical_line(a: fitz.Rect, b: fitz.Rect) -> bool:
+    return abs((a.y0 + a.y1) / 2 - (b.y0 + b.y1) / 2) <= 2.0
+
+
+def likely_duplicate_text(first: str, second: str) -> bool:
+    left, right = compact_letters(first), compact_letters(second)
+    if not left or not right:
+        return False
+    if left == right:
+        return True
+    shorter, longer = sorted((left, right), key=len)
+    return len(shorter) >= 6 and shorter in longer
+
+
+def text_fragment_has_letters(text: str) -> bool:
+    compact = compact_letters(text)
+    return bool(compact) and not compact.isdigit()
+
+
+def high_confidence_overlap(first: dict, second: dict, a: fitz.Rect, b: fitz.Rect, median_size: float) -> bool:
+    overlap = rect_overlap_ratio(a, b)
+    if overlap < .65:
+        return False
+    if likely_duplicate_text(first["text"], second["text"]):
+        return False
+    if same_physical_line(a, b) and overlap < .82:
+        return False
+    first_compact, second_compact = compact_letters(first["text"]), compact_letters(second["text"])
+    short_pair = min(len(first_compact), len(second_compact)) <= 12
+    prominent = max(first.get("size", 0), second.get("size", 0)) >= max(11.5, median_size * 1.15)
+    return short_pair and prominent
+
+
+def deterministic_layout_issues(records: list[dict], page_rect: fitz.Rect, median_size: float) -> list[dict]:
+    found: list[dict] = []
+    sorted_lines = sorted(records, key=lambda item: (item["bbox"][1], item["bbox"][0]))
+    for index, first in enumerate(sorted_lines):
+        a = fitz.Rect(first["bbox"])
+        first_cjk = cjk_count(first["text"]) > 0
+        if a.x0 < page_rect.x0 - .5 or a.y0 < page_rect.y0 - .5 or a.x1 > page_rect.x1 + .5 or a.y1 > page_rect.y1 + .5:
+            found.append(issue("rendered_text_clipped", "critical", f"text bbox outside page: {first['text'][:80]}", a))
+        compact_text = re.sub(r"\s", "", first["text"])
+        right_column_orphan = (
+            len(compact_text) == 1
+            and text_fragment_has_letters(first["text"])
+            and a.x0 > page_rect.width * .72
+            and first.get("size", 0) >= 6.5
+        )
+        if (is_single_cjk_line(first) and (a.x1 >= page_rect.x1 - 2 or a.x0 <= page_rect.x0 + 2)) or right_column_orphan:
+            found.append(issue("rendered_text_clipped", "critical", f"orphan text fragment: {first['text'][:20]}", a))
+        for second in sorted_lines[index + 1:index + 10]:
+            b = fitz.Rect(second["bbox"])
+            if b.y0 > a.y1 + 3:
+                break
+            second_cjk = cjk_count(second["text"]) > 0
+            mixed_cjk = first_cjk and (second_cjk or english_letters(second["text"]) >= 2)
+            mixed_cjk = mixed_cjk or (second_cjk and english_letters(first["text"]) >= 2)
+            if not mixed_cjk:
+                continue
+            if high_confidence_overlap(first, second, a, b, median_size):
+                evidence = f"overlap: {first['text'][:40]} / {second['text'][:40]}"
+                found.append(issue("rendered_text_overlap", "critical", evidence, union_region(a, b)))
+                break
+    singletons = [item for item in sorted_lines if is_single_cjk_line(item)]
+    for index in range(len(singletons)):
+        cluster = [singletons[index]]
+        prev = fitz.Rect(singletons[index]["bbox"])
+        for item in singletons[index + 1:index + 8]:
+            rect = fitz.Rect(item["bbox"])
+            same_column = abs((rect.x0 + rect.x1) / 2 - (prev.x0 + prev.x1) / 2) <= max(5, prev.width * 1.4)
+            close = 0 <= rect.y0 - prev.y1 <= max(16, prev.height * 2.2)
+            if not same_column or not close:
+                break
+            cluster.append(item)
+            prev = rect
+        if len(cluster) >= 3:
+            rects = [fitz.Rect(item["bbox"]) for item in cluster]
+            text = "".join(item["text"] for item in cluster[:8])
+            found.append(issue("rendered_vertical_cjk_stack", "critical", f"single CJK stack: {text}", union_region(*rects)))
+            break
+    return found
+
+
+def plan_fallback_count(plan: dict | None) -> int:
+    if not plan:
+        return 0
+    total = 0
+    for key in ("fallbacks", "fallback_regions", "structured_fallbacks"):
+        value = plan.get(key)
+        if isinstance(value, list):
+            total += len(value)
+    total += int(plan.get("companion_fallbacks") or 0)
+    return total
+
+
 def allowed_english(text: str) -> bool:
     stripped = normalized_text(text)
     if not stripped:
@@ -167,6 +278,20 @@ def dominant_directions(records: list[dict]) -> tuple[float, float]:
     return vertical / len(records), 1 - vertical / len(records)
 
 
+def clean_text_geometry_metrics(lines: list[dict], page_rect: fitz.Rect, source_letters: int, output_cjk: int) -> dict:
+    valid = 0
+    for record in lines:
+        rect = fitz.Rect(record["bbox"])
+        if not rect.is_empty and rect.width >= 1 and rect.height >= 1 and page_rect.contains(rect):
+            valid += 1
+    return {
+        "clean_text_coverage_ratio": round(output_cjk / max(source_letters, 1), 4),
+        "clean_text_line_count": len(lines),
+        "clean_text_bbox_valid": valid == len(lines),
+        "clean_text_invalid_bbox_count": len(lines) - valid,
+    }
+
+
 def issue(kind: str, severity: str, evidence: str, region=None) -> dict:
     result = {"issue_type": kind, "severity": severity, "evidence": evidence}
     if region is not None:
@@ -183,6 +308,7 @@ def page_issues(source: fitz.Page, output: fitz.Page, plan: dict | None,
     page_rect = output.rect
     sizes = [item["size"] for item in output_lines if item["size"] > 0]
     median_size = float(np.median(sizes)) if sizes else 0.0
+    issues.extend(deterministic_layout_issues(output_lines, page_rect, median_size))
 
     if source.rotation != output.rotation:
         issues.append(issue("rotation_metadata_mismatch", "critical", f"rotation {source.rotation} -> {output.rotation}"))
@@ -258,8 +384,23 @@ def page_issues(source: fitz.Page, output: fitz.Page, plan: dict | None,
     # while text, direction and font checks continue to use the translation source.
     source_ink = output_ink = structure_iou = None
     missing_regions = crowded_regions = 0
+    render_mode = (plan or {}).get("render_mode")
     structured_page = bool(plan and plan.get("policy") in {"translate_table_cells", "protect_table_translate_caption", "preserve_original"})
-    if route != "ocr":
+    clean_metrics = {}
+    if route == "ocr" and render_mode not in {"clean", "overlay"}:
+        issues.append(issue(
+            "scan_render_mode_missing", "critical",
+            "OCR page-plan lacks render_mode; clean/overlay QA contract is incomplete",
+        ))
+    if route == "ocr" and render_mode == "clean":
+        clean_metrics = clean_text_geometry_metrics(output_lines, page_rect, source_letters, output_cjk)
+        if not clean_metrics["clean_text_bbox_valid"]:
+            issues.append(issue(
+                "clean_text_geometry_invalid",
+                "critical",
+                f"invalid text bboxes={clean_metrics['clean_text_invalid_bbox_count']}",
+            ))
+    if route != "ocr" or render_mode == "overlay":
         source_image, output_image = render_gray(visual_source or source), render_gray(output)
         output_image = align_render(source_image, output_image)
         source_ink, output_ink = ink_ratio(source_image), ink_ratio(output_image)
@@ -283,11 +424,14 @@ def page_issues(source: fitz.Page, output: fitz.Page, plan: dict | None,
     source_median = float(np.median(source_sizes)) if source_sizes else 0.0
     if source_median >= 5 and median_size > 0 and median_size < source_median * .58:
         issues.append(issue("rendered_text_too_small", "critical", f"median font {source_median:.1f} -> {median_size:.1f}"))
+    elif median_size > 0 and median_size < 5.2 and len(output_lines) >= 3:
+        issues.append(issue("rendered_text_too_small", "critical", f"median font below calibrated threshold: {median_size:.1f}pt"))
 
     if plan and plan.get("policy") in {"preserve_original", "protect_table_translate_caption"}:
         issues.append(issue("strategy_preserved_source_region", "warning", f"policy={plan.get('policy')}"))
-    if plan and plan.get("companion_fallbacks", 0):
-        issues.append(issue("structured_region_fallback", "critical", f"companion fallbacks={plan['companion_fallbacks']}"))
+    fallbacks = plan_fallback_count(plan)
+    if fallbacks:
+        issues.append(issue("structured_region_fallback", "critical", f"page-plan fallbacks={fallbacks}"))
 
     metrics = {
         "source_ink_ratio": round(source_ink, 4) if source_ink is not None else None,
@@ -297,6 +441,7 @@ def page_issues(source: fitz.Page, output: fitz.Page, plan: dict | None,
         "output_vertical_ratio": round(output_vertical, 3), "source_english_letters": source_letters,
         "output_cjk": output_cjk,
     }
+    metrics.update(clean_metrics)
     return issues, metrics
 
 

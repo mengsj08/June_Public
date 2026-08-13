@@ -30,6 +30,25 @@ class QaProfileTest(unittest.TestCase):
         self.assertFalse(any(item["issue_type"].startswith("rendered_") for item in issues))
         source_doc.close(); output_doc.close()
 
+    def test_clean_ocr_route_uses_text_geometry_metrics_without_render_similarity(self):
+        source_doc, source = page_with_text("English source paragraph. " * 20)
+        output_doc, output = page_with_text("中文译文。" * 20)
+        with patch("qa_alpha.render_gray", side_effect=AssertionError("render should be skipped")):
+            issues, metrics = page_issues(source, output, {"render_mode": "clean"}, route="ocr")
+        self.assertIn("clean_text_coverage_ratio", metrics)
+        self.assertTrue(metrics["clean_text_bbox_valid"])
+        self.assertIsNone(metrics["structure_iou"])
+        self.assertFalse(any(item["issue_type"] == "clean_text_geometry_invalid" for item in issues))
+        source_doc.close(); output_doc.close()
+
+    def test_ocr_route_without_render_mode_fails_closed(self):
+        source_doc, source = page_with_text("English source paragraph. " * 20)
+        output_doc, output = page_with_text("中文译文。" * 20)
+        issues, _ = page_issues(source, output, None, route="ocr")
+        missing = next(item for item in issues if item["issue_type"] == "scan_render_mode_missing")
+        self.assertEqual(missing["severity"], "critical")
+        source_doc.close(); output_doc.close()
+
     def test_refusal_fallback_coverage_is_warning_with_reason(self):
         source_doc, source = page_with_text("English source paragraph that remains untranslated. " * 8)
         output_doc, output = page_with_text("English source paragraph that remains untranslated. " * 8)

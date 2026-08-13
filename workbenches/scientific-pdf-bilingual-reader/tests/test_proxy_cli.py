@@ -10,10 +10,30 @@ import fitz
 SCRIPTS = Path(__file__).resolve().parents[1] / "scripts"
 sys.path.insert(0, str(SCRIPTS))
 
-from workbench import _locate_source_pages, read_translation_warnings, record_translation_refusal, run_proxy_cli
+from workbench import (
+    _locate_source_pages, proxy_error_kind, read_translation_warnings,
+    record_translation_refusal, run_proxy_cli,
+)
 
 
 class ProxyCliTest(unittest.TestCase):
+    def test_codex_prompt_goes_over_stdin(self):
+        captured = {}
+
+        def runner(cmd, **kwargs):
+            captured.update(cmd=cmd, kwargs=kwargs)
+            return subprocess.CompletedProcess(cmd, 0, stdout="译文\n", stderr="")
+
+        prompt = "Source Text: private paper text\nTranslated Text:"
+        self.assertEqual(run_proxy_cli("codex", prompt, runner=runner), "译文")
+        self.assertEqual(captured["cmd"][-1], "-")
+        self.assertNotIn(prompt, captured["cmd"])
+        self.assertEqual(captured["kwargs"]["input"], prompt)
+        self.assertIn("-C", captured["cmd"])
+        self.assertIn("shell_tool", captured["cmd"])
+        self.assertIn("unified_exec", captured["cmd"])
+        self.assertNotEqual(Path(captured["cmd"][captured["cmd"].index("-C") + 1]), Path.cwd())
+
     def test_claude_is_isolated_and_prompt_goes_over_stdin(self):
         captured = {}
 
@@ -73,6 +93,10 @@ class ProxyCliTest(unittest.TestCase):
 
         with self.assertRaises(subprocess.TimeoutExpired):
             run_proxy_cli("claude", "Source Text:\nsource\n\nTranslated Text:", runner=runner)
+
+    def test_proxy_failure_is_classified_without_source_text(self):
+        self.assertEqual(proxy_error_kind(RuntimeError("upstream status 502 Bad Gateway")), "upstream_gateway")
+        self.assertEqual(proxy_error_kind(OSError(7, "Argument list too long")), "argument_too_long")
 
     def test_refusal_source_is_located_to_pdf_page(self):
         with tempfile.TemporaryDirectory() as temp:

@@ -234,7 +234,7 @@ def install(*, yes: bool, dry_run: bool, skip_assets: bool) -> None:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="科研长 PDF 双语阅读器受管运行时")
+    parser = argparse.ArgumentParser(description="长 PDF 双语阅读器受管运行时")
     sub = parser.add_subparsers(dest="command", required=True)
     doctor = sub.add_parser("doctor", help="检查受管运行时")
     doctor.add_argument("--skip-assets", action="store_true")

@@ -1,0 +1,29 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "repair_family": {
+      "type": "string",
+      "enum": ["unexpected_text", "toc_layout", "rotation_layout", "table_layout", "table_untranslated", "form_untranslated", "layout", "untranslated_region"]
+    },
+    "confidence": {"type": "number", "minimum": 0, "maximum": 1},
+    "reading_order_ok": {"type": "boolean"},
+    "reading_order_note": {"type": "string"},
+    "protected_content_ok": {"type": "boolean"},
+    "protected_content_note": {"type": "string"},
+    "comment_issue_improved": {"type": "boolean"},
+    "comment_issue_note": {"type": "string"},
+    "observations": {"type": "array", "items": {"type": "string"}}
+  },
+  "required": [
+    "repair_family",
+    "confidence",
+    "reading_order_ok",
+    "reading_order_note",
+    "protected_content_ok",
+    "protected_content_note",
+    "comment_issue_improved",
+    "comment_issue_note",
+    "observations"
+  ]
+}

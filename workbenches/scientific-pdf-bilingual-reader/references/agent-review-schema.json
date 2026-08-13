@@ -1,0 +1,32 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "reviews": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "comment_id": {"type": "string", "minLength": 1},
+          "is_real_problem": {"type": "boolean"},
+          "confidence": {"type": "number", "minimum": 0, "maximum": 1},
+          "root_cause": {"type": "string"},
+          "recommended_action": {"type": "string"},
+          "repair_family": {
+            "type": "string",
+            "enum": ["unexpected_text", "toc_layout", "rotation_layout", "table_layout", "table_untranslated", "form_untranslated", "layout", "untranslated_region"]
+          },
+          "scope": {"type": "string"},
+          "protected_content": {"type": "array", "items": {"type": "string"}},
+          "risk": {"type": "string", "enum": ["low", "medium", "high"]},
+          "cost_level": {"type": "string", "enum": ["low", "medium", "high"]},
+          "explanation": {"type": "string"}
+        },
+        "required": ["comment_id", "is_real_problem", "confidence", "root_cause", "recommended_action", "repair_family", "scope", "protected_content", "risk", "cost_level", "explanation"]
+      }
+    }
+  },
+  "required": ["reviews"]
+}

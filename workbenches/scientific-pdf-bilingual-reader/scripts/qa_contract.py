@@ -14,10 +14,17 @@ from typing import Any
 
 
 QA_CONTRACT_SCHEMA = "qa-contract/v1"
-QA_RULE_VERSION = "qa-alpha-red-orange-warning/v2"
+QA_RULE_VERSION = "qa-alpha-red-orange-warning/v3"
 REGRESSION_RECEIPT_SCHEMA = "pdf-reader-regression-receipt/v1"
 
 PROTECTED_POLICIES = {"protect_table_translate_caption", "preserve_original"}
+DETERMINISTIC_VISUAL_GATE_ISSUES = {
+    "rendered_text_overlap",
+    "rendered_text_clipped",
+    "rendered_vertical_cjk_stack",
+    "rendered_text_too_small",
+    "structured_region_fallback",
+}
 RED_ISSUES = {
     "page_count_changed",
     "rotation_metadata_mismatch",
@@ -27,12 +34,15 @@ RED_ISSUES = {
     "rendered_page_too_sparse",
     "rendered_regions_crowded",
     "rendered_structure_drift",
-    "rendered_text_too_small",
     "model_meta_response_leak",
 }
 ORANGE_ISSUES = {
     "strategy_preserved_source_region",
     "structured_region_fallback",
+    "rendered_text_overlap",
+    "rendered_text_clipped",
+    "rendered_vertical_cjk_stack",
+    "rendered_text_too_small",
 }
 WARNING_ISSUES = {
     "english_region_untranslated",
@@ -41,6 +51,106 @@ WARNING_ISSUES = {
     "toc_layout_suspect",
     "unexpected_control_characters",
 }
+ACTIONABLE_USER_IMPACTS = {"hard_blocker", "needs_review"}
+
+
+def issue_user_impact(issue: dict) -> str:
+    """Return the UI attention tier, including compatibility for older reports."""
+    explicit = issue.get("user_impact")
+    if explicit in {"hard_blocker", "needs_review", "tip"}:
+        return explicit
+    severity = issue.get("severity")
+    if severity in {"red", "critical"}:
+        return "hard_blocker"
+    if severity == "orange":
+        return "needs_review"
+    return "tip"
+
+
+def issue_review_id(pdf_page: int, issue: dict) -> str:
+    """Build the stable review key used by both the API summary and review panel."""
+    evidence = str(issue.get("evidence", ""))
+    region = json.dumps(issue.get("region", []), separators=(",", ":"))
+    digest = hashlib.sha1(
+        f"{pdf_page}|{issue.get('issue_type')}|{evidence}|{region}".encode()
+    ).hexdigest()[:10]
+    return f"p{pdf_page}-{issue.get('issue_type', 'issue')}-{digest}"
+
+
+def attention_summary(
+    pages: list[dict],
+    document_issues: list[dict] | None = None,
+    decisions: dict | None = None,
+) -> dict[str, Any]:
+    """Summarize human actions separately from optional technical diagnostics."""
+    decisions = decisions or {}
+    actionable_pages: set[int] = set()
+    hard_blocker_pages: set[int] = set()
+    needs_review_pages: set[int] = set()
+    technical_tip_pages: set[int] = set()
+    actionable_issue_count = 0
+    hard_blocker_issue_count = 0
+    needs_review_issue_count = 0
+    technical_tip_issue_count = 0
+    ignored_actionable_issue_count = 0
+
+    for page in pages:
+        pdf_page = int(page.get("pdf_page", 0))
+        seen: set[str] = set()
+        for issue in page.get("issues", []):
+            issue_id = issue.get("issue_id") or issue_review_id(pdf_page, issue)
+            if issue_id in seen:
+                continue
+            seen.add(issue_id)
+            impact = issue_user_impact(issue)
+            if impact == "tip":
+                technical_tip_pages.add(pdf_page)
+                technical_tip_issue_count += 1
+                continue
+            decision = (
+                decisions.get(issue_id, {}).get("decision")
+                or issue.get("review", {}).get("decision")
+                or "pending"
+            )
+            if decision == "ignored":
+                ignored_actionable_issue_count += 1
+                continue
+            actionable_pages.add(pdf_page)
+            actionable_issue_count += 1
+            if impact == "hard_blocker":
+                hard_blocker_pages.add(pdf_page)
+                hard_blocker_issue_count += 1
+            else:
+                needs_review_pages.add(pdf_page)
+                needs_review_issue_count += 1
+
+    document_actionable_issue_count = 0
+    document_technical_tip_count = 0
+    for issue in document_issues or []:
+        if issue_user_impact(issue) in ACTIONABLE_USER_IMPACTS:
+            document_actionable_issue_count += 1
+            actionable_issue_count += 1
+        else:
+            document_technical_tip_count += 1
+            technical_tip_issue_count += 1
+
+    return {
+        "actionable_pages": sorted(actionable_pages),
+        "actionable_page_count": len(actionable_pages),
+        "actionable_issue_count": actionable_issue_count,
+        "hard_blocker_pages": sorted(hard_blocker_pages),
+        "hard_blocker_page_count": len(hard_blocker_pages),
+        "hard_blocker_issue_count": hard_blocker_issue_count,
+        "needs_review_pages": sorted(needs_review_pages),
+        "needs_review_page_count": len(needs_review_pages),
+        "needs_review_issue_count": needs_review_issue_count,
+        "technical_tip_pages": sorted(technical_tip_pages),
+        "technical_tip_page_count": len(technical_tip_pages),
+        "technical_tip_issue_count": technical_tip_issue_count,
+        "ignored_actionable_issue_count": ignored_actionable_issue_count,
+        "document_actionable_issue_count": document_actionable_issue_count,
+        "document_technical_tip_count": document_technical_tip_count,
+    }
 
 
 def canonical_json(payload: Any) -> str:
@@ -226,6 +336,88 @@ def gate_status(summary: dict[str, int]) -> str:
     if summary.get("warning", 0):
         return "passed_with_warnings"
     return "passed"
+
+
+def deterministic_visual_issue_signature(pdf_page: int, issue: dict) -> str | None:
+    kind = issue.get("issue_type")
+    if kind not in DETERMINISTIC_VISUAL_GATE_ISSUES:
+        return None
+    region = issue.get("region") or []
+    quantized_region = []
+    if len(region) >= 4:
+        quantized_region = [round(float(value) / 8) * 8 for value in region[:4]]
+    return json.dumps(
+        {"page": int(pdf_page), "type": kind, "region": quantized_region},
+        ensure_ascii=False,
+        sort_keys=True,
+        separators=(",", ":"),
+    )
+
+
+def deterministic_visual_issue_signatures(report: dict, pdf_page: int | None = None) -> set[str]:
+    signatures = set()
+    for page in report.get("pages", []):
+        page_number = int(page.get("pdf_page", 0))
+        if pdf_page is not None and page_number != int(pdf_page):
+            continue
+        for issue in page.get("issues", []):
+            signature = deterministic_visual_issue_signature(page_number, issue)
+            if signature:
+                signatures.add(signature)
+    return signatures
+
+
+def new_deterministic_visual_violations(before: dict, after: dict, pdf_page: int | None = None) -> list[dict]:
+    before_signatures = deterministic_visual_issue_signatures(before, pdf_page)
+    before_counts = Counter()
+    after_counts = Counter()
+    after_issues: list[tuple[int, dict, str]] = []
+    for report, counts in ((before, before_counts), (after, after_counts)):
+        for page in report.get("pages", []):
+            page_number = int(page.get("pdf_page", 0))
+            if pdf_page is not None and page_number != int(pdf_page):
+                continue
+            for issue in page.get("issues", []):
+                if issue.get("issue_type") in DETERMINISTIC_VISUAL_GATE_ISSUES:
+                    counts[(page_number, issue.get("issue_type"))] += 1
+                    if report is after:
+                        signature = deterministic_visual_issue_signature(page_number, issue)
+                        if signature:
+                            after_issues.append((page_number, issue, signature))
+    violations = []
+    seen = set()
+    surplus_by_type = {
+        key: after_counts[key] - before_counts.get(key, 0)
+        for key in after_counts
+        if after_counts[key] > before_counts.get(key, 0)
+    }
+    def append_violation(page_number: int, issue: dict, signature: str) -> None:
+        seen.add(signature)
+        violations.append({
+            "pdf_page": page_number,
+            "issue_type": issue.get("issue_type"),
+            "evidence": issue.get("evidence"),
+            "region": issue.get("region"),
+            "signature": signature,
+        })
+
+    for page_number, issue, signature in after_issues:
+        if signature in before_signatures or signature in seen:
+            continue
+        count_key = (page_number, issue.get("issue_type"))
+        if surplus_by_type.get(count_key, 0) > 0:
+            surplus_by_type[count_key] -= 1
+        append_violation(page_number, issue, signature)
+
+    for page_number, issue, signature in after_issues:
+        if signature in seen or signature not in before_signatures:
+            continue
+        count_key = (page_number, issue.get("issue_type"))
+        if surplus_by_type.get(count_key, 0) <= 0:
+            continue
+        surplus_by_type[count_key] -= 1
+        append_violation(page_number, issue, signature)
+    return violations
 
 
 def score_key(page: dict, default_task_id: str | None = None) -> str:

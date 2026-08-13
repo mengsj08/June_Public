@@ -14,8 +14,7 @@ import json
 import os
 import re
 import sys
-import time
-import urllib.request
+import uuid
 from pathlib import Path
 
 import fitz
@@ -27,18 +26,9 @@ from page_router import (  # noqa: E402
     render_navigation,
 )
 from qa_alpha import audit, allowed_english, english_letters, line_records, normalized_text  # noqa: E402
+from translation_broker import TranslationBroker  # noqa: E402
 
 
-GLOSSARY = {
-    "Total": "总计", "PART 3": "第3部分", "Canada": "加拿大", "Japan": "日本",
-    "China": "中国", "Korea": "韩国", "Brazil": "巴西", "Barbados": "巴巴多斯",
-    "Venezuela": "委内瑞拉", "Mexico": "墨西哥", "Morocco": "摩洛哥",
-    "United States": "美国", "European Community": "欧洲共同体",
-    "Contracting Parties": "缔约方", "Other Contracting Parties": "其他缔约方",
-    "Trinidad & Tobago": "特立尼达和多巴哥",
-    "UK (Overseas Territories) (4)": "英国（海外领土）(4)",
-    "France (St. Pierre et Miquelon) (4)": "法国（圣皮埃尔和密克隆）(4)",
-}
 TOC_INSTRUCTION = "把下面目录标题逐条翻译成简洁准确的中文。保留缩略语、编号、年份、拉丁学名和专有名词；不要添加解释。"
 CELL_INSTRUCTION = "逐格翻译表格或表单中的英文为简洁准确的中文。保留编号、金额、单位、缩略语、专有名词和拉丁学名；不要添加解释。"
 ROTATION_INSTRUCTION = "逐条翻译旋转表格页面的标题、说明或表单字段为简洁准确的中文。保留编号、金额、单位、缩略语和专有名词；不要添加解释。"
@@ -46,118 +36,84 @@ FORM_INSTRUCTION = "逐条翻译页面标题、说明或表单字段为简洁准
 HEADING_INSTRUCTION = "逐条翻译仍为英文的页面标题、页眉页脚或重要标签。保留编号、缩略语、专有名词和拉丁学名；不要添加解释。"
 
 
-class TranslationBroker:
-    """Task-local translation cache with bounded, ID-stable AI batches."""
+def safe_task_file(task_root: Path, value: str | None, default: str) -> Path:
+    root = task_root.resolve()
+    relative = Path(value or default)
+    if relative.is_absolute():
+        raise RuntimeError("任务文件引用必须位于任务目录内")
+    target = (root / relative).resolve()
+    if root not in target.parents:
+        raise RuntimeError("任务文件引用越出任务目录")
+    if not target.is_file():
+        raise FileNotFoundError(f"任务文件不存在：{relative}")
+    return target
 
-    def __init__(self, cache_path: Path, *, max_calls: int = 12, batch_size: int = 40,
-                 max_batch_chars: int = 8000):
-        self.cache_path = cache_path
-        try:
-            self.cache = json.loads(cache_path.read_text()) if cache_path.is_file() else {}
-        except Exception:
-            self.cache = {}
-        self.max_calls = max_calls
-        self.batch_size = batch_size
-        self.max_batch_chars = max_batch_chars
-        self.metrics = {"requests": 0, "ai_seconds": 0.0, "cache_hits": 0,
-                        "glossary_hits": 0, "unique_ai_items": 0, "unresolved": [], "errors": []}
 
-    @staticmethod
-    def cache_key(text: str, instruction: str) -> str:
-        payload = "repair-v2\n" + normalized_text(instruction) + "\n" + normalized_text(text)
-        return hashlib.sha256(payload.encode()).hexdigest()
+def resolve_task_files(task_root: Path) -> dict:
+    task_path = task_root / "task.json"
+    try:
+        task = json.loads(task_path.read_text()) if task_path.is_file() else {}
+    except Exception as exc:
+        raise RuntimeError(f"task.json 无法读取：{exc}") from exc
+    original = safe_task_file(task_root, task.get("original_file"), "original.pdf")
+    source = safe_task_file(
+        task_root,
+        task.get("translation_source_file") or task.get("original_file"),
+        "original.pdf",
+    )
+    current = safe_task_file(task_root, task.get("translated_file"), "translated-zh.pdf")
+    plan = safe_task_file(task_root, task.get("page_plan_file"), "page-plan.json")
+    return {
+        "task": task,
+        "task_json": task_path if task_path.is_file() else None,
+        "original": original,
+        "source": source,
+        "current": current,
+        "plan": plan,
+    }
 
-    def save(self) -> None:
-        temporary = self.cache_path.with_suffix(".tmp")
-        temporary.write_text(json.dumps(self.cache, ensure_ascii=False, indent=2))
-        temporary.replace(self.cache_path)
 
-    def _request(self, entries: list[dict], instruction: str) -> dict[str, str]:
-        if self.metrics["requests"] >= self.max_calls:
-            return {}
-        base = os.environ.get("OPENAILIKED_BASE_URL")
-        model = os.environ.get("OPENAILIKED_MODEL", "codex")
-        key = os.environ.get("OPENAILIKED_API_KEY", "local")
-        if not base:
-            raise RuntimeError("修复翻译缺少 OPENAILIKED_BASE_URL")
-        prompt = (
-            instruction
-            + "\n输入是带稳定 id 的 JSON 数组。只返回 JSON 数组，每项必须包含原 id 和 translation；"
-              "不要省略、合并或改变 id。\n"
-            + json.dumps(entries, ensure_ascii=False)
-        )
-        body = json.dumps({"model": model, "messages": [{"role": "user", "content": prompt}], "stream": False}).encode()
-        request = urllib.request.Request(
-            base.rstrip("/") + "/chat/completions", data=body,
-            headers={"Content-Type": "application/json", "Authorization": f"Bearer {key}"},
-        )
-        started = time.monotonic()
-        self.metrics["requests"] += 1
-        try:
-            with urllib.request.urlopen(request, timeout=100) as response:
-                payload = json.loads(response.read())
-            content = payload["choices"][0]["message"]["content"].strip()
-            match = re.search(r"\[[\s\S]*\]", content)
-            decoded = json.loads(match.group(0) if match else content)
-            return {
-                str(item.get("id")): str(item.get("translation", "")).strip()
-                for item in decoded if isinstance(item, dict) and item.get("id") is not None
-            }
-        except Exception as exc:
-            self.metrics["errors"].append(type(exc).__name__)
-            return {}
-        finally:
-            self.metrics["ai_seconds"] += round(time.monotonic() - started, 3)
+def task_relative(task_root: Path, path: Path) -> str:
+    return str(path.resolve().relative_to(task_root.resolve()))
 
-    def translate(self, texts: list[str], instruction: str) -> list[str]:
-        normalized = [normalized_text(text) for text in texts]
-        resolved: dict[str, str] = {}
-        pending: list[str] = []
-        for text in dict.fromkeys(normalized):
-            if text in GLOSSARY:
-                resolved[text] = GLOSSARY[text]
-                self.metrics["glossary_hits"] += 1
-                continue
-            cache_key = self.cache_key(text, instruction)
-            if cache_key in self.cache:
-                resolved[text] = self.cache[cache_key]
-                self.metrics["cache_hits"] += 1
-            else:
-                pending.append(text)
-        self.metrics["unique_ai_items"] += len(pending)
 
-        batches, current, current_chars = [], [], 0
-        for text in pending:
-            if current and (len(current) >= self.batch_size or current_chars + len(text) > self.max_batch_chars):
-                batches.append(current); current, current_chars = [], 0
-            current.append(text); current_chars += len(text)
-        if current:
-            batches.append(current)
+def file_sha256(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as stream:
+        for chunk in iter(lambda: stream.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
 
-        for batch in batches:
-            entries = [{"id": f"t{index}", "text": text} for index, text in enumerate(batch)]
-            returned = self._request(entries, instruction)
-            missing = []
-            for entry in entries:
-                translation = returned.get(entry["id"], "")
-                if translation:
-                    text = entry["text"]
-                    resolved[text] = translation
-                    self.cache[self.cache_key(text, instruction)] = translation
-                else:
-                    missing.append(entry)
-            if missing and self.metrics["requests"] < self.max_calls:
-                retry = self._request(missing, instruction)
-                for entry in missing:
-                    translation = retry.get(entry["id"], "")
-                    if translation:
-                        text = entry["text"]
-                        resolved[text] = translation
-                        self.cache[self.cache_key(text, instruction)] = translation
-                    else:
-                        self.metrics["unresolved"].append(entry["text"])
-        self.save()
-        return [resolved.get(text, text) for text in normalized]
+
+def page_contract(page: fitz.Page) -> dict:
+    pixmap = page.get_pixmap(matrix=fitz.Matrix(96 / 72, 96 / 72), alpha=False)
+    text = page.get_text("text").encode("utf-8")
+    return {
+        "render_sha256": hashlib.sha256(pixmap.samples).hexdigest(),
+        "text_sha256": hashlib.sha256(text).hexdigest(),
+        "rect": [round(value, 4) for value in page.rect],
+        "rotation": page.rotation,
+    }
+
+
+def verify_non_target_pages(current: fitz.Document, candidate_path: Path,
+                            target_pages: set[int]) -> dict:
+    candidate = fitz.open(candidate_path)
+    if len(current) != len(candidate):
+        raise RuntimeError(f"候选页数改变：{len(current)} -> {len(candidate)}")
+    mismatches = []
+    checked = 0
+    for index in range(len(current)):
+        pdf_page = index + 1
+        if pdf_page in target_pages:
+            continue
+        checked += 1
+        if page_contract(current[index]) != page_contract(candidate[index]):
+            mismatches.append(pdf_page)
+    candidate.close()
+    if mismatches:
+        raise RuntimeError(f"候选改动了非目标页：{mismatches[:20]}")
+    return {"checked_pages": checked, "mismatched_pages": []}
 
 
 def font_path() -> Path:
@@ -165,6 +121,37 @@ def font_path() -> Path:
     if not found:
         raise RuntimeError("缺少可用中文字体")
     return found
+
+
+def repair_font_name(page: fitz.Page) -> str:
+    """Return a per-output-document font resource name for repair overlays.
+
+    Reusing the literal /repair-cjk name on a page that embeds an earlier
+    repaired page can make PyMuPDF bind new CID text to the old subset font
+    program. The text layer survives through ToUnicode, but rendered glyphs are
+    wrong. A fresh resource name per generated document/page keeps the old Form
+    XObject subset and the new overlay subset independent.
+    """
+    document = page.parent
+    state = getattr(document, "_repair_cjk_font_state", None)
+    if state is None:
+        state = {"token": uuid.uuid4().hex[:10], "names": {}}
+        setattr(document, "_repair_cjk_font_state", state)
+    token = state["token"]
+    names = state["names"]
+    page_number = page.number if page.number >= 0 else len(names)
+    cached = names.get(page_number)
+    if cached:
+        return cached
+    existing = {str(font[4]) for font in page.get_fonts(full=True) if len(font) > 4}
+    base = f"repair-cjk-{token}-p{page_number + 1}"
+    name = base
+    suffix = 1
+    while name in existing:
+        suffix += 1
+        name = f"{base}-{suffix}"
+    names[page_number] = name
+    return name
 
 
 def needs_translation(text: str) -> bool:
@@ -202,12 +189,12 @@ def display_to_page_rect(page: fitz.Page, rect: fitz.Rect) -> fitz.Rect:
 def fit_text(page: fitz.Page, rect: fitz.Rect, text: str, *, center: bool = False,
              min_size: float = 4.0, max_size: float = 11.0,
              text_rotation: int = 0) -> bool:
-    path = font_path()
-    name = "repair-cjk"
-    page.insert_font(fontname=name, fontfile=str(path))
     rect = fitz.Rect(rect)
     if rect.width < 4 or rect.height < 3:
         return False
+    path = font_path()
+    name = repair_font_name(page)
+    page.insert_font(fontname=name, fontfile=str(path))
     align = fitz.TEXT_ALIGN_CENTER if center else fitz.TEXT_ALIGN_LEFT
     for size in (max_size, 10, 9, 8, 7, 6, 5, min_size):
         if size < min_size or size > max_size:
@@ -426,8 +413,9 @@ def prefetch_cases(source: fitz.Document, current: fitz.Document, cases: list[di
 
 def run(task_root: Path, cases: list[dict], output_dir: Path) -> dict:
     output_dir.mkdir(parents=True, exist_ok=True)
-    source = fitz.open(task_root / "original.pdf")
-    current = fitz.open(task_root / "translated-zh.pdf")
+    refs = resolve_task_files(task_root)
+    source = fitz.open(refs["source"])
+    current = fitz.open(refs["current"])
     broker = TranslationBroker(task_root / "repair-translation-cache.json")
     prefetch_cases(source, current, cases, broker)
     source_subset = extract_subset(source, cases)
@@ -474,8 +462,9 @@ def run(task_root: Path, cases: list[dict], output_dir: Path) -> dict:
 def run_full(task_root: Path, cases: list[dict], output_dir: Path,
              baseline_path: Path | None = None, task_id: str | None = None) -> dict:
     output_dir.mkdir(parents=True, exist_ok=True)
-    source = fitz.open(task_root / "original.pdf")
-    current = fitz.open(task_root / "translated-zh.pdf")
+    refs = resolve_task_files(task_root)
+    source = fitz.open(refs["source"])
+    current = fitz.open(refs["current"])
     broker = TranslationBroker(task_root / "repair-translation-cache.json")
     ordered_cases = sorted(cases, key=lambda item: int(item["pdf_page"]))
     prefetch_cases(source, current, ordered_cases, broker)
@@ -502,8 +491,11 @@ def run_full(task_root: Path, cases: list[dict], output_dir: Path,
         details.append(detail)
     repaired_path = output_dir / "translated-zh.repaired.pdf"
     after.save(repaired_path, garbage=4, deflate=True)
+    after.close()
+    target_pages = set(case_map)
+    non_target_integrity = verify_non_target_pages(current, repaired_path, target_pages)
 
-    plan_path = task_root / "page-plan.json"
+    plan_path = refs["plan"]
     plan = json.loads(plan_path.read_text()) if plan_path.is_file() else {"version": 2, "pages": []}
     pages = {int(item["pdf_page"]): item for item in plan.get("pages", [])}
     for detail in details:
@@ -524,14 +516,22 @@ def run_full(task_root: Path, cases: list[dict], output_dir: Path,
     repaired_plan_path = output_dir / "page-plan.repaired.json"
     repaired_plan_path.write_text(json.dumps(plan, ensure_ascii=False, indent=2))
     qa_report = audit(
-        task_root / "original.pdf", repaired_path, repaired_plan_path,
+        refs["source"], repaired_path, repaired_plan_path,
         baseline_path=baseline_path, task_id=task_id,
+        task_json_path=refs["task_json"],
+        visual_source_path=refs["original"] if refs["original"] != refs["source"] else None,
     )
     qa_path = output_dir / "qa-repaired.json"
     qa_path.write_text(json.dumps(qa_report, ensure_ascii=False, indent=2))
     result = {
         "task_root": str(task_root), "task_id": task_id, "cases": ordered_cases,
         "repairs": details, "translation_metrics": broker.metrics,
+        "input_files": {
+            "source": {"path": task_relative(task_root, refs["source"]), "sha256": file_sha256(refs["source"])},
+            "current": {"path": task_relative(task_root, refs["current"]), "sha256": file_sha256(refs["current"])},
+            "plan": {"path": task_relative(task_root, refs["plan"]), "sha256": file_sha256(refs["plan"])},
+        },
+        "non_target_integrity": non_target_integrity,
         "qa": {"status": qa_report["status"], "summary": qa_report["summary"],
                "flagged_pages": qa_report["flagged_pages"], "baseline": qa_report["baseline"]},
         "repaired_file": repaired_path.name, "repaired_plan": repaired_plan_path.name,

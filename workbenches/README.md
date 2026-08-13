@@ -13,7 +13,7 @@ The classification rule is product shape, not implementation language:
 | Workbench | Primary interface | Public snapshot |
 | --- | --- | --- |
 | [Comma Review Studio](comma-review-studio/) | Markdown/manuscript review workspace | `comma-editor-kit` commit `73e39d7` |
-| [Scientific PDF Bilingual Reader](scientific-pdf-bilingual-reader/) | Long-PDF translation and bilingual reader | v0.1.1 |
+| [Scientific PDF Bilingual Reader](scientific-pdf-bilingual-reader/) | Long-PDF translation, bilingual reading and human-gated repair | main · 2026-08-13 Stage 0–3 |
 
 Runtime documents, comments, PDFs, task state, credentials, logs, caches and generated
 outputs must remain outside this public repository.

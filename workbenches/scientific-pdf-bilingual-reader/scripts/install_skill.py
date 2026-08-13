@@ -14,6 +14,7 @@ from pathlib import Path
 SKILL_NAME = "scientific-pdf-bilingual-reader"
 DEFAULT_SOURCE = Path(__file__).resolve().parents[1]
 IGNORED_NAMES = {".DS_Store", "__pycache__", ".git", ".pytest_cache"}
+PRIVATE_DISTRIBUTION_NAMES = {"fixture-manifest.json"}
 
 
 def discovery_roots() -> dict[str, Path]:
@@ -36,7 +37,9 @@ def backup_root() -> Path:
 def ignore_copy(_directory: str, names: list[str]) -> set[str]:
     return {
         name for name in names
-        if name in IGNORED_NAMES or name.endswith((".pyc", ".pyo"))
+        if name in IGNORED_NAMES
+        or name in PRIVATE_DISTRIBUTION_NAMES
+        or name.endswith((".pyc", ".pyo", ".pdf", ".png", ".jpg", ".jpeg", ".jsonl"))
     }
 
 
@@ -106,7 +109,7 @@ def install(source: Path, target_set: str, *, force: bool, dry_run: bool) -> lis
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="安装科研长 PDF 双语阅读器 Skill")
+    parser = argparse.ArgumentParser(description="安装长 PDF 双语阅读器 Skill")
     parser.add_argument("--targets", choices=("codex", "claude", "both"), default="both")
     parser.add_argument("--source", type=Path, default=DEFAULT_SOURCE)
     parser.add_argument("--force", action="store_true", help="备份并替换已安装版本")

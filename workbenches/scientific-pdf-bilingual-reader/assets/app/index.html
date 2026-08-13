@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>科研长 PDF 双语阅读器</title>
-  <link rel="stylesheet" href="/styles.css?v=20260810-4">
+  <title>长 PDF 双语阅读器</title>
+  <link rel="stylesheet" href="/styles.css?v=20260812-11">
 </head>
 <body>
   <div class="app-shell">
@@ -17,8 +17,8 @@
           </svg>
         </span>
         <span class="brand-copy">
-          <strong>科研长 PDF 双语阅读器</strong>
-          <small>Scientific PDF Bilingual Reader</small>
+          <strong>长 PDF 双语阅读器</strong>
+          <small>Long PDF Bilingual Reader</small>
         </span>
       </a>
 
@@ -30,7 +30,7 @@
 
       <div class="top-actions">
         <details class="health-menu">
-          <summary><span class="health-dot"></span>本机处理</summary>
+          <summary><span class="health-dot"></span>本机工作台</summary>
           <div class="status" id="health">正在检查本机环境…</div>
         </details>
         <button class="quiet-button" id="shutdown">退出</button>
@@ -50,7 +50,7 @@
                 <span class="eyebrow">NEW DOCUMENT</span>
                 <h2>放入英文 PDF</h2>
               </div>
-              <span class="privacy-badge">仅本机</span>
+              <span class="privacy-badge">文件本机保存</span>
             </div>
             <p class="intake-copy">文本型或扫描件，最大 500 MB。原文件不会被改写。</p>
             <label class="drop" id="dropZone">
@@ -92,7 +92,7 @@
 
         <div class="library-note">
           <span class="health-dot"></span>
-          <span>本机保存 · 原文不上传</span>
+          <span>文件本机保存 · 使用 Codex/Claude 时会发送必要文字或页面截图</span>
         </div>
       </aside>
 
@@ -184,9 +184,11 @@
                   <button class="icon-button review-close" id="closeReview" aria-label="收起质量复核">×</button>
                 </div>
                 <div class="review-page-picker">
-                  <label for="reviewPageSelect">问题页</label>
+                  <label for="reviewPageSelect" id="reviewPageLabel">需要处理</label>
                   <select id="reviewPageSelect"></select>
+                  <button class="review-filter-toggle" id="reviewTipsToggle" type="button" aria-pressed="false">技术提示</button>
                 </div>
+                <section class="document-review-summary" id="documentReviewSummary" aria-live="polite"></section>
                 <section class="review-detail">
                   <div id="reviewDetail" class="review-empty">选择一个问题页开始复核。系统只分析你选择的问题，不会自动修改整份 PDF。</div>
                   <div id="repairHistory"></div>
@@ -198,7 +200,36 @@
       </section>
     </main>
   </div>
-  <script type="module" src="/pdf-viewer.js?v=20260810-4"></script>
-  <script src="/app.js?v=20260810-4"></script>
+  <dialog class="decision-dialog" id="repairDecisionDialog" aria-labelledby="repairDecisionTitle">
+    <form class="decision-dialog-card" id="repairDecisionForm" method="dialog">
+      <span class="eyebrow">REPAIR FEEDBACK GATE</span>
+      <h2 id="repairDecisionTitle">补充下一轮修复要求</h2>
+      <p id="repairDecisionSummary">反馈只会进入新的 Claude 只读建议；不会自动生成候选。</p>
+      <label for="repairDecisionNote">June 补充要求（可留空）</label>
+      <textarea id="repairDecisionNote" maxlength="2000" placeholder="例如：只在原表头位置擦除并替换英文；不得改动数字、公式、网格或其他页面。"></textarea>
+      <p class="decision-dialog-error" id="repairDecisionError" role="alert" hidden></p>
+      <div class="decision-dialog-actions">
+        <button class="ghost" id="repairDecisionCancel" type="button">取消</button>
+        <button id="repairDecisionSubmit" type="submit">创建只读建议 attempt</button>
+      </div>
+    </form>
+  </dialog>
+  <dialog class="cycle-dialog" id="cycleDialog" aria-labelledby="cycleDialogTitle">
+    <form class="cycle-dialog-card" id="cycleDialogForm" method="dialog">
+      <header>
+        <div>
+          <span class="eyebrow">DOCUMENT REVIEW CYCLE</span>
+          <h2 id="cycleDialogTitle">本篇审校进度</h2>
+          <p id="cycleDialogSummary"></p>
+        </div>
+        <button class="icon-button" id="cycleDialogClose" type="button" aria-label="关闭">×</button>
+      </header>
+      <div class="cycle-dialog-body" id="cycleDialogBody"></div>
+      <p class="decision-dialog-error" id="cycleDialogError" role="alert" hidden></p>
+      <footer class="cycle-dialog-actions" id="cycleDialogActions"></footer>
+    </form>
+  </dialog>
+  <script type="module" src="/pdf-viewer.js?v=20260812-5"></script>
+  <script src="/app.js?v=20260812-12"></script>
 </body>
 </html>

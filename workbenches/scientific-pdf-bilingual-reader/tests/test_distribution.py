@@ -142,6 +142,21 @@ class DistributionTest(unittest.TestCase):
         self.assertIn("paddleocr==3.7.0", ocr_lock["packages"])
         self.assertEqual(ocr_lock["pipeline"]["language"], "en")
 
+    def test_user_facing_product_name_is_long_pdf_reader(self):
+        page = (SOURCE / "assets" / "app" / "index.html").read_text(encoding="utf-8")
+        skill = (SOURCE / "SKILL.md").read_text(encoding="utf-8")
+        workbench = (SOURCE / "scripts" / "workbench.py").read_text(encoding="utf-8")
+        setup = (SOURCE / "scripts" / "setup.py").read_text(encoding="utf-8")
+        install = (SOURCE / "scripts" / "install_skill.py").read_text(encoding="utf-8")
+        bootstrap = (SOURCE / "scripts" / "bootstrap.py").read_text(encoding="utf-8")
+        display_surfaces = "\n".join([page, skill, workbench, setup, install, bootstrap])
+        self.assertIn("长 PDF 双语阅读器", display_surfaces)
+        self.assertIn("Long PDF Bilingual Reader", page)
+        self.assertNotIn("科研长 PDF 双语阅读器", display_surfaces)
+        self.assertNotIn("Scientific PDF Bilingual Reader</small>", page)
+        self.assertIn("scientific-pdf-bilingual-reader", skill)
+        self.assertIn("Scientific PDF Bilingual Reader", workbench)
+
     def test_frontend_runtime_lock_matches_vendored_pdfjs(self):
         lock = json.loads((SOURCE / "references" / "frontend-runtime-lock.json").read_text())
         self.assertEqual(lock["package"]["name"], "pdfjs-dist")
@@ -156,6 +171,95 @@ class DistributionTest(unittest.TestCase):
             self.assertEqual(digest, lock["vendored"][key])
         for folder, expected in lock["vendored"]["support_asset_counts"].items():
             self.assertEqual(sum(path.is_file() for path in (vendor / folder).rglob("*")), expected)
+
+    def test_repair_feedback_uses_in_page_dialog(self):
+        app = (SOURCE / "assets" / "app" / "app.js").read_text(encoding="utf-8")
+        page = (SOURCE / "assets" / "app" / "index.html").read_text(encoding="utf-8")
+        self.assertNotIn("prompt(", app)
+        self.assertIn("repairDecisionDialog", app)
+        self.assertIn('id="repairDecisionDialog"', page)
+        self.assertIn('id="repairDecisionNote"', page)
+
+    def test_frontend_hides_technical_tips_from_default_action_queue(self):
+        app = (SOURCE / "assets" / "app" / "app.js").read_text(encoding="utf-8")
+        page = (SOURCE / "assets" / "app" / "index.html").read_text(encoding="utf-8")
+        self.assertIn("function isActionableIssue", app)
+        self.assertIn("reviewShowTips=false", app)
+        self.assertIn('class="technical-tips"', app)
+        self.assertIn('id="reviewTipsToggle"', page)
+        self.assertIn("target.issues.some(needsAction)", app)
+        self.assertIn("为什么标记？", app)
+        self.assertIn("机器只统计 PDF 的可选择文字层", app)
+        self.assertIn("你的补充意见（可选）", app)
+        self.assertIn("历史处理记录", app)
+        self.assertIn('class="repair-history"', app)
+        self.assertIn("旧提示已退出待办", app)
+        self.assertIn("旧 QA 参考", app)
+        self.assertIn("reviewData?.pages.some", app)
+        self.assertIn("当前页 / 待办", app)
+        self.assertIn("human-review", app)
+        self.assertIn("填写本页的人工发现", app)
+
+    def test_review_polling_preserves_active_feedback_input(self):
+        app = (SOURCE / "assets" / "app" / "app.js").read_text(encoding="utf-8")
+        self.assertIn("function reviewInteractionActive", app)
+        self.assertIn("reviewComposing", app)
+        self.assertIn("async function pollReview", app)
+        self.assertIn("pollReview().catch", app)
+        self.assertNotIn("if(reviewTask)loadReview().catch", app)
+
+    def test_review_polling_uses_block_hashes_for_static_dom(self):
+        app = (SOURCE / "assets" / "app" / "app.js").read_text(encoding="utf-8")
+        self.assertIn("reviewBlockHashes", app)
+        self.assertIn("function patchReviewBlock", app)
+        self.assertIn("data-review-block", app)
+        self.assertIn("function ensureReviewDetailSkeleton", app)
+        self.assertIn("preserveOpenDetails", app)
+        self.assertIn("setHtmlIfChanged", app)
+        self.assertNotIn("$('#reviewDetail').innerHTML=`<div class=\"detail-head\"", app)
+
+    def test_frontend_exposes_comment_decision_controls_without_duplicate_hints(self):
+        app = (SOURCE / "assets" / "app" / "app.js").read_text(encoding="utf-8")
+        self.assertIn("进修复", app)
+        self.assertIn("作废移除", app)
+        self.assertIn("撤回批准", app)
+        self.assertIn('data-cycle-comment-decision="not_adopted"', app)
+        self.assertNotIn("疑似重复", app)
+
+    def test_frontend_groups_same_type_machine_issues_display_only(self):
+        app = (SOURCE / "assets" / "app" / "app.js").read_text(encoding="utf-8")
+        self.assertIn("function issueGroups", app)
+        self.assertIn("data-group-issues", app)
+        self.assertIn("for(const issueId of issueIds)", app)
+        self.assertIn("structuralOcrBanner", app)
+        self.assertIn("target?.route!=='ocr'", app)
+
+    def test_frontend_rerun_uses_start_with_snapshot_flag(self):
+        app = (SOURCE / "assets" / "app" / "app.js").read_text(encoding="utf-8")
+        self.assertIn('data-rerun="${t.id}"', app)
+        self.assertIn("body.rerun=true", app)
+        self.assertIn("await startTask(b.dataset.rerun,{rerun:true})", app)
+
+    def test_scan_route_uses_dedicated_pipeline_and_shared_translation_broker(self):
+        workbench = (SOURCE / "scripts" / "workbench.py").read_text(encoding="utf-8")
+        repair = (SOURCE / "scripts" / "qa_repair_harness.py").read_text(encoding="utf-8")
+        broker = (SOURCE / "scripts" / "translation_broker.py").read_text(encoding="utf-8")
+        self.assertIn("build_scan_translation_pdf", workbench)
+        self.assertIn("merge_scan_pages", workbench)
+        self.assertIn("scan_pages and int(plan.get(\"routes\", {}).get(\"text\", 0)) == 0", workbench)
+        self.assertIn("scan route complete", workbench)
+        self.assertIn("from translation_broker import TranslationBroker", repair)
+        self.assertIn("class TranslationBroker", broker)
+        self.assertNotIn("class TranslationBroker", repair)
+
+    def test_comment_decision_success_is_visible_and_revisable(self):
+        app = (SOURCE / "assets" / "app" / "app.js").read_text(encoding="utf-8")
+        styles = (SOURCE / "assets" / "app" / "styles.css").read_text(encoding="utf-8")
+        self.assertIn("已同意修改，已加入修复池", app)
+        self.assertIn("当前 PDF 尚未改变", app)
+        self.assertIn("更改决定", app)
+        self.assertIn("commentDecisionPanel", app)
+        self.assertIn(".comment-decision-state.approved", styles)
 
 
 if __name__ == "__main__":
