@@ -1,49 +1,81 @@
 # xhs-explore
 
-小红书内容发现与分析 skill。
+> 搜索、读取和分析小红书公开内容的只读入口。
 
-## When To Use
+`xhs-explore` 用于发现候选笔记、读取正文与评论、查看用户主页，并把结果交给 Agent 做结构化分析。它本身不发布、不评论，也不改变点赞或收藏状态。
 
-- 搜索关键词相关笔记。
-- 获取首页推荐 Feed。
-- 查看某条笔记的完整内容和评论。
-- 查看用户主页信息。
+## 适用场景
 
-## Quick Start For AI
+- 按关键词和筛选条件搜索笔记；
+- 获取当前首页推荐 Feed；
+- 读取指定笔记的完整内容、图片信息和评论；
+- 查看作者公开主页；
+- 为竞品研究、选题研究或内容策略提供证据。
 
-示例提示词：
+## 快速开始
 
-```text
-使用 xhs-explore，搜索“小红书 AI 教育”图文笔记，按最多点赞排序，整理前 5 条。
-```
-
-```text
-使用 xhs-explore，读取这条笔记的详情和评论：feed_id=...，xsec_token=...
-```
-
-## Commands
+搜索图文笔记：
 
 ```bash
-python scripts/cli.py search-feeds --keyword "关键词" --sort-by "最多点赞" --note-type "图文"
-python scripts/cli.py list-feeds
-python scripts/cli.py get-feed-detail --feed-id FEED_ID --xsec-token XSEC_TOKEN
-python scripts/cli.py user-profile --user-id USER_ID --xsec-token XSEC_TOKEN
+python scripts/cli.py search-feeds \
+  --keyword "AI 教育" \
+  --sort-by "最多点赞" \
+  --note-type "图文"
 ```
 
-## Inputs
+读取首页 Feed：
 
-- 搜索关键词。
-- 可选筛选：排序、笔记类型、发布时间、搜索范围、地点。
-- 详情读取需要成对的 `feed_id` 和 `xsec_token`。
+```bash
+python scripts/cli.py list-feeds
+```
 
-## Output
+读取笔记详情与作者主页：
 
-- 结构化搜索结果。
-- 笔记标题、作者、互动数据、正文、图片、评论。
-- 用户主页基础信息。
+```bash
+python scripts/cli.py get-feed-detail \
+  --feed-id FEED_ID \
+  --xsec-token XSEC_TOKEN
 
-## Safety
+python scripts/cli.py user-profile \
+  --user-id USER_ID \
+  --xsec-token XSEC_TOKEN
+```
 
-- 批量读取详情时，每 3 篇左右插入等待，避免连续高频访问。
-- 只通过 `python scripts/cli.py` 操作，不混用其他小红书工具。
-- 不把登录态、cookies 或 token 写入公开文档。
+## 关键输入
+
+| 输入 | 说明 |
+| --- | --- |
+| `keyword` | 搜索关键词 |
+| 排序与筛选 | 可按排序、笔记类型、发布时间、搜索范围、地点筛选 |
+| `feed_id` | 笔记标识 |
+| `xsec_token` | 与该笔记结果配套的访问参数；需和 `feed_id` 成对使用 |
+| `user_id` | 作者主页标识 |
+
+## 推荐输出格式
+
+对多条笔记做分析时，建议先列证据表，再写推断：
+
+| 标题 | 作者 | 类型 | 点赞/收藏/评论 | 正文结构 | 来源标识 |
+| --- | --- | --- | --- | --- | --- |
+| … | … | … | … | … | `feed_id` |
+
+无法读取或缺失的数据应标为“未获取”，不能由 Agent 猜测补齐。
+
+## 交给 Agent 使用
+
+```text
+使用 xhs-explore 搜索“AI 教育”图文笔记，按最多点赞排序，读取前 5 条详情。用表格区分原始数据和你的分析；控制访问频率，不执行任何互动。
+```
+
+## 安全边界
+
+- 只通过 `python scripts/cli.py` 操作，不混用其他小红书工具；
+- 批量读取详情时，每处理约 3 篇插入等待，避免连续高频访问；
+- 不把 Cookie、登录态或 Token 内容写入公开文档；
+- 搜索结果会变化，报告中应记录采集时间和筛选条件；
+- 公开可见不等于可任意转载，使用第三方内容时仍需遵守平台规则与版权要求。
+
+## 相关文档
+
+- [复合内容运营](../xhs-content-ops/README.md)
+- [采集并写入飞书](../topic2feishu-xhs/README.md)

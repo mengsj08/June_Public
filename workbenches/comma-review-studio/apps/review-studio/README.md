@@ -1,140 +1,154 @@
-# Comma Review Studio
+# Comma Review Studio · 本地宿主说明
 
-Comma Review Studio is the complete local reference host for Comma Editor Kit. It owns the capabilities that intentionally stay outside editor-core: filesystem persistence, local Codex or Claude execution, review-session ledgers, multi-turn finding updates, revision-locked comment writeback, conflict recovery, document history, and portable exports.
+本目录是 Comma Editor Kit 的完整 reference host。编辑器核心只负责 Markdown 渲染、
+编辑与锚定评论；本地宿主负责文件系统、CLI provider、评审台账、版本恢复、导入导出和
+冲突处理。
 
-It also owns quote-scoped conversations. Selecting source text exposes `添加批注 / 快速解释 / 深入讨论`: quick explanations are transient; deep discussions are persisted as parent-linked message trees with comments, explicit forks, and message-level comment writeback.
+普通使用者请先阅读项目根目录的 [`../../README.md`](../../README.md)。本文面向需要
+调试、迁移或验证本地宿主的维护者。
 
-## Run
+## 启动
 
-```bash
-COMMA_REVIEW_PORT=8891 python3 server.py
-```
-
-Open `http://127.0.0.1:8891/?doc=paper.md`.
-
-For a private document directory, set an explicit data root:
+先在项目根目录安装并构建编辑器：
 
 ```bash
-COMMA_REVIEW_DATA_ROOT=/absolute/private/directory COMMA_REVIEW_PORT=8891 python3 server.py
+npm ci
+npm run build
 ```
 
-The server binds only to `127.0.0.1`. It accepts Markdown files only and confines document access to the selected data root. Private documents, comment sidecars, review sessions, quote conversation ledgers, event ledgers, logs, screenshots, and raw model traces must not be committed.
+然后启动本地宿主：
 
-`--host` is intentionally restricted before bind to `127.0.0.1` or
-`localhost`. v0 does not support `::1`, wildcard binds, LAN addresses, or a
-remote Review Studio mode.
+```bash
+COMMA_REVIEW_PORT=8891 python3 apps/review-studio/server.py
+```
 
-## Version and export center
+打开：
 
-Every successful immediate save records a content-addressed snapshot under
-`<data-root>/.comma-review/versions/`. A named checkpoint points at the same
-immutable blob. Restoring a checkpoint writes a new timeline entry instead of
-deleting later history. If a save loses its optimistic-revision race, the
-attempted body is retained under `.comma-review/drafts/`; the page reloads the
-newest disk revision and offers diff, revision-checked recovery, or dismissal.
+```text
+http://127.0.0.1:8891/?doc=paper.md
+```
 
-The export center provides exact Markdown, Markdown with appended review
-comments, and a Review Package ZIP containing the selected manuscript,
-document-relative image assets, native comments, matching review/conversation
-ledgers, the per-document hash-only `CommentEvent` ledger, and version
-snapshots. The global event ledger and raw AI traces are
-excluded. DOCX and PDF use a detected local LibreOffice executable; set
-`COMMA_REVIEW_SOFFICE_BIN=/absolute/path/to/soffice` when auto-detection is not
-appropriate.
+使用仓库外私有目录：
 
-## Local CLI capability
+```bash
+COMMA_REVIEW_DATA_ROOT=/absolute/private/directory \
+COMMA_REVIEW_PORT=8891 \
+python3 apps/review-studio/server.py
+```
 
-`GET /api/runtime/capabilities` reports Codex and Claude installation, version,
-and login readiness. The header badge uses the same resolver as quick explain,
-quote-scoped discussions, and structured review, so a missing provider is
-disabled before invocation instead of returning a successful stub.
+`--host` 只接受 `127.0.0.1` 或 `localhost`。v0 不支持 `::1`、wildcard、LAN 地址或远程
+Review Studio。
 
-The resolver augments a minimal launchd `PATH` with conventional macOS CLI
-locations and passes that path to child processes (important for the Node-based
-Codex launcher). Explicit installations can be pinned without changing global
-shell state:
+## 宿主负责什么
+
+| 模块 | 责任 |
+| --- | --- |
+| 文档访问 | 把所有文件访问限制在选定 data root；Markdown 是主稿事实源 |
+| Provider 能力 | 探测 Codex、Claude 和可用 Gateway 的版本与只读登录状态 |
+| 结构化评审 | 异步运行、取消进程树、保存 run 状态与失败原因 |
+| Comment 生命周期 | revision-locked 写回、锚点核验、旧 sidecar 兼容与迁移 |
+| Quote 对话 | 选区范围内快速解释、深入讨论、父子消息、显式分叉与评论写回 |
+| 版本中心 | 内容寻址快照、命名 checkpoint、恢复时间线与冲突草稿 |
+| 导入导出 | DOCX → Markdown；Markdown、带评论 Markdown、Review Package ZIP、可选 DOCX/PDF |
+| 数据审计 | 只输出计数、警告码与脱敏路径，不打印稿件或评论正文 |
+
+## Provider 能力探测
+
+`GET /api/runtime/capabilities` 返回 Codex / Claude / Gateway 的安装、版本、登录就绪度和
+支持能力。页面头部 badge、快速解释、引用讨论和结构化评审使用同一个 resolver，缺失
+provider 会在调用前禁用，而不是返回假成功。
+
+显式指定 CLI：
 
 ```bash
 COMMA_REVIEW_CODEX_BIN=/absolute/path/to/codex \
 COMMA_REVIEW_CLAUDE_BIN=/absolute/path/to/claude \
-python3 server.py
+python3 apps/review-studio/server.py
 ```
 
-Capability detection runs only `--version` and read-only login-status commands;
-their authentication output is discarded and page load never starts a model
-task.
+能力探测只运行 `--version` 和只读登录状态命令；认证输出会被丢弃，页面加载不会自动
+触发模型。
 
-Structured review runs use the local asynchronous executor. Run state includes
-`queued`, `running`, `cancelling`, `cancelled`, `completed`, and `failed`.
-Cancelling a controlled provider run terminates its process tree and records a
-receipt. The queue and active thread registry are in memory: host restart does
-not resume a model call. On startup, persisted active runs are marked failed
-with a host-restart recovery reason.
+运行状态包括 `queued`、`running`、`cancelling`、`cancelled`、`completed` 与 `failed`。
+队列和活跃进程注册表位于内存：宿主重启不会恢复正在进行的模型调用；启动时会把持久化
+的活跃 run 标成带恢复原因的 failed。
 
-## Comment lifecycle migration
+## 版本与恢复
 
-Legacy comment sidecars remain readable without a write. Inspect a copied data
-root with the Slice A migration in dry-run mode:
+每次成功保存都会在 `<data-root>/.comma-review/versions/` 生成内容寻址快照。命名版本只
+指向同一不可变内容；恢复某个版本会新增时间线事件，不删除后来历史。
+
+如果保存时乐观 revision 检查失败：
+
+1. 尝试保存的正文进入 `.comma-review/drafts/`；
+2. 页面重新载入磁盘最新 revision；
+3. 用户可以比较 diff、执行 revision-checked 恢复或放弃草稿。
+
+Review Package ZIP 可包含稿件、文档相对图片、评论、匹配的评审/对话账本、每文档
+hash-only `CommentEvent` 账本与版本快照；全局事件账本和原始 AI trace 被排除。
+
+DOCX / PDF 导出依赖本机 LibreOffice。自动探测不合适时：
+
+```bash
+COMMA_REVIEW_SOFFICE_BIN=/absolute/path/to/soffice python3 server.py
+```
+
+## Comment 迁移
+
+旧 comment sidecar 默认只读兼容，不会因为打开文档而被重写。先对复制的数据目录运行
+dry-run：
 
 ```bash
 python3 migrate_slice_a.py --data-root /absolute/path/to/copied-data
 ```
 
-`--apply` is reserved for an explicitly authorized migration. It verifies all
-records first and creates byte-identical sidecar/session backups under
-`.comma-review/migration-backups/` before the first normalized write. The
-command reports counts and field names only; it does not print comment or
-manuscript content.
+只有明确授权后才使用 `--apply`。应用前会验证全部记录，并在第一次规范化写入前，把
+sidecar / session 原字节备份到 `.comma-review/migration-backups/`。命令只报告计数和
+字段名，不打印正文。
 
-## Store audit
-
-Inspect a data root without writing, reconciling, migrating, or printing private
-body/comment/evidence/trace text:
+## Store Audit
 
 ```bash
 python3 review_store_audit.py --data-root /absolute/path/to/data
 python3 review_store_audit.py --data-root /absolute/path/to/data --json
 ```
 
-Exit codes are stable: `0` clean, `1` warnings such as old schemas, orphaned
-sidecars, missing documents, missing version/evidence pairings, or unfinished
-operation journal entries, and `2` errors for data that cannot be safely read
-or parsed. The JSON output carries the same counts, redacted paths, warning
-codes, and error codes as the human output.
+退出码：
 
-## Verify
+| 退出码 | 含义 |
+| --- | --- |
+| `0` | 数据结构干净 |
+| `1` | 可读但有警告：旧 schema、孤立 sidecar、缺文档、版本/证据不配对、未完成 journal |
+| `2` | 数据无法安全读取或解析 |
 
-From the repository root:
+JSON 与文本输出只包含计数、脱敏路径、warning code 和 error code。
+
+## 验证
+
+从项目根目录运行：
 
 ```bash
 npm run test:review
 CI=true python3 -m pytest apps/review-studio/ -q
 ```
 
-Use any Python 3.10+ interpreter with the test dependencies installed.
+`pytest` 收集 API、orchestrator 与生命周期合同测试，但不执行 `test_headless.py`；后者是
+带 `main()` 的 Playwright 验收脚本。
 
-`pytest apps/review-studio/` collects the API, orchestrator, and Slice A
-contract tests. It does not run `test_headless.py`: that file is an
-executable Playwright acceptance script with a `main()` entrypoint, not a pytest
-test function.
-
-The Review Studio browser regressions require a running server and the kanban
-Playwright environment. Start the server from the repository root in one
-terminal:
-
-```bash
-COMMA_REVIEW_PORT=8891 python3 apps/review-studio/server.py
-```
-
-The service remains restricted to the loopback interface.
-
-Then run both executable browser acceptance scripts from a second terminal:
+浏览器验收需要先启动 8891 服务，再运行：
 
 ```bash
 CI=true COMMA_REVIEW_PORT=8891 python3 apps/review-studio/test_headless.py
 CI=true COMMA_REVIEW_PORT=8891 python3 apps/review-studio/test_blocks.py
 ```
 
-These browser checks require Playwright and a compatible Chromium installation.
+需要 Playwright 和兼容 Chromium。
 
-See `REVIEW_WORKFLOW.md` for the API and writeback contract. `SPIKE_REPORT.md` is retained only as migration provenance.
+## 隐私边界
+
+不得提交 data root、真实稿件、comment sidecar、review session、quote conversation、
+事件账本、日志、截图、模型原始 trace、migration backup 或恢复草稿。诊断与审计输出也
+不得打印私有正文。
+
+API 和写回合同见 [`REVIEW_WORKFLOW.md`](REVIEW_WORKFLOW.md)。`SPIKE_REPORT.md` 只作为
+迁移来源保留，不是当前产品说明。
