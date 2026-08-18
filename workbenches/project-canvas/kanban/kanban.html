@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Project Canvas</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+<link rel="stylesheet" href="/static/kanban/design-tokens.css">
+<link rel="stylesheet" href="/static/kanban/kanban.css?v=20260810-compact-toolbar-v1">
+<link rel="stylesheet" href="/static/kanban/console.css?v=20260810-project-index-retired-v1">
+<link rel="stylesheet" href="/static/kanban/real-projects.css?v=20260810-project-entry-v7">
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/zh.js"></script>
+</head>
+<body>
+<!-- Login Overlay -->
+<div class="login-overlay" id="login-overlay">
+  <div class="login-card" style="position:relative">
+    <div class="login-step on" id="login-step-quiz">
+      <div class="quiz-toast" id="quiz-toast"></div>
+      <div class="quiz-title-hero">验证你的身份 <span class="quiz-countdown-hero" id="quiz-countdown-hero"></span></div>
+      <p class="login-subtitle" id="quiz-question" style="text-align:left;font-size:14px;margin-bottom:4px"></p>
+      <div class="quiz-options" id="quiz-options"></div>
+      <input type="text" class="quiz-name" id="quiz-name" placeholder="你是？" autocomplete="off">
+      <div class="login-error" id="quiz-error"></div>
+      <div class="quiz-submit-row">
+        <button class="login-btn" id="quiz-submit">提交</button>
+        <span class="quiz-countdown" id="quiz-countdown"></span>
+      </div>
+    </div>
+    <div class="login-step" id="login-step-user">
+      <div class="login-back" id="login-user-close">关闭</div>
+      <h1>选择身份</h1>
+      <p class="login-subtitle">请选择你的名字</p>
+      <div class="login-members" id="login-members"></div>
+    </div>
+  </div>
+</div>
+
+<div class="hdr">
+  <div class="hdr-brand">
+    <span class="hdr-brand-mark">K</span>
+    <div class="hdr-brand-copy">
+      <strong>Project Canvas</strong>
+      <small id="hdr-audience-label">项目与 AI 调度</small>
+    </div>
+  </div>
+  <span class="hdr-user" id="hdr-username">未设置</span>
+  <div class="hdr-summary" id="hdr-summary"></div>
+  <div class="hdr-r">
+    <div id="hdr-local-status" class="hdr-local-status" aria-label="本机状态">
+      <div class="hdr-network-wrap" id="hdr-network-wrap">
+        <button type="button" class="hdr-status-chip hdr-network-trigger" id="hdr-network-trigger" aria-label="打开本机状态" aria-expanded="false" aria-controls="hdr-network-panel">
+          <span class="hdr-status-dot" aria-hidden="true"></span>
+          <span>本机状态</span>
+        </button>
+        <div class="hdr-network-panel" id="hdr-network-panel" hidden></div>
+      </div>
+    </div>
+    <label class="filter-switch" id="sw-mine" hidden><input type="checkbox" id="chk-mine"><span class="filter-track"></span>与我相关</label>
+    <label class="filter-switch" id="sw-done" hidden><input type="checkbox" id="chk-done"><span class="filter-track"></span>隐藏已完成</label>
+    <button type="button" class="hdr-new-project-btn" id="btn-new-project" title="建立真实项目">
+      <i data-lucide="plus"></i><span>新建项目</span>
+    </button>
+    <button class="btn btn-icon" id="btn-search" title="搜索任务 (⌘K)">
+      <i data-lucide="search"></i>
+    </button>
+    <button class="btn btn-icon" id="btn-queue" title="AI 队列">
+      <i data-lucide="list-todo"></i>
+      <span class="queue-badge" id="queue-badge"></span>
+    </button>
+    <button class="hdr-overflow-btn" id="btn-overflow" title="菜单">&#9776;</button>
+    <div class="hdr-overflow-menu" id="hdr-overflow-menu">
+      <div class="hdr-overflow-item" id="overflow-settings">&#9881; 个人设置</div>
+      <div class="hdr-overflow-item" id="overflow-switch-user">&#128100; 切换用户</div>
+      <div class="hdr-overflow-sep"></div>
+      <div class="hdr-overflow-item" id="overflow-logout" style="color:var(--red)">&#10145; 退出登录</div>
+      <div class="hdr-overflow-sep"></div>
+      <label class="hdr-overflow-item" id="overflow-filter-mine" hidden><input type="checkbox" id="overflow-chk-mine" style="accent-color:var(--accent)">与我相关</label>
+      <label class="hdr-overflow-item" id="overflow-filter-done"><input type="checkbox" id="overflow-chk-done" style="accent-color:var(--accent)">隐藏已完成</label>
+      <div class="hdr-overflow-sep"></div>
+      <label class="hdr-overflow-item" id="overflow-sw-sync-git"><input type="checkbox" id="overflow-chk-sync-git" style="accent-color:var(--accent)">Git 自动同步</label>
+      <div class="hdr-overflow-sep"></div>
+      <div class="hdr-overflow-item" id="overflow-clock" style="color:var(--muted);font-family:var(--mono);font-size:12px"></div>
+    </div>
+  </div>
+</div>
+<div class="stats" id="stats"></div>
+<div class="tabs" id="tabs"></div>
+<div id="views"></div>
+
+<!-- 新建任务 Modal -->
+<div class="modal-bg" id="modal-new">
+  <div class="modal">
+    <h2>新建任务</h2>
+    <label>所属项目</label>
+    <div class="proj-cb" id="proj-cb">
+      <input id="new-project" autocomplete="off" placeholder="输入或选择项目名称">
+      <div class="proj-dd" id="proj-dropdown"></div>
+    </div>
+    <div id="new-project-err" class="field-err"></div>
+    <label>正文内容</label>
+    <textarea id="new-body" rows="5" style="width:100%;padding:8px 12px;border-radius:6px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:14px;font-family:var(--sans);resize:vertical" placeholder="输入任务描述、需求说明等..."></textarea>
+    <div class="ai-title-row">
+      <input type="checkbox" id="ai-title-cb" checked>
+      <label for="ai-title-cb">AI 生成标题</label>
+    </div>
+    <div id="title-input-wrap">
+      <label>任务标题</label>
+      <input id="new-title" placeholder="例如：用户认证模块设计">
+    </div>
+    <label>负责人</label>
+    <select id="new-assignee"></select>
+    <label>优先级</label>
+    <select id="new-priority">
+      <option value="high">高</option><option value="medium" selected>中</option><option value="low">低</option>
+    </select>
+    <label>截止日期</label>
+    <input id="new-due-date" placeholder="选择截止日期" readonly>
+    <div class="btns">
+      <button class="btn" id="btn-cancel">取消</button>
+      <button class="btn btn-primary" id="btn-create">创建</button>
+      <div class="split-dd" id="btn-ai-split">
+        <button class="btn btn-primary" id="btn-ai-create">AI 执行</button>
+        <button class="btn btn-primary btn-arrow" id="btn-ai-arrow"></button>
+        <div class="dd" id="ai-tool-dd">
+          <div class="dd-item" data-tool="claude">Claude</div>
+          <div class="dd-item" data-tool="codex">Codex</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 个人设置 Modal -->
+<div class="modal-bg" id="modal-settings">
+  <div class="modal">
+    <h2>个人设置</h2>
+    <label>你的名字</label>
+    <select id="settings-user"></select>
+    <label>Claude 命令 <span style="color:var(--dim);font-weight:400">(留空使用默认)</span></label>
+    <input id="settings-claude" placeholder="例如: claude --print --dangerously-skip-permissions">
+    <label>Codex 命令 <span style="color:var(--dim);font-weight:400">(留空使用默认)</span></label>
+    <input id="settings-codex" placeholder="例如: codex --yolo exec">
+    <div class="btns">
+      <button class="btn" id="btn-settings-cancel">取消</button>
+      <button class="btn btn-primary" id="btn-settings-save">保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+<!-- Task Toast Stack -->
+<div class="task-toast-stack" id="task-toast-stack"></div>
+
+<!-- Queue Sidebar -->
+<div class="queue-overlay" id="queue-overlay"></div>
+<div class="queue-sidebar" id="queue-sidebar">
+  <div class="queue-sidebar-header">
+    <span class="queue-sidebar-title">AI 队列</span>
+    <button class="queue-sidebar-close" id="queue-close-btn">&times;</button>
+  </div>
+  <div class="queue-tabs">
+    <div class="queue-tab on" data-tab="processed">已处理<span class="queue-tab-badge" id="processed-badge"></span></div>
+    <div class="queue-tab" data-tab="running">处理中<span class="queue-tab-count" id="running-count"></span></div>
+    <div class="queue-tab" data-tab="queued">排队中<span class="queue-tab-count" id="queued-count"></span></div>
+  </div>
+  <div class="queue-tab-content on" id="queue-tab-processed"></div>
+  <div class="queue-tab-content" id="queue-tab-running"></div>
+  <div class="queue-tab-content" id="queue-tab-queued"></div>
+</div>
+
+<!-- Task Detail Overlay -->
+<div id="detail-overlay" role="dialog" aria-label="任务详情">
+  <div class="detail-header">
+    <span class="detail-back" id="detail-back-btn" title="返回">&larr;</span>
+    <span id="detail-title"></span>
+    <button class="btn" id="detail-edit-btn" title="编辑整篇 Markdown 源码">源码</button>
+    <button id="detail-claude-btn" class="ai-btn ai-claude-btn detail-ai-legacy" aria-hidden="true" tabindex="-1">Claude</button>
+    <button id="detail-codex-btn" class="ai-btn ai-codex-btn detail-ai-legacy" aria-hidden="true" tabindex="-1">Codex</button>
+    <button id="detail-copy-btn">复制MD</button>
+    <button class="btn btn-icon" id="detail-queue-btn" title="AI 队列">
+      <i data-lucide="list-todo"></i>
+      <span class="queue-badge" id="detail-queue-badge"></span>
+    </button>
+  </div>
+  <div id="detail-status-bar"></div>
+  <div id="detail-loading"><span class="detail-spinner"></span> 加载中...</div>
+  <div id="detail-error"></div>
+  <div class="detail-body" id="detail-body-area" style="display:none">
+    <div class="detail-center">
+      <div id="detail-view-mode">
+        <div id="detail-md-content"></div>
+      </div>
+      <div id="detail-edit-mode" style="display:none">
+        <textarea id="detail-editor"></textarea>
+        <div class="editor-toolbar">
+          <button class="btn btn-primary" id="editor-save-btn">保存 (Ctrl+S)</button>
+          <button class="btn" id="editor-cancel-btn">取消</button>
+          <span id="editor-status" class="editor-status"></span>
+        </div>
+      </div>
+      <div id="ai-activity" style="display:none">
+        <div class="ai-activity-title">AI Activity</div>
+        <div id="ai-activity-list"></div>
+      </div>
+    </div>
+    <div id="detail-sidebar">
+      <button id="detail-sidebar-toggle" class="detail-sidebar-toggle" type="button" aria-expanded="true">
+        <span>详情侧栏</span><span class="toggle-arrow">&#9662;</span>
+      </button>
+      <div class="detail-sidebar-header">
+        <div class="detail-sidebar-tabs" role="tablist" aria-label="任务详情侧栏">
+          <button id="detail-sidebar-info-tab" class="detail-sidebar-tab is-active" type="button" role="tab" aria-selected="true" aria-controls="detail-sidebar-info">信息</button>
+          <button id="detail-sidebar-comments-tab" class="detail-sidebar-tab" type="button" role="tab" aria-selected="false" aria-controls="detail-sidebar-comments">批注 <span id="detail-sidebar-comments-badge" class="detail-sidebar-badge" hidden></span></button>
+        </div>
+        <button id="detail-sidebar-fold-btn" class="detail-sidebar-fold" type="button" aria-label="折叠详情侧栏" title="折叠详情侧栏">›</button>
+      </div>
+      <div id="detail-sidebar-info" class="detail-sidebar-panel is-active" role="tabpanel" aria-labelledby="detail-sidebar-info-tab">
+        <div id="detail-props"></div>
+        <a id="detail-file-path" href="javascript:void(0)"></a>
+      </div>
+      <div id="detail-sidebar-comments" class="detail-sidebar-panel" role="tabpanel" aria-labelledby="detail-sidebar-comments-tab" hidden></div>
+    </div>
+  </div>
+</div>
+
+<div id="lightbox-overlay" aria-hidden="true">
+  <img id="lightbox-image" alt="">
+  <div id="lightbox-caption"></div>
+</div>
+
+<div class="file-mention-dd" id="file-mention-dd">
+  <div class="fm-tabs" id="fm-tabs"></div>
+  <div class="fm-results" id="fm-results"></div>
+  <div class="fm-hint" aria-hidden="true">
+    <span><kbd class="fm-key">↑↓</kbd> 选择</span>
+    <span><kbd class="fm-key">←→</kbd> 分类</span>
+    <span><kbd class="fm-key">Enter</kbd> 确认</span>
+    <span><kbd class="fm-key">Esc</kbd> 关闭</span>
+  </div>
+</div>
+<script>
+window.__KANBAN_BOOTSTRAP__ = __KANBAN_BOOTSTRAP_JSON__;
+window.__KANBAN_HAS_API__ = __KANBAN_HAS_API_VALUE__;
+</script>
+<script type="module" src="/static/kanban/main.js?v=20260818-kan-1757-v1"></script>
+</body>
+</html>

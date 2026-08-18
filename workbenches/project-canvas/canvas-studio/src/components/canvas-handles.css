@@ -1,0 +1,37 @@
+/* source: upstream canvas project frontend/src/components/canvas-handles.css @ c7116ce */
+.react-flow__handle {
+  width: 18px !important;
+  height: 18px !important;
+  border-radius: 50% !important;
+  border: 5px solid #ffffff !important;
+  background: #1f1f1f !important;
+  transition: all 0.16s ease !important;
+  cursor: crosshair !important;
+}
+
+.react-flow__handle:hover {
+  width: 20px !important;
+  height: 20px !important;
+  background: #000000 !important;
+  box-shadow: 0 0 0 5px rgba(0, 0, 0, 0.10) !important;
+}
+
+.react-flow__handle-connecting,
+.react-flow__handle-valid {
+  background: #111111 !important;
+  border-color: #ffffff !important;
+}
+
+.react-flow__handle-invalid {
+  background: #7a7a7a !important;
+  border-color: #ffffff !important;
+}
+
+.react-flow__edge:hover {
+  stroke-width: 2.5 !important;
+  opacity: 0.9;
+}
+
+.react-flow__node.dragging {
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.16);
+}

@@ -1,0 +1,4418 @@
+@import url('design-tokens.css');
+#vw-console.console-shell,
+#vw-governance.console-shell,
+#vw-sih-sources.console-shell {
+  --console-bg:var(--color-canvas);
+  --console-surface:var(--color-surface);
+  --console-surface-2:var(--color-surface-muted);
+  --console-line:var(--color-line);
+  --console-line-soft:var(--color-line-soft);
+  --console-ink:var(--color-text);
+  --console-dim:var(--color-text-muted);
+  --console-faint:var(--color-text-subtle);
+  --console-warn:var(--color-warning);
+  --console-warn-bg:var(--color-warning-soft);
+  --console-info:var(--color-primary);
+  --console-info-bg:var(--color-primary-soft);
+  --console-ok:var(--color-success);
+  --console-ok-bg:var(--color-success-soft);
+  --console-danger:var(--color-danger);
+  --console-danger-bg:var(--color-danger-soft);
+  --console-radius:var(--radius-3);
+  min-height:calc(100vh - 124px);
+  padding:var(--space-6) var(--space-8) var(--space-12);
+  background:
+    linear-gradient(180deg,color-mix(in srgb,var(--color-surface) 74%,transparent) 0%,transparent 210px),
+    var(--console-bg);
+  color:var(--console-ink);
+}
+
+#vw-sih-sources.console-shell {
+  background:
+    linear-gradient(180deg,color-mix(in srgb,var(--color-surface) 72%,transparent) 0%,transparent 240px),
+    var(--console-bg);
+}
+
+.console-shell .console-app {
+  width:min(1180px,100%);
+  margin:0 auto;
+}
+
+.console-shell .console-top {
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap:var(--space-5);
+  margin-bottom:var(--space-5);
+}
+
+.console-shell .console-brand {
+  display:flex;
+  flex-direction:column;
+  gap:var(--space-1);
+  min-width:0;
+}
+
+.console-shell .console-brand h2 {
+  margin:0;
+  font-size:var(--text-3xl);
+  font-weight:800;
+  line-height:var(--leading-tight);
+  color:var(--console-ink);
+  letter-spacing:0;
+}
+
+.console-shell .console-me {
+  color:var(--console-dim);
+  font-size:var(--text-sm);
+  font-family:var(--mono);
+  white-space:nowrap;
+}
+
+.console-shell .console-actions {
+  display:flex;
+  align-items:center;
+  gap:6px;
+  flex-shrink:0;
+}
+
+.console-shell .console-action-primary {
+  min-height:34px;
+  padding:0 14px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  background:var(--color-ink);
+  border-color:var(--color-ink);
+  color:var(--color-on-primary);
+  box-shadow:var(--shadow-2);
+}
+
+.console-shell .sih-grid {
+  display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(280px,340px);
+  gap:var(--space-5);
+  align-items:start;
+}
+
+.console-shell .sih-main,
+.console-shell .sih-rail {
+  min-width:0;
+}
+
+.console-shell .sih-rail {
+  position:sticky;
+  top:112px;
+}
+
+.console-shell .sih-metrics {
+  display:grid;
+  grid-template-columns:repeat(5,minmax(0,1fr));
+  gap:var(--space-3);
+  margin-bottom:var(--space-5);
+}
+
+.console-shell .sih-metric,
+.console-shell .sih-panel {
+  background:var(--console-surface);
+  border:1px solid var(--console-line);
+  border-radius:var(--console-radius);
+  box-shadow:var(--shadow-2);
+}
+
+.console-shell .sih-metric {
+  padding:14px 14px 12px;
+  min-width:0;
+  border-top:3px solid var(--console-line);
+}
+
+.console-shell .sih-metric.tone-good { border-top-color:var(--console-ok); }
+.console-shell .sih-metric.tone-warn { border-top-color:var(--console-warn); }
+.console-shell .sih-metric.tone-bad { border-top-color:var(--console-danger); }
+.console-shell .sih-metric.tone-muted { border-top-color:var(--console-faint); }
+
+.console-shell .sih-metric-value {
+  font-size:var(--text-2xl);
+  font-weight:900;
+  line-height:1;
+  font-family:var(--mono);
+  color:var(--console-ink);
+}
+
+.console-shell .sih-metric-label {
+  margin-top:7px;
+  font-size:var(--text-sm);
+  font-weight:850;
+  color:var(--console-ink);
+}
+
+.console-shell .sih-metric-sub {
+  margin-top:3px;
+  font-size:var(--text-xs);
+  color:var(--console-faint);
+  line-height:1.3;
+}
+
+.console-shell .sih-panel {
+  padding:14px;
+  margin-bottom:var(--space-4);
+}
+
+.console-shell .sih-panel h3,
+.console-shell .sih-group-head h3 {
+  margin:0;
+  font-size:var(--text-md);
+  line-height:1.25;
+  font-weight:850;
+  color:var(--console-ink);
+}
+
+.console-shell .sih-group-head {
+  display:flex;
+  justify-content:space-between;
+  gap:var(--space-3);
+  margin-bottom:var(--space-3);
+}
+
+.console-shell .sih-group-head span {
+  display:block;
+  margin-top:3px;
+  font-size:var(--text-xs);
+  color:var(--console-faint);
+  font-family:var(--mono);
+}
+
+.console-shell .sih-action-btn {
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  min-height:34px;
+}
+
+.console-shell .sih-action-btn svg {
+  width:15px;
+  height:15px;
+}
+
+.console-shell .sih-action-btn.is-running {
+  opacity:.72;
+  cursor:progress;
+}
+
+.console-shell .sih-action-btn.is-primary {
+  border-color:var(--color-primary);
+  background:var(--color-primary);
+  color:var(--color-surface);
+}
+
+.console-shell .sih-action-btn.is-primary:hover {
+  filter:brightness(.96);
+}
+
+.console-shell .sih-scenario-intro {
+  margin:-8px 0 var(--space-5);
+  max-width:760px;
+  color:var(--console-dim);
+  font-size:var(--text-sm);
+  line-height:var(--leading-normal);
+}
+
+.console-shell .sih-scenario-intro p {
+  margin:0;
+}
+
+.console-shell .sih-scenario-layout {
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 230px;
+  gap:var(--space-6);
+  align-items:start;
+}
+
+.console-shell .sih-scenario-main,
+.console-shell .sih-scenario-rail {
+  min-width:0;
+}
+
+.console-shell .sih-scenario-rail {
+  position:sticky;
+  top:112px;
+  border-left:1px solid var(--console-line);
+  padding-left:var(--space-4);
+}
+
+.console-shell .sih-scenario-grid {
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:var(--space-3);
+}
+
+.console-shell .sih-scenario-card {
+  min-height:176px;
+  display:flex;
+  flex-direction:column;
+  gap:var(--space-3);
+  padding:15px;
+  background:var(--console-surface);
+  border:1px solid var(--console-line);
+  border-radius:var(--radius-3);
+}
+
+.console-shell .sih-scenario-card:hover {
+  border-color:var(--color-line-strong);
+  background:var(--color-surface-raised);
+}
+
+.console-shell .sih-scenario-card.is-active {
+  border-color:var(--color-primary);
+  background:var(--color-surface-raised);
+  box-shadow:inset 0 0 0 1px color-mix(in srgb, var(--color-primary) 22%, transparent);
+}
+
+.console-shell .sih-scenario-card:focus-visible {
+  outline:2px solid color-mix(in srgb, var(--color-primary) 42%, transparent);
+  outline-offset:2px;
+}
+
+.console-shell .sih-scenario-top {
+  display:flex;
+  justify-content:space-between;
+  gap:var(--space-3);
+  align-items:flex-start;
+}
+
+.console-shell .sih-scenario-top h3 {
+  margin:0;
+  color:var(--console-ink);
+  font-size:var(--text-lg);
+  line-height:var(--leading-tight);
+  font-weight:850;
+}
+
+.console-shell .sih-scenario-tag {
+  flex-shrink:0;
+  color:var(--console-faint);
+  font-size:var(--text-xs);
+  font-weight:800;
+  white-space:nowrap;
+}
+
+.console-shell .sih-scenario-card p {
+  margin:0;
+  color:var(--console-dim);
+  font-size:var(--text-sm);
+  line-height:var(--leading-normal);
+}
+
+.console-shell .sih-scenario-io {
+  display:grid;
+  gap:4px;
+  margin-top:auto;
+  color:var(--console-faint);
+  font-size:var(--text-xs);
+  font-weight:700;
+  line-height:1.35;
+}
+
+.console-shell .sih-scenario-card-actions {
+  display:flex;
+  flex-wrap:wrap;
+  gap:var(--space-2);
+  align-items:center;
+}
+
+.console-shell .sih-scenario-action {
+  align-self:flex-start;
+  min-height:30px;
+  padding:0 10px;
+  border:1px solid var(--console-line);
+  border-radius:var(--radius-2);
+  background:transparent;
+  color:var(--color-primary);
+  font-size:var(--text-xs);
+  font-weight:850;
+  cursor:pointer;
+}
+
+.console-shell .sih-scenario-action:hover {
+  border-color:var(--color-line-strong);
+  background:var(--console-surface-2);
+}
+
+.console-shell .sih-scenario-input-panel {
+  margin-top:var(--space-4);
+  padding:17px;
+  border:1px solid var(--console-line);
+  border-radius:var(--radius-3);
+  background:var(--console-surface);
+  display:grid;
+  gap:var(--space-4);
+}
+
+.console-shell .sih-scenario-input-head {
+  display:flex;
+  justify-content:space-between;
+  gap:var(--space-4);
+  align-items:flex-start;
+}
+
+.console-shell .sih-scenario-input-head h3 {
+  margin:0 0 5px;
+  color:var(--console-ink);
+  font-size:var(--text-lg);
+  line-height:var(--leading-tight);
+  font-weight:850;
+}
+
+.console-shell .sih-scenario-input-head p,
+.console-shell .sih-scenario-direct p {
+  margin:0;
+  color:var(--console-dim);
+  font-size:var(--text-sm);
+  line-height:var(--leading-normal);
+}
+
+.console-shell .sih-scenario-input-badge {
+  flex-shrink:0;
+  padding:4px 8px;
+  border:1px solid var(--console-line);
+  border-radius:var(--radius-pill);
+  color:var(--console-faint);
+  font-size:var(--text-xs);
+  font-weight:850;
+  white-space:nowrap;
+}
+
+.console-shell .sih-scenario-form {
+  display:grid;
+  gap:var(--space-3);
+}
+
+.console-shell .sih-scenario-field {
+  display:grid;
+  gap:7px;
+}
+
+.console-shell .sih-scenario-field span {
+  color:var(--console-dim);
+  font-size:var(--text-xs);
+  font-weight:850;
+}
+
+.console-shell .sih-scenario-field input,
+.console-shell .sih-scenario-field textarea {
+  width:100%;
+  border:1px solid var(--console-line);
+  border-radius:var(--radius-2);
+  background:var(--console-surface-2);
+  color:var(--console-ink);
+  font:inherit;
+  font-size:var(--text-sm);
+  line-height:var(--leading-normal);
+  padding:10px 11px;
+}
+
+.console-shell .sih-scenario-field textarea {
+  min-height:86px;
+  resize:vertical;
+}
+
+.console-shell .sih-scenario-field input:focus,
+.console-shell .sih-scenario-field textarea:focus {
+  outline:2px solid color-mix(in srgb, var(--color-primary) 32%, transparent);
+  outline-offset:1px;
+  border-color:var(--color-primary);
+}
+
+.console-shell .sih-scenario-input-actions {
+  display:flex;
+  flex-wrap:wrap;
+  gap:var(--space-2);
+  align-items:center;
+}
+
+.console-shell .sih-scenario-direct {
+  display:grid;
+  gap:var(--space-3);
+}
+
+.console-shell .sih-daily-status {
+  display:grid;
+  gap:8px;
+  padding:12px;
+  border:1px solid var(--console-line);
+  border-radius:var(--radius-2);
+  background:var(--console-surface-2);
+}
+
+.console-shell .sih-daily-status.is-stale {
+  border-color:color-mix(in srgb, var(--console-warn) 38%, var(--console-line));
+  background:color-mix(in srgb, var(--console-warn) 8%, var(--console-surface-2));
+}
+
+.console-shell .sih-daily-status.is-current {
+  border-color:color-mix(in srgb, var(--console-good) 38%, var(--console-line));
+  background:color-mix(in srgb, var(--console-good) 7%, var(--console-surface-2));
+}
+
+.console-shell .sih-daily-status-top {
+  display:flex;
+  justify-content:space-between;
+  gap:var(--space-3);
+  align-items:baseline;
+}
+
+.console-shell .sih-daily-status-top strong {
+  color:var(--console-ink);
+  font-size:var(--text-sm);
+  line-height:var(--leading-tight);
+  font-weight:900;
+}
+
+.console-shell .sih-daily-status-top span,
+.console-shell .sih-daily-latest {
+  color:var(--console-faint);
+  font-size:var(--text-xs);
+  font-weight:850;
+}
+
+.console-shell .sih-daily-status p {
+  margin:0;
+  color:var(--console-dim);
+  font-size:var(--text-sm);
+  line-height:var(--leading-normal);
+}
+
+.console-shell .sih-triage-result {
+  display:grid;
+  gap:8px;
+  padding:12px;
+  border:1px solid color-mix(in srgb, var(--color-primary) 28%, var(--console-line));
+  border-radius:var(--radius-2);
+  background:color-mix(in srgb, var(--color-primary) 5%, var(--console-surface-2));
+}
+
+.console-shell .sih-triage-result.is-empty {
+  border-color:var(--console-line);
+  background:var(--console-surface-2);
+}
+
+.console-shell .sih-triage-result.is-error {
+  border-color:color-mix(in srgb, var(--console-danger) 36%, var(--console-line));
+  background:color-mix(in srgb, var(--console-danger) 5%, var(--console-surface-2));
+}
+
+.console-shell .sih-triage-result-head {
+  display:flex;
+  justify-content:space-between;
+  gap:var(--space-3);
+  align-items:flex-start;
+}
+
+.console-shell .sih-triage-result-head > div:first-child {
+  display:grid;
+  gap:3px;
+  min-width:0;
+}
+
+.console-shell .sih-triage-result strong {
+  color:var(--console-ink);
+  font-size:var(--text-sm);
+  line-height:var(--leading-tight);
+  font-weight:900;
+}
+
+.console-shell .sih-triage-result span {
+  color:var(--console-faint);
+  font-size:var(--text-xs);
+  font-weight:850;
+}
+
+.console-shell .sih-triage-result-actions {
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+  gap:var(--space-2);
+}
+
+.console-shell .sih-triage-result p {
+  margin:0;
+  color:var(--console-dim);
+  font-size:var(--text-sm);
+  line-height:var(--leading-normal);
+}
+
+.console-shell .sih-use-status h3 {
+  margin:0 0 var(--space-3);
+  color:var(--console-dim);
+  font-size:var(--text-sm);
+  font-weight:850;
+}
+
+.console-shell .sih-use-status-row {
+  display:grid;
+  grid-template-columns:minmax(0,1fr);
+  gap:3px;
+  padding:9px 0;
+  border-top:1px solid var(--console-line-soft);
+}
+
+.console-shell .sih-use-status-row span {
+  color:var(--console-faint);
+  font-size:var(--text-xs);
+  font-weight:750;
+}
+
+.console-shell .sih-use-status-row b {
+  color:var(--console-ink);
+  font-size:var(--text-sm);
+  line-height:1.35;
+}
+
+.console-shell .sih-use-status-row.tone-warn b {
+  color:var(--console-warn);
+}
+
+.console-shell .sih-use-status-row.tone-good b {
+  color:var(--console-dim);
+}
+
+.console-shell .sih-maintenance {
+  margin-top:var(--space-6);
+  border-top:1px solid var(--console-line);
+  border-bottom:1px solid var(--console-line);
+  padding:0;
+}
+
+.console-shell .sih-maintenance > summary {
+  min-height:48px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:var(--space-4);
+  cursor:pointer;
+  list-style:none;
+}
+
+.console-shell .sih-maintenance > summary::-webkit-details-marker {
+  display:none;
+}
+
+.console-shell .sih-maintenance-title {
+  color:var(--console-dim);
+  font-size:var(--text-sm);
+  font-weight:850;
+}
+
+.console-shell .sih-maintenance-value {
+  color:var(--console-faint);
+  font-size:var(--text-xs);
+  font-weight:850;
+}
+
+.console-shell .sih-maintenance-value.tone-warn {
+  color:var(--console-warn);
+}
+
+.console-shell .sih-maintenance-value.tone-good {
+  color:var(--console-dim);
+}
+
+.console-shell .sih-maintenance-body {
+  padding:0 0 var(--space-5);
+}
+
+.console-shell .sih-maintenance-metrics {
+  margin-top:var(--space-3);
+}
+
+.console-shell .sih-maintenance-grid {
+  margin-top:var(--space-4);
+}
+
+.console-shell .sih-warning-item {
+  display:flex;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:8px;
+  padding:9px 0;
+  border-top:1px solid var(--console-line-soft);
+  font-size:var(--text-sm);
+  color:var(--console-dim);
+}
+
+.console-shell .sih-warning-item:first-of-type {
+  margin-top:8px;
+}
+
+.console-shell .sih-warning-code {
+  flex-shrink:0;
+  padding:2px 7px;
+  border-radius:var(--radius-pill);
+  background:var(--console-warn-bg);
+  color:var(--console-warn);
+  font-size:var(--text-xs);
+  font-family:var(--mono);
+  font-weight:800;
+}
+
+.console-shell .sih-empty,
+.console-shell .sih-loading {
+  padding:18px 10px;
+  color:var(--console-faint);
+  font-family:var(--mono);
+  font-size:var(--text-xs);
+  text-align:center;
+}
+
+.console-shell .sih-table-wrap {
+  width:100%;
+  overflow:auto;
+  border:1px solid var(--console-line-soft);
+  border-radius:var(--radius-2);
+}
+
+.console-shell .sih-source-table {
+  width:100%;
+  min-width:980px;
+  border-collapse:collapse;
+  background:var(--console-surface);
+  font-size:var(--text-xs);
+}
+
+.console-shell .sih-source-table th,
+.console-shell .sih-source-table td {
+  padding:9px 10px;
+  border-bottom:1px solid var(--console-line-soft);
+  text-align:left;
+  vertical-align:top;
+}
+
+.console-shell .sih-source-table th {
+  position:sticky;
+  top:0;
+  z-index:1;
+  background:var(--console-surface-2);
+  color:var(--console-dim);
+  font-weight:850;
+  white-space:nowrap;
+}
+
+.console-shell .sih-source-table tr:last-child td {
+  border-bottom:none;
+}
+
+.console-shell .sih-source-table tr.tone-bad td:first-child {
+  border-left:3px solid var(--console-danger);
+}
+
+.console-shell .sih-source-table tr.tone-warn td:first-child {
+  border-left:3px solid var(--console-warn);
+}
+
+.console-shell .sih-source-table tr.tone-good td:first-child {
+  border-left:3px solid var(--console-ok);
+}
+
+.console-shell .sih-source-name {
+  font-weight:850;
+  color:var(--console-ink);
+  line-height:1.3;
+}
+
+.console-shell .sih-source-id {
+  margin-top:3px;
+  color:var(--console-faint);
+  font-family:var(--mono);
+  font-size:var(--text-2xs);
+  line-height:1.3;
+  word-break:break-all;
+}
+
+.console-shell .sih-status-pill {
+  display:inline-flex;
+  align-items:center;
+  white-space:nowrap;
+  padding:3px 7px;
+  border-radius:var(--radius-pill);
+  border:1px solid var(--console-line);
+  font-weight:850;
+  font-size:var(--text-2xs);
+}
+
+.console-shell .sih-status-pill.tone-good {
+  background:var(--console-ok-bg);
+  color:var(--console-ok);
+  border-color:color-mix(in srgb,var(--console-ok) 24%,var(--console-line));
+}
+
+.console-shell .sih-status-pill.tone-warn {
+  background:var(--console-warn-bg);
+  color:var(--console-warn);
+  border-color:color-mix(in srgb,var(--console-warn) 24%,var(--console-line));
+}
+
+.console-shell .sih-status-pill.tone-bad {
+  background:var(--console-danger-bg);
+  color:var(--console-danger);
+  border-color:color-mix(in srgb,var(--console-danger) 24%,var(--console-line));
+}
+
+.console-shell .sih-status-pill.tone-muted {
+  background:var(--console-surface-2);
+  color:var(--console-faint);
+}
+
+.console-shell .sih-evidence-btn {
+  max-width:180px;
+  margin:0 5px 5px 0;
+  padding:4px 7px;
+  border:1px solid var(--console-line);
+  border-radius:var(--radius-1);
+  background:var(--console-surface-2);
+  color:var(--console-dim);
+  font-size:var(--text-2xs);
+  font-family:var(--mono);
+  cursor:pointer;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  vertical-align:top;
+}
+
+.console-shell .sih-evidence-btn:hover {
+  border-color:var(--color-line-strong);
+  color:var(--console-ink);
+}
+
+.console-shell .sih-mini-grid {
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:8px;
+  margin-top:10px;
+  margin-bottom:10px;
+}
+
+.console-shell .sih-mini {
+  padding:9px;
+  border-radius:var(--radius-2);
+  background:var(--console-surface-2);
+  border:1px solid var(--console-line-soft);
+}
+
+.console-shell .sih-mini b {
+  display:block;
+  font-family:var(--mono);
+  font-size:var(--text-md);
+  color:var(--console-ink);
+}
+
+.console-shell .sih-mini span {
+  display:block;
+  margin-top:3px;
+  font-size:var(--text-2xs);
+  color:var(--console-faint);
+}
+
+.console-shell .sih-prompt-card {
+  border-top:1px solid var(--console-line-soft);
+  padding-top:10px;
+  margin-top:10px;
+}
+
+.console-shell .sih-prompt-top {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+}
+
+.console-shell .sih-prompt-copy {
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+}
+
+.console-shell .sih-prompt-copy b {
+  font-size:var(--text-sm);
+  color:var(--console-ink);
+}
+
+.console-shell .sih-prompt-copy span {
+  font-size:var(--text-2xs);
+  color:var(--console-faint);
+  font-family:var(--mono);
+}
+
+.console-shell .sih-prompt-card pre,
+.console-shell .sih-missing pre {
+  max-height:180px;
+  margin:8px 0 0;
+  padding:10px;
+  overflow:auto;
+  border-radius:var(--radius-2);
+  background:var(--color-code-bg);
+  color:var(--color-code-text);
+  font-size:var(--text-2xs);
+  line-height:1.5;
+  white-space:pre-wrap;
+  word-break:break-word;
+}
+
+.console-shell .sih-path {
+  margin-top:8px;
+  color:var(--console-faint);
+  font-family:var(--mono);
+  font-size:var(--text-xs);
+  word-break:break-all;
+}
+
+.console-shell .console-action-primary:hover {
+  background:var(--color-ink-hover);
+  border-color:var(--color-ink-hover);
+  color:var(--color-on-primary);
+}
+
+.console-shell .console-action-secondary {
+  min-width:0;
+  min-height:34px;
+  padding:0 12px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  background:color-mix(in srgb,var(--console-surface) 84%,var(--console-surface-2));
+  border-color:var(--color-border);
+  color:var(--color-text);
+  border-radius:var(--radius-2);
+  font-size:var(--text-sm);
+  font-weight:800;
+  box-shadow:var(--shadow-1);
+}
+
+.console-shell .console-action-secondary:hover {
+  border-color:var(--color-ink);
+  color:var(--color-ink);
+}
+
+.console-shell .console-action-secondary.is-running {
+  opacity:.72;
+  cursor:progress;
+}
+
+.console-shell .console-action-secondary i {
+  width:16px;
+  height:16px;
+  stroke-width:2.2;
+}
+
+/* KAN-203 右栏大减法：300px 机房 → 窄状态列；KAN-1002 桥接/入口上移右栏，放宽至 210px。 */
+.console-shell .console-grid {
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 210px;
+  gap:var(--space-6);
+  align-items:start;
+}
+
+.console-shell .console-main,
+.console-shell .console-rail {
+  min-width:0;
+}
+
+/* 窄状态列（KAN-1002 四组重排版）：细左分隔线，组间细分隔线，层次靠字号/灰阶/间距，
+   无卡片盒/无面板底色/无按钮堆。 */
+.console-shell .console-status-col {
+  padding-left:var(--space-4);
+  border-left:1px solid var(--console-line-soft);
+}
+.console-shell .console-status-group {
+  padding:var(--space-3) 0;
+  border-top:0.5px solid var(--console-line-soft);
+}
+.console-shell .console-status-group:first-child {
+  padding-top:0;
+  border-top:0;
+}
+.console-shell .console-status-group:last-child {
+  padding-bottom:0;
+}
+.console-shell .console-status-caption {
+  margin-bottom:var(--space-2);
+  color:var(--console-faint);
+  font-size:var(--text-2xs);
+  letter-spacing:0.08em;
+}
+.console-shell .console-status-rows {
+  display:flex;
+  flex-direction:column;
+  gap:var(--space-2);
+}
+.console-shell .console-status-row {
+  display:flex;
+  align-items:baseline;
+  justify-content:space-between;
+  gap:var(--space-2);
+  font-size:12px;
+  line-height:var(--leading-normal);
+}
+/* KAN-1002：标签小灰左 / 值常规右（去粗体）；accent 只落需要动作的值。 */
+.console-shell .console-status-label {
+  color:var(--console-faint);
+  font-size:var(--text-2xs);
+  white-space:nowrap;
+}
+.console-shell .console-status-value {
+  color:var(--console-ink);
+  font-weight:400;
+  text-align:right;
+}
+.console-shell .console-status-value.is-danger {
+  color:var(--console-danger);
+}
+.console-shell .console-status-links {
+  display:flex;
+  flex-direction:column;
+  gap:var(--space-1);
+}
+.console-shell .console-status-link {
+  background:transparent;
+  border:0;
+  padding:2px 0;
+  text-align:left;
+  font-size:12px;
+  color:var(--console-info);
+  cursor:pointer;
+  white-space:nowrap;
+}
+.console-shell .console-status-link:hover { text-decoration:underline; }
+
+/* KAN-1002 右栏紧凑行（桥接/入口）：名字左可换行 + 状态右灰阶；动作=点击行本身，
+   小动作（刷新/复制）默认隐藏、行 hover 才现——无常驻按钮堆。 */
+.console-shell .console-rail-item {
+  min-width:0;
+}
+.console-shell .console-rail-row {
+  display:flex;
+  align-items:baseline;
+  justify-content:space-between;
+  gap:var(--space-2);
+  width:100%;
+  padding:2px 0;
+  border:0;
+  background:transparent;
+  color:var(--console-ink);
+  font-size:12px;
+  line-height:var(--leading-normal);
+  text-align:left;
+  cursor:pointer;
+}
+.console-shell .console-rail-row:disabled {
+  color:var(--console-faint);
+  cursor:wait;
+}
+.console-shell .console-rail-name {
+  min-width:0;
+}
+.console-shell .console-rail-row:hover .console-rail-name,
+.console-shell .console-rail-row:focus-visible .console-rail-name {
+  color:var(--color-primary);
+}
+.console-shell .console-rail-meta {
+  flex:0 0 auto;
+  color:var(--console-faint);
+  font-size:var(--text-2xs);
+  white-space:nowrap;
+}
+.console-shell .console-rail-actions {
+  display:flex;
+  gap:var(--space-2);
+  max-height:0;
+  overflow:hidden;
+}
+.console-shell .console-rail-item:hover .console-rail-actions,
+.console-shell .console-rail-item:focus-within .console-rail-actions {
+  max-height:24px;
+}
+.console-shell .console-rail-action {
+  padding:0;
+  border:0;
+  background:transparent;
+  color:var(--console-dim);
+  font-size:var(--text-2xs);
+  cursor:pointer;
+}
+.console-shell .console-rail-action:hover {
+  color:var(--color-primary);
+  text-decoration:underline;
+}
+/* 网络折叠块并入桥接组：去独立上边框，靠组分隔线。 */
+.console-shell .console-status-group .console-network {
+  margin-top:var(--space-2);
+}
+
+/* 「+派活」描边小按钮（并入盘面条右侧，去大黑填充）。 */
+.console-shell .console-cursor-bar { position:relative; }
+.console-shell .console-cursor-actions {
+  margin-left:auto;
+  display:flex;
+  align-items:center;
+}
+.console-shell .console-dispatch-btn {
+  min-height:26px;
+  padding:0 10px;
+  font-size:12px;
+  color:var(--console-ink);
+  background:transparent;
+  border:1px solid var(--console-line);
+  border-radius:var(--radius-2);
+  cursor:pointer;
+}
+.console-shell .console-dispatch-btn:hover {
+  border-color:var(--color-line-strong);
+  background:var(--console-surface-2);
+}
+
+/* 桥接与入口抽屉内容：被撤九部件搬家的容器。 */
+.console-shell .console-bridges-drawer-content {
+  display:flex;
+  flex-direction:column;
+  gap:var(--space-4);
+}
+
+.console-shell .console-lane {
+  margin-bottom:var(--space-6);
+}
+
+.console-shell .console-lane-hd {
+  display:flex;
+  align-items:center;
+  gap:var(--space-2);
+  margin:0 0 var(--space-2);
+  font-size:var(--text-sm);
+  font-weight:800;
+  letter-spacing:0;
+  color:var(--console-dim);
+}
+
+.console-shell .console-lane-attention .console-lane-hd,
+.console-shell .console-lane-inbox .console-lane-hd,
+.console-shell .console-lane-running .console-lane-hd,
+.console-shell .console-lane-unrouted .console-lane-hd,
+.console-shell .console-lane-coordinate .console-lane-hd {
+  color:var(--console-dim);
+}
+
+.console-shell .console-lane-donelog .card {
+  opacity:.72;
+}
+
+.console-shell .console-lane-donelog .card:hover {
+  opacity:1;
+}
+
+.console-shell .console-lane-count {
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-width:20px;
+  height:20px;
+  padding:0 var(--space-2);
+  border-radius:var(--radius-pill);
+  background:var(--console-surface);
+  border:1px solid var(--console-line);
+  color:var(--console-dim);
+  font-size:var(--text-xs);
+  font-family:var(--mono);
+  font-weight:700;
+}
+
+.console-shell .console-empty,
+.console-shell .console-bridge-empty {
+  color:var(--console-faint);
+  font-size:var(--text-md);
+  padding:var(--space-2) 0 var(--space-3);
+}
+
+/* 空泳道折叠：标题与「暂无/已验收」并排成一行，回收首屏空间 */
+.console-shell .console-lane.is-empty {
+  margin-bottom:var(--space-3);
+  display:flex;
+  align-items:center;
+  gap:var(--space-3);
+}
+.console-shell .console-lane.is-empty .console-lane-hd {
+  margin:0;
+}
+.console-shell .console-lane.is-empty .console-empty {
+  padding:0;
+  font-size:var(--text-xs);
+}
+
+.console-shell .console-bridge-empty {
+  font-size:var(--text-xs);
+}
+
+/* KAN-199：类型泳道分组标题（.console-group-title）已退役，主列不再按类型分组。 */
+
+/* —— KAN-199 盘面条（cursor 条）：顶栏下一条单行状态条 —— */
+.console-shell .console-cursor-bar {
+  display:flex;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:var(--space-2) var(--space-3);
+  margin:0 0 var(--space-5);
+  padding:var(--space-2) 0;
+  border-bottom:1px solid var(--console-line-soft);
+}
+.console-shell .console-cursor-group {
+  display:flex;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:var(--space-2) var(--space-3);
+}
+.console-shell .console-cursor-sep {
+  width:1px;
+  height:14px;
+  background:var(--console-line);
+}
+.console-shell .console-cursor-seg {
+  display:inline-flex;
+  align-items:baseline;
+  gap:var(--space-1);
+  padding:2px 0;
+  background:none;
+  border:0;
+  color:var(--console-ink);
+  font-size:var(--text-sm);
+  font-weight:700;
+  cursor:pointer;
+}
+.console-shell .console-cursor-seg:hover .console-cursor-seg-label {
+  text-decoration:underline;
+  text-underline-offset:3px;
+}
+.console-shell .console-cursor-seg.is-muted {
+  color:var(--console-dim);
+  font-weight:600;
+}
+.console-shell .console-cursor-seg-count {
+  font-family:var(--mono);
+  font-size:var(--text-xs);
+  color:var(--console-dim);
+}
+.console-shell .console-cursor-seg.is-muted .console-cursor-seg-count {
+  color:var(--console-faint);
+}
+
+/* —— KAN-199 主列区块高亮：盘面条点击滚动后短暂闪一下 —— */
+.console-shell .console-section-flash {
+  animation:consoleSectionFlash 1.1s ease-out;
+}
+@keyframes consoleSectionFlash {
+  0% { background:var(--console-surface-2); }
+  100% { background:transparent; }
+}
+
+/* —— KAN-199「等我验收」尾部折叠 —— */
+.console-shell .console-lane-fold {
+  margin-top:var(--space-1);
+}
+.console-shell .console-lane-fold > summary {
+  list-style:none;
+  cursor:pointer;
+  color:var(--console-faint);
+  font-size:var(--text-xs);
+  padding:var(--space-1) 0;
+}
+.console-shell .console-lane-fold > summary::-webkit-details-marker { display:none; }
+.console-shell .console-lane-fold > summary:hover { color:var(--console-dim); }
+
+/* —— KAN-199 抽屉：AI 在办 / 收件箱 / 团队对接要点等不需要 Owner 动作的内容 —— */
+.console-shell .console-drawers {
+  margin-top:var(--space-5);
+  border-top:1px solid var(--console-line-soft);
+  padding-top:var(--space-3);
+}
+.console-shell .console-drawer {
+  margin-bottom:var(--space-2);
+}
+.console-shell .console-drawer > summary {
+  list-style:none;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  gap:var(--space-2);
+  padding:var(--space-1) 0;
+  color:var(--console-dim);
+  font-size:var(--text-sm);
+  font-weight:700;
+}
+.console-shell .console-drawer > summary::-webkit-details-marker { display:none; }
+.console-shell .console-drawer > summary::before {
+  content:'▸';
+  color:var(--console-faint);
+  font-size:var(--text-xs);
+}
+.console-shell .console-drawer[open] > summary::before { content:'▾'; }
+.console-shell .console-drawer > summary:hover { color:var(--console-ink); }
+.console-shell .console-drawer-body {
+  padding:var(--space-1) 0 var(--space-2) var(--space-2);
+}
+
+/* KAN-207：人闸值守区。事实源 live-read，视觉上只留线和空白。 */
+.console-shell .console-duty {
+  margin:var(--space-6) 0;
+  padding-top:var(--space-4);
+  border-top:1px solid var(--console-line-soft);
+}
+
+.console-shell .console-duty-head {
+  display:flex;
+  align-items:baseline;
+  justify-content:space-between;
+  gap:var(--space-3);
+  margin-bottom:var(--space-3);
+}
+
+.console-shell .console-duty-head h3 {
+  margin:0;
+  font-size:var(--text-base);
+  font-weight:760;
+  letter-spacing:0;
+  color:var(--console-ink);
+}
+
+.console-shell .console-duty-head-meta {
+  color:var(--console-faint);
+  font-family:var(--mono);
+  font-size:var(--text-2xs);
+  white-space:nowrap;
+}
+
+.console-shell .console-duty-grid {
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:var(--space-5) var(--space-6);
+}
+
+.console-shell .console-duty-block {
+  min-width:0;
+  padding-top:var(--space-3);
+  border-top:1px solid var(--console-line-soft);
+}
+
+.console-shell .console-duty-block-head {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:var(--space-3);
+  margin-bottom:var(--space-2);
+}
+
+.console-shell .console-duty-block-head h4 {
+  margin:0;
+  color:var(--console-dim);
+  font-size:var(--text-sm);
+  font-weight:760;
+  letter-spacing:0;
+}
+
+.console-shell .console-duty-source {
+  min-width:0;
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+  max-width:62%;
+  padding:0;
+  border:0;
+  background:transparent;
+  color:var(--console-faint);
+  cursor:pointer;
+  font-family:var(--mono);
+  font-size:var(--text-2xs);
+}
+
+.console-shell .console-duty-source:hover {
+  color:var(--console-ink);
+  text-decoration:underline;
+}
+
+.console-shell .console-duty-source i {
+  width:13px;
+  height:13px;
+  flex:0 0 auto;
+  stroke-width:2;
+}
+
+.console-shell .console-duty-source span {
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+.console-shell .console-duty-block-body {
+  color:var(--console-ink);
+  font-size:var(--text-sm);
+  line-height:var(--leading-normal);
+}
+
+.console-shell .console-duty-meta,
+.console-shell .console-duty-summary,
+.console-shell .console-duty-empty {
+  color:var(--console-dim);
+  font-size:var(--text-xs);
+}
+
+.console-shell .console-duty-empty {
+  padding:var(--space-2) 0;
+}
+
+.console-shell .console-duty-owner-statement {
+  padding:var(--space-2) 0;
+  border-bottom:1px solid var(--console-line-soft);
+}
+
+.console-shell .console-duty-owner-statement > summary {
+  list-style:none;
+  cursor:pointer;
+  display:flex;
+  align-items:baseline;
+  justify-content:space-between;
+  gap:var(--space-3);
+}
+
+.console-shell .console-duty-owner-statement > summary::-webkit-details-marker {
+  display:none;
+}
+
+.console-shell .console-duty-owner-sentence {
+  min-width:0;
+  color:var(--console-ink);
+}
+
+.console-shell .console-duty-owner-check {
+  flex:0 0 auto;
+  color:var(--console-faint);
+  font-size:var(--text-xs);
+  text-decoration:underline;
+  text-underline-offset:2px;
+}
+
+.console-shell .console-duty-owner-evidence {
+  margin-top:var(--space-2);
+  padding-left:var(--space-2);
+  padding-right:var(--space-2);
+  border-left:1px solid var(--console-line-soft);
+  /* 证据是支撑不是主干:有界内滚,防原始断言把 Owner 面撑成日志页(同 duty-markdown 先例) */
+  max-height:240px;
+  overflow-y:auto;
+}
+
+.console-shell .console-duty-owner-evidence-line {
+  margin:0 0 var(--space-1);
+  color:var(--console-dim);
+  font-family:var(--mono);
+  font-size:var(--text-2xs);
+  line-height:var(--leading-normal);
+  overflow-wrap:anywhere;
+}
+
+.console-shell .console-duty-markdown {
+  max-height:320px;
+  overflow:auto;
+  padding-right:var(--space-2);
+  color:var(--console-ink);
+  font-size:12px;
+}
+
+.console-shell .console-duty-markdown h1,
+.console-shell .console-duty-markdown h2,
+.console-shell .console-duty-markdown h3 {
+  margin:var(--space-3) 0 var(--space-2);
+  color:var(--console-ink);
+  letter-spacing:0;
+}
+
+.console-shell .console-duty-markdown h1 { font-size:var(--text-base); }
+.console-shell .console-duty-markdown h2 { font-size:var(--text-sm); }
+.console-shell .console-duty-markdown h3 { font-size:var(--text-sm); }
+.console-shell .console-duty-markdown p,
+.console-shell .console-duty-markdown ul,
+.console-shell .console-duty-markdown ol { margin:var(--space-2) 0; }
+.console-shell .console-duty-markdown code {
+  color:var(--console-ink);
+  background:var(--console-surface-2);
+}
+
+.console-shell .console-duty-list {
+  display:flex;
+  flex-direction:column;
+  gap:var(--space-2);
+  margin-top:var(--space-2);
+}
+
+.console-shell .console-duty-row {
+  width:100%;
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  gap:3px;
+  padding:0 0 var(--space-2);
+  border:0;
+  border-bottom:1px solid var(--console-line-soft);
+  background:transparent;
+  color:var(--console-ink);
+  text-align:left;
+  cursor:pointer;
+}
+
+.console-shell .console-duty-row:hover .console-duty-row-main {
+  text-decoration:underline;
+}
+
+.console-shell .console-duty-row-main,
+.console-shell .console-duty-row-meta {
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+.console-shell .console-duty-row-main {
+  color:var(--console-ink);
+  font-size:var(--text-sm);
+  font-weight:650;
+}
+
+.console-shell .console-duty-row-meta {
+  color:var(--console-dim);
+  font-size:var(--text-xs);
+}
+
+/* —— KAN-979 值守断言小组件：ASSERT 键名做小标签，正文一句白话，
+   数据源/命令/路径折进证据层（点开），不进第一屏。 —— */
+.console-shell .console-duty-assert-group {
+  margin:var(--space-2) 0 2px;
+  color:var(--console-faint);
+  font-size:var(--text-2xs);
+  font-weight:750;
+  letter-spacing:.02em;
+}
+
+.console-shell .console-duty-assert {
+  padding:4px 0;
+  border-bottom:1px solid var(--console-line-soft);
+}
+
+.console-shell .console-duty-assert-head {
+  list-style:none;
+  display:flex;
+  align-items:baseline;
+  gap:6px;
+  cursor:default;
+}
+
+.console-shell details.console-duty-assert > .console-duty-assert-head {
+  cursor:pointer;
+}
+
+.console-shell .console-duty-assert-head::-webkit-details-marker {
+  display:none;
+}
+
+.console-shell .console-duty-assert-tag {
+  flex:0 0 auto;
+  padding:0 5px;
+  border:1px solid var(--console-line);
+  border-radius:var(--radius-pill);
+  color:var(--console-faint);
+  font-family:var(--mono);
+  font-size:var(--text-2xs);
+  line-height:1.6;
+  white-space:nowrap;
+}
+
+.console-shell .console-duty-assert-body {
+  min-width:0;
+  color:var(--console-ink);
+  font-size:var(--text-xs);
+  line-height:var(--leading-normal);
+}
+
+.console-shell .console-duty-assert-more {
+  flex:0 0 auto;
+  margin-left:auto;
+  color:var(--console-faint);
+  font-size:var(--text-2xs);
+  text-decoration:underline;
+  text-underline-offset:2px;
+}
+
+.console-shell .console-duty-assert-evidence {
+  margin:4px 0 2px;
+  padding-left:var(--space-2);
+  border-left:1px solid var(--console-line-soft);
+  color:var(--console-dim);
+  font-family:var(--mono);
+  font-size:var(--text-2xs);
+  line-height:var(--leading-normal);
+  overflow-wrap:anywhere;
+}
+
+.console-shell .console-duty-assert-rest {
+  margin-top:var(--space-1);
+  color:var(--console-faint);
+  font-size:var(--text-2xs);
+}
+
+/* —— KAN-979 外发台账合并行：verdict 小色点 + ×N 计数。 —— */
+.console-shell .console-duty-row-flex {
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+
+.console-shell .console-duty-row-text {
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+.console-shell .console-duty-dot {
+  flex:0 0 auto;
+  width:6px;
+  height:6px;
+  border-radius:50%;
+  background:var(--console-faint);
+}
+
+.console-shell .console-duty-dot.tone-ok {
+  background:var(--console-ok);
+}
+
+.console-shell .console-duty-dot.tone-ink {
+  background:var(--console-ink);
+}
+
+.console-shell .console-duty-dot.tone-muted {
+  background:var(--color-text-faint);
+}
+
+.console-shell .console-duty-times {
+  flex:0 0 auto;
+  color:var(--console-faint);
+  font-family:var(--mono);
+  font-size:var(--text-2xs);
+  font-weight:750;
+}
+
+/* —— KAN-199 右栏「项目全景」小块：空间视图移交 Studio —— */
+.console-shell .console-panorama {
+  margin-bottom:var(--space-5);
+}
+.console-shell .console-panorama-head {
+  margin-bottom:var(--space-2);
+}
+.console-shell .console-panorama-link {
+  display:block;
+  background:none;
+  border:0;
+  padding:0;
+  cursor:pointer;
+  color:var(--console-dim);
+  font-size:var(--text-sm);
+  text-align:left;
+}
+.console-shell .console-panorama-conversation {
+  margin-top:var(--space-2);
+  color:var(--console-ink);
+  font-weight:750;
+}
+.console-shell .console-panorama-link:hover {
+  color:var(--console-ink);
+  text-decoration:underline;
+  text-underline-offset:3px;
+}
+
+/* —— KAN-199 卡片角落类型小标签：灰色小字，不彩色不加框 —— */
+.console-shell .console-card .console-chip-type {
+  color:var(--console-faint) !important;
+  font-weight:500 !important;
+  font-size:var(--text-xs) !important;
+}
+
+.console-shell .console-card {
+  margin-bottom:var(--space-2);
+  padding:8px var(--space-3);
+  background:var(--console-surface);
+  border:1px solid var(--console-line);
+  color:var(--console-ink);
+  border-radius:var(--console-radius);
+  box-shadow:var(--shadow-1);
+}
+
+.console-shell .console-card.is-due-now {
+  border-color:color-mix(in srgb,var(--console-warn) 36%,var(--console-line));
+  box-shadow:var(--shadow-2);
+}
+
+.console-shell .console-card:hover {
+  border-color:var(--color-line-strong);
+  transform:translateY(-1px);
+}
+
+.console-shell .console-card .t {
+  color:var(--console-ink);
+  font-size:var(--text-base);
+  line-height:var(--leading-normal);
+  margin-bottom:4px;
+  font-weight:700;
+}
+
+.console-shell .console-card .m {
+  gap:var(--space-1);
+}
+
+.console-shell .console-card .p {
+  color:var(--console-faint);
+  margin-top:var(--space-2);
+}
+
+.console-shell .console-card .b {
+  border-radius:var(--radius-pill);
+  padding:2px var(--space-2);
+  color:var(--console-dim);
+  background:var(--console-surface-2);
+  border:1px solid transparent;
+  font-size:var(--text-xs);
+}
+
+.console-shell .console-card .b::before {
+  display:none;
+}
+
+.console-shell .console-card .b:hover {
+  background:var(--color-canvas-soft);
+  border-color:var(--console-line);
+}
+
+.console-shell .console-card .dd {
+  background:var(--console-surface);
+  border-color:var(--console-line);
+  box-shadow:var(--shadow-3);
+}
+
+.console-shell .console-card .dd-item:hover {
+  background:var(--console-surface-2);
+}
+
+.console-shell .console-card .due {
+  color:var(--console-faint);
+  font-size:var(--text-xs);
+}
+
+.console-shell .console-card .due.overdue {
+  color:var(--console-danger);
+}
+
+.console-shell .console-card .due.console-due-now {
+  padding:2px var(--space-2);
+  border-radius:var(--radius-pill);
+  background:var(--console-warn-bg);
+  color:var(--console-warn);
+  font-weight:800;
+}
+
+.console-shell .console-card .due.console-due-now.overdue {
+  background:var(--console-danger-bg);
+  color:var(--console-danger);
+}
+
+.console-shell .console-chip-warn {
+  background:var(--console-warn-bg) !important;
+  color:var(--console-warn) !important;
+}
+
+.console-shell .console-chip-info,
+.console-shell .console-chip-ai,
+.console-shell .console-chip-scene {
+  background:var(--console-info-bg) !important;
+  color:var(--console-info) !important;
+  text-decoration:none;
+}
+
+.console-shell .console-chip-todo,
+.console-shell .console-chip-mute,
+.console-shell .b-source {
+  background:var(--console-surface-2) !important;
+  color:var(--console-faint) !important;
+}
+
+.console-shell .console-chip-danger {
+  background:var(--console-danger-bg) !important;
+  color:var(--console-danger) !important;
+}
+
+/* —— 设计收口：去框 + 排版降噪 + 近黑白克制（颜色只留逾期红，参考 Notion/Apple）—— */
+.console-shell .console-card {
+  background:transparent;
+  border:0;
+  box-shadow:none;
+  padding:7px var(--space-2);
+  margin-bottom:1px;
+  border-radius:var(--radius-2);
+}
+.console-shell .console-card:hover {
+  background:var(--console-surface-2);
+  border:0;
+  transform:none;
+}
+.console-shell .console-card.is-due-now {
+  background:var(--console-surface-2);
+  box-shadow:none;
+}
+.console-shell .console-card .t {
+  font-weight:600;
+  margin-bottom:3px;
+}
+/* 卡面降噪：项目（泳道已按项目分组）/领域（点锚替代）/来源/场景 移出卡面，细节在详情页看 */
+.console-shell .console-card .b-proj,
+.console-shell .console-card .b-domain,
+.console-shell .console-card .b-source,
+.console-shell .console-card .b-scenario { display:none; }
+/* 余下 chip（状态/优先级/负责人）扁平为安静文字，不再是彩色药丸 */
+.console-shell .console-card .b {
+  background:transparent !important;
+  border:0 !important;
+  padding:1px 3px !important;
+  border-radius:var(--radius-1) !important;
+  color:var(--console-dim) !important;
+  font-weight:600 !important;
+}
+.console-shell .console-card .b:hover { background:var(--console-surface-2) !important; }
+.console-shell .console-card .console-chip-warn,
+.console-shell .console-card .console-chip-info,
+.console-shell .console-card .console-chip-ai,
+.console-shell .console-card .console-chip-todo,
+.console-shell .console-card .console-chip-mute { color:var(--console-dim) !important; }
+.console-shell .console-card.is-pending-ai-dispatch {
+  border-left:3px solid color-mix(in srgb,var(--console-info) 42%,var(--console-line)) !important;
+  padding-left:calc(var(--space-2) + 4px);
+  background:color-mix(in srgb,var(--console-info-bg) 42%,transparent);
+}
+.console-shell .console-card .console-chip-pending-ai {
+  padding:1px var(--space-2) !important;
+  border:1px solid color-mix(in srgb,var(--console-info) 28%,var(--console-line)) !important;
+  border-radius:var(--radius-pill) !important;
+  background:var(--console-info-bg) !important;
+  color:var(--console-info) !important;
+  font-weight:800 !important;
+  white-space:nowrap;
+}
+.console-shell .console-card.is-console-unrouted {
+  border-left:3px solid color-mix(in srgb,var(--console-warn) 42%,var(--console-line)) !important;
+  padding-left:calc(var(--space-2) + 4px);
+  background:color-mix(in srgb,var(--console-warn-bg) 42%,transparent);
+}
+.console-shell .console-card .console-chip-unrouted {
+  padding:1px var(--space-2) !important;
+  border:1px solid color-mix(in srgb,var(--console-warn) 28%,var(--console-line)) !important;
+  border-radius:var(--radius-pill) !important;
+  background:var(--console-warn-bg) !important;
+  color:var(--console-warn) !important;
+  font-weight:800 !important;
+  white-space:nowrap;
+}
+/* 唯一保留的告警色：逾期 */
+.console-shell .console-card .due.overdue,
+.console-shell .console-card .due.console-due-now.overdue { color:var(--console-danger) !important; }
+/* 卡面去掉常驻的 mono 路径行（详情页仍可见/可打开），进一步降噪 */
+.console-shell .console-card .p { display:none; }
+
+.console-shell .console-review-actions {
+  display:flex;
+  gap:var(--space-2);
+  flex-wrap:wrap;
+  margin-top:var(--space-2);
+  padding-top:var(--space-2);
+  border-top:1px solid var(--console-line-soft);
+}
+
+.console-shell .console-review-actions button {
+  min-height:30px;
+  padding:4px var(--space-3);
+  border:1px solid var(--console-line);
+  border-radius:var(--radius-3);
+  background:var(--console-surface);
+  color:var(--console-ink);
+  font-size:var(--text-sm);
+  cursor:pointer;
+}
+
+.console-shell .console-review-actions button:hover {
+  border-color:var(--color-line-strong);
+  background:var(--color-surface-raised);
+}
+
+/* KAN-203 色彩纪律：验收/打回改无彩描边小按钮（去绿去红填充）。 */
+.console-shell .console-review-actions .console-ok,
+.console-shell .console-review-actions .console-reject {
+  color:var(--console-dim);
+  border-color:var(--console-line);
+  background:transparent;
+}
+.console-shell .console-review-actions .console-ok:hover,
+.console-shell .console-review-actions .console-reject:hover {
+  color:var(--console-ink);
+  border-color:var(--color-line-strong);
+  background:var(--console-surface-2);
+}
+
+/* KAN-203 行式卡片：验收/打回按钮只在行 hover（或触屏 focus-within）时显示，平时不占位。 */
+.console-shell .console-lane .console-review-actions,
+.console-shell .console-drawer .console-review-actions {
+  display:none;
+}
+.console-shell .console-card:hover .console-review-actions,
+.console-shell .console-card:focus-within .console-review-actions {
+  display:flex;
+}
+/* 行高更紧、0.5px 底分隔线、无盒无圆角底（首行/hover 微底沿用上文 surface-2）。 */
+.console-shell .console-lane .console-card,
+.console-shell .console-drawer .console-card {
+  border-bottom:0.5px solid var(--console-line-soft);
+  border-radius:0;
+  padding:8px var(--space-2);
+}
+/* 等我验收段标题 500 权重（其余仍 600），标题固定 13px。 */
+.console-shell .console-card .t { font-size:13px; }
+.console-shell .console-lane-attention .console-card .t { font-weight:500; }
+
+.console-shell .console-team-panel {
+  display:flex;
+  flex-direction:column;
+  gap:var(--space-4);
+}
+
+.console-shell .console-team-block,
+.console-shell .console-roster,
+.console-shell .console-bridges {
+  margin-bottom:var(--space-3);
+  padding:var(--space-3);
+  background:var(--console-surface);
+  border:1px solid var(--console-line);
+  border-radius:var(--console-radius);
+  box-shadow:var(--shadow-1);
+}
+
+.console-shell .console-team-section-title,
+.console-shell .console-box-title {
+  margin-bottom:var(--space-2);
+  color:var(--console-faint);
+  font-size:var(--text-sm);
+  font-weight:800;
+}
+
+.console-shell .console-team-section-title {
+  font-size:var(--text-xs);
+}
+
+.console-shell .console-team-degraded {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:var(--space-3);
+  padding:var(--space-3);
+  border:1px solid color-mix(in srgb,var(--console-warn) 28%,var(--console-line));
+  border-radius:var(--radius-3);
+  background:var(--console-warn-bg);
+  color:var(--console-warn);
+  font-size:var(--text-sm);
+  font-weight:800;
+}
+
+.console-shell .console-team-link {
+  flex-shrink:0;
+  padding:5px 9px;
+  border:1px solid color-mix(in srgb,var(--console-warn) 32%,var(--console-line));
+  border-radius:var(--radius-2);
+  background:var(--console-surface);
+  color:var(--console-warn);
+  font-size:var(--text-xs);
+  font-weight:800;
+  cursor:pointer;
+}
+
+.console-shell .console-team-link:hover,
+.console-shell .console-team-link:focus-visible {
+  border-color:var(--console-warn);
+  outline:0;
+}
+
+.console-shell .console-team-digest-list {
+  display:flex;
+  flex-direction:column;
+  gap:var(--space-2);
+}
+
+.console-shell .console-team-digest-row {
+  display:grid;
+  grid-template-columns:44px minmax(0,1fr);
+  gap:var(--space-2);
+  width:100%;
+  padding:9px 10px;
+  border:1px solid var(--console-line);
+  border-radius:var(--radius-3);
+  background:var(--console-surface);
+  color:var(--console-ink);
+  text-align:left;
+  cursor:pointer;
+}
+
+.console-shell .console-team-digest-row:hover,
+.console-shell .console-team-digest-row:focus-visible {
+  border-color:var(--color-line-strong);
+  background:var(--color-surface-raised);
+  outline:0;
+}
+
+.console-shell .console-team-digest-type {
+  align-self:start;
+  padding:2px 5px;
+  border-radius:var(--radius-pill);
+  background:var(--console-info-bg);
+  color:var(--console-info);
+  font-size:var(--text-2xs);
+  font-weight:800;
+  text-align:center;
+}
+
+.console-shell .console-team-digest-main {
+  display:flex;
+  flex-direction:column;
+  min-width:0;
+  gap:var(--space-1);
+}
+
+.console-shell .console-team-digest-title {
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  font-size:var(--text-sm);
+  font-weight:800;
+}
+
+.console-shell .console-team-digest-meta {
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  color:var(--console-dim);
+  font-size:var(--text-xs);
+}
+
+.console-shell .console-team-pointers .console-card:last-child {
+  margin-bottom:0;
+}
+
+.console-shell .console-project-health {
+  margin-bottom:var(--space-6);
+}
+
+.console-shell .console-project-health-head {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:var(--space-2);
+  width:100%;
+  min-height:30px;
+  margin:0 0 var(--space-2);
+  padding:0;
+  border:0;
+  background:transparent;
+  color:inherit;
+  text-align:left;
+  cursor:pointer;
+}
+
+.console-shell .console-project-health .console-box-title {
+  display:flex;
+  align-items:center;
+  min-height:20px;
+  margin:0;
+  color:var(--console-dim);
+}
+
+.console-shell .console-project-health-toggle {
+  flex-shrink:0;
+  padding:2px 7px;
+  border:1px solid var(--console-line);
+  border-radius:var(--radius-pill);
+  background:var(--console-surface);
+  color:var(--console-faint);
+  font-size:var(--text-2xs);
+  font-weight:800;
+}
+
+.console-shell .console-project-health-head:hover .console-project-health-toggle,
+.console-shell .console-project-health-head:focus-visible .console-project-health-toggle {
+  border-color:color-mix(in srgb,var(--console-info) 26%,var(--console-line));
+  color:var(--console-info);
+}
+
+.console-shell .console-project-health-head:focus-visible {
+  outline:2px solid color-mix(in srgb,var(--console-info) 28%,transparent);
+  outline-offset:3px;
+  border-radius:var(--radius-2);
+}
+
+.console-shell .console-project-list {
+  display:flex;
+  flex-direction:column;
+  gap:var(--space-2);
+}
+
+.console-shell .console-project-row {
+  display:flex;
+  flex-direction:column;
+  gap:7px;
+  width:100%;
+  padding:9px 10px;
+  border:1px solid var(--console-line);
+  border-radius:var(--radius-3);
+  background:var(--console-surface);
+  color:var(--console-ink);
+  text-align:left;
+  box-shadow:var(--shadow-1);
+  cursor:pointer;
+}
+
+.console-shell .console-project-row:hover,
+.console-shell .console-project-row:focus-visible {
+  border-color:color-mix(in srgb,var(--console-info) 26%,var(--console-line));
+  background:var(--console-info-bg);
+  outline:0;
+}
+
+.console-shell .console-project-row-top {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:var(--space-2);
+}
+
+.console-shell .console-project-name {
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  font-size:var(--text-sm);
+  font-weight:800;
+}
+
+.console-shell .console-project-score {
+  flex-shrink:0;
+  color:var(--console-dim);
+  font-family:var(--mono);
+  font-size:var(--text-xs);
+}
+
+/* KAN-979 链卡进度条：2px 中性灰细线；仅低分链（.is-low）给 accent。 */
+.console-shell .console-project-bar {
+  width:100%;
+  height:2px;
+  overflow:hidden;
+  border-radius:var(--radius-pill);
+  background:var(--console-line-soft);
+}
+
+.console-shell .console-project-bar-fill {
+  height:100%;
+  border-radius:inherit;
+  background:var(--color-line-strong);
+}
+
+.console-shell .console-project-bar.is-low .console-project-bar-fill {
+  background:var(--console-danger);
+}
+
+.console-shell .console-project-row.is-active {
+  border-color:var(--color-line-strong);
+}
+
+.console-shell .console-project-meta {
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  color:var(--console-dim);
+  font-size:var(--text-xs);
+}
+
+/* 「等你动作 N」承载全板唯一 accent 语义：等 Owner 动作（KAN-999 文案消歧）。 */
+.console-shell .console-project-meta.is-waiting {
+  color:var(--console-danger);
+  font-weight:700;
+}
+
+/* KAN-979 统一徽章语法：同字号/圆角/muted 色；绿只给通过/健康，accent 只给等 Owner。 */
+.console-shell .console-badge {
+  flex-shrink:0;
+  display:inline-flex;
+  align-items:center;
+  padding:1px 6px;
+  border:1px solid var(--console-line);
+  border-radius:var(--radius-pill);
+  background:var(--console-surface);
+  color:var(--console-dim);
+  font-family:var(--mono);
+  font-size:var(--text-2xs);
+  font-weight:650;
+  line-height:1.5;
+  white-space:nowrap;
+}
+
+.console-shell .console-badge.tone-ok {
+  color:var(--console-ok);
+  border-color:color-mix(in srgb,var(--console-ok) 30%,var(--console-line));
+}
+
+.console-shell .console-badge.tone-ink {
+  color:var(--console-ink);
+}
+
+.console-shell .console-badge.tone-accent {
+  color:var(--console-danger);
+  border-color:color-mix(in srgb,var(--console-danger) 30%,var(--console-line));
+}
+
+.console-shell .console-governance-burden {
+  margin-bottom:var(--space-6);
+}
+
+.console-shell .console-gov-head {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:var(--space-2);
+  margin-bottom:var(--space-2);
+}
+
+.console-shell .console-gov-head .console-box-title {
+  display:flex;
+  align-items:center;
+  min-height:20px;
+  margin:0;
+  color:var(--console-dim);
+}
+
+.console-shell .console-gov-count {
+  flex-shrink:0;
+  padding:2px 6px;
+  border:1px solid var(--console-line);
+  border-radius:var(--radius-pill);
+  background:var(--console-surface);
+  color:var(--console-faint);
+  font-family:var(--mono);
+  font-size:var(--text-2xs);
+}
+
+/* KAN-979 去数字墙：四格统计退役，改一句陈述行（.console-gov-statement）。 */
+.console-shell .console-gov-statement {
+  margin-bottom:var(--space-2);
+  color:var(--console-dim);
+  font-size:var(--text-sm);
+  line-height:var(--leading-normal);
+}
+
+.console-shell .console-gov-statement .is-waiting {
+  color:var(--console-danger);
+  font-weight:750;
+}
+
+.console-shell .console-gov-metrics {
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:6px;
+  margin-bottom:var(--space-2);
+}
+
+.console-shell .console-gov-metric {
+  min-width:0;
+  padding:7px 5px;
+  border:1px solid var(--console-line-soft);
+  border-radius:var(--radius-2);
+  background:var(--console-surface-2);
+  text-align:center;
+}
+
+.console-shell .console-gov-metric-n {
+  font-family:var(--mono);
+  font-size:var(--text-md);
+  font-weight:850;
+  color:var(--console-ink);
+}
+
+.console-shell .console-gov-metric-l {
+  margin-top:2px;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  color:var(--console-dim);
+  font-size:var(--text-2xs);
+}
+
+.console-shell .console-gov-run-stack {
+  display:grid;
+  grid-template-columns:1fr;
+  gap:6px;
+  margin-bottom:var(--space-2);
+}
+
+.console-shell .console-gov-rows {
+  display:flex;
+  flex-direction:column;
+  gap:var(--space-2);
+}
+
+.console-shell .console-gov-row {
+  display:flex;
+  flex-direction:column;
+  gap:7px;
+  width:100%;
+  padding:9px 10px;
+  border:1px solid var(--console-line);
+  border-radius:var(--radius-3);
+  background:var(--console-surface);
+  color:var(--console-ink);
+  text-align:left;
+  box-shadow:var(--shadow-1);
+}
+
+.console-shell .console-gov-row-top {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:var(--space-2);
+}
+
+/* KAN-979：分组标题与「自治理后台 N 项」折叠行字级统一（text-sm/750）。 */
+.console-shell .console-gov-row-name {
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  font-size:var(--text-sm);
+  font-weight:750;
+}
+
+.console-shell .console-gov-row-count {
+  flex-shrink:0;
+  color:var(--console-dim);
+  font-family:var(--mono);
+  font-size:var(--text-xs);
+}
+
+.console-shell .console-gov-row-meta {
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  color:var(--console-dim);
+  font-size:var(--text-xs);
+}
+
+.console-shell .console-gov-task-list {
+  display:flex;
+  flex-direction:column;
+  gap:5px;
+}
+
+.console-shell .console-gov-key-empty {
+  padding:3px 1px;
+  color:var(--console-faint);
+  font-size:var(--text-xs);
+  font-weight:750;
+}
+
+.console-shell .console-gov-task {
+  display:flex;
+  flex-direction:column;
+  align-items:stretch;
+  gap:3px;
+  width:100%;
+  min-height:30px;
+  padding:6px 7px;
+  border:1px solid var(--console-line-soft);
+  border-radius:var(--radius-2);
+  background:var(--console-surface-2);
+  color:var(--console-ink);
+  text-align:left;
+  cursor:pointer;
+}
+
+.console-shell .console-gov-task.is-background {
+  border-color:var(--console-line-soft);
+  background:color-mix(in srgb,var(--console-surface-2) 76%,transparent);
+  color:var(--console-dim);
+}
+
+.console-shell .console-gov-task:hover,
+.console-shell .console-gov-task:focus-visible {
+  border-color:color-mix(in srgb,var(--console-info) 26%,var(--console-line));
+  background:var(--console-info-bg);
+  outline:0;
+}
+
+.console-shell .console-gov-task-title {
+  min-width:0;
+  overflow:visible;
+  white-space:normal;
+  font-size:var(--text-xs);
+  font-weight:800;
+  line-height:1.35;
+}
+
+.console-shell .console-gov-task-meta {
+  color:var(--console-faint);
+  font-family:var(--mono);
+  font-size:var(--text-2xs);
+  white-space:normal;
+  line-height:1.3;
+}
+
+.console-shell .console-gov-background {
+  padding-top:6px;
+  border-top:1px dashed var(--console-line-soft);
+}
+
+.console-shell .console-gov-background summary {
+  display:flex;
+  align-items:center;
+  min-height:22px;
+  color:var(--console-faint);
+  font-size:var(--text-sm);
+  font-weight:750;
+  cursor:pointer;
+  list-style:none;
+}
+
+.console-shell .console-gov-background summary::-webkit-details-marker {
+  display:none;
+}
+
+.console-shell .console-gov-background[open] summary {
+  margin-bottom:5px;
+}
+
+/* KAN-979 最近体检/最近自检：压成一行状态（名 + 结论徽章 + 关键数/时间 + 行尾小按钮），
+   撤色底卡框——结论 tone 只落在徽章字色上，背景一律中性。 */
+.console-shell .console-gov-run-status {
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:4px 8px;
+  padding:5px 0;
+  border:0;
+  border-bottom:1px solid var(--console-line-soft);
+  border-radius:0;
+  background:transparent;
+}
+
+.console-shell .console-gov-run-main {
+  display:flex;
+  align-items:center;
+  gap:6px;
+  flex:0 0 auto;
+}
+
+.console-shell .console-gov-run-label {
+  color:var(--console-dim);
+  font-size:var(--text-xs);
+  font-weight:850;
+}
+
+.console-shell .console-gov-run-pill {
+  flex-shrink:0;
+  padding:1px 6px;
+  border:1px solid var(--console-line);
+  border-radius:var(--radius-pill);
+  background:var(--console-surface);
+  color:var(--console-dim);
+  font-family:var(--mono);
+  font-size:var(--text-2xs);
+  font-weight:650;
+  white-space:nowrap;
+}
+
+.console-shell .console-gov-run-status.tone-good .console-gov-run-pill {
+  color:var(--console-ok);
+  border-color:color-mix(in srgb,var(--console-ok) 30%,var(--console-line));
+}
+
+.console-shell .console-gov-run-status.tone-bad .console-gov-run-pill {
+  color:var(--console-ink);
+  border-color:var(--color-line-strong);
+}
+
+.console-shell .console-gov-run-meta {
+  flex:1 1 auto;
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  color:var(--console-faint);
+  font-size:var(--text-2xs);
+  line-height:1.35;
+}
+
+.console-shell .console-gov-run-actions {
+  display:flex;
+  align-items:center;
+  gap:6px;
+  flex:0 0 auto;
+  margin-left:auto;
+}
+
+.console-shell .console-gov-run-actions button {
+  min-height:20px;
+  padding:0 4px;
+  border:0;
+  border-radius:var(--radius-1);
+  background:transparent;
+  color:var(--console-faint);
+  font-size:var(--text-2xs);
+  font-weight:750;
+  text-decoration:underline;
+  text-underline-offset:2px;
+  cursor:pointer;
+}
+
+.console-shell .console-gov-run-actions button:disabled {
+  opacity:.46;
+  cursor:not-allowed;
+}
+
+.console-shell .console-gov-run-actions button:hover,
+.console-shell .console-gov-run-actions button:focus-visible {
+  color:var(--color-primary);
+  outline:0;
+}
+
+.console-shell .console-gov-run-actions button:disabled:hover {
+  color:var(--console-faint);
+}
+
+.console-shell .console-gov-actions {
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:6px;
+  margin-top:var(--space-2);
+}
+
+.console-shell .console-gov-action {
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:5px;
+  min-width:0;
+  min-height:31px;
+  padding:0 7px;
+  border:1px solid var(--console-line);
+  border-radius:var(--radius-2);
+  background:var(--console-surface);
+  color:var(--console-ink);
+  font-size:var(--text-xs);
+  font-weight:850;
+  cursor:pointer;
+}
+
+.console-shell .console-gov-action.tone-primary {
+  background:color-mix(in srgb,var(--console-info) 10%,var(--console-surface));
+}
+
+.console-shell .console-gov-action.tone-run.is-running,
+.console-shell .console-gov-action.tone-run:disabled {
+  border-color:color-mix(in srgb,var(--console-warn) 28%,var(--console-line));
+  background:var(--console-warn-bg);
+  color:var(--console-dim);
+  cursor:wait;
+}
+
+.console-shell .console-gov-action:hover,
+.console-shell .console-gov-action:focus-visible {
+  border-color:color-mix(in srgb,var(--color-primary) 35%,var(--console-line));
+  color:var(--color-primary);
+  outline:0;
+}
+
+.console-shell .console-gov-action svg {
+  width:14px;
+  height:14px;
+  flex:0 0 14px;
+}
+
+.console-shell .console-gov-action span {
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+.console-shell .console-dynamic-list {
+  display:flex;
+  flex-direction:column;
+  gap:var(--space-2);
+  margin:var(--space-2) 0 var(--space-3);
+}
+
+/* KAN-979 米黄/彩色大底退役：动态卡一律浅灰细边 + 中性底，状态语义收进右上徽章。 */
+.console-shell .console-dynamic-card {
+  padding:10px;
+  border:1px solid var(--console-line-soft);
+  border-radius:var(--radius-3);
+  background:var(--console-surface);
+}
+
+.console-shell .console-dynamic-card.tone-fresh,
+.console-shell .console-dynamic-card.tone-stale,
+.console-shell .console-dynamic-card.tone-running {
+  border-color:var(--console-line-soft);
+  background:var(--console-surface);
+}
+
+.console-shell .console-dynamic-card.tone-error {
+  border-color:var(--color-line-strong);
+  background:var(--console-surface);
+}
+
+.console-shell .console-dynamic-top {
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:var(--space-2);
+}
+
+.console-shell .console-dynamic-title {
+  min-width:0;
+  font-size:var(--text-md);
+  font-weight:800;
+  line-height:1.35;
+}
+
+.console-shell .console-dynamic-status {
+  flex-shrink:0;
+  font-size:var(--text-2xs);
+  font-family:var(--mono);
+  color:var(--console-dim);
+  border:1px solid var(--console-line);
+  border-radius:var(--radius-pill);
+  padding:2px 6px;
+  background:var(--console-surface);
+}
+
+.console-shell .console-dynamic-meta,
+.console-shell .console-dynamic-summary,
+.console-shell .console-dynamic-sources,
+.console-shell .console-dynamic-error {
+  margin-top:6px;
+  font-size:var(--text-xs);
+  line-height:1.45;
+  color:var(--console-dim);
+  word-break:break-word;
+}
+
+.console-shell .console-dynamic-meta {
+  font-family:var(--mono);
+}
+
+.console-shell .console-dynamic-error {
+  color:var(--console-danger);
+}
+
+/* KAN-979 三个大按钮改一行文字按钮。 */
+.console-shell .console-dynamic-actions {
+  display:flex;
+  align-items:center;
+  gap:var(--space-4);
+  margin-top:var(--space-2);
+}
+
+.console-shell .console-dynamic-btn {
+  min-width:0;
+  padding:0;
+  border:0;
+  background:transparent;
+  color:var(--console-dim);
+  font-size:var(--text-xs);
+  font-weight:750;
+  text-decoration:underline;
+  text-underline-offset:2px;
+  cursor:pointer;
+}
+
+.console-shell .console-dynamic-btn:hover:not(:disabled),
+.console-shell .console-dynamic-btn:focus-visible:not(:disabled) {
+  color:var(--color-primary);
+}
+
+.console-shell .console-dynamic-btn:disabled {
+  cursor:not-allowed;
+  opacity:.55;
+  text-decoration:none;
+}
+
+/* KAN-979 证据不裸奔：绝对路径压成行内小链接（名字可点开，⧉ 复制，hover title 带全量）。 */
+.console-shell .console-dynamic-source-ref {
+  display:inline-flex;
+  align-items:center;
+  gap:2px;
+  margin-left:var(--space-2);
+}
+
+.console-shell .console-dynamic-source-ref:first-child {
+  margin-left:0;
+}
+
+.console-shell .console-dynamic-source-link,
+.console-shell .console-dynamic-source-copy {
+  padding:0;
+  border:0;
+  background:transparent;
+  color:var(--console-dim);
+  font-family:var(--mono);
+  font-size:var(--text-2xs);
+  cursor:pointer;
+}
+
+.console-shell .console-dynamic-source-link {
+  text-decoration:underline;
+  text-underline-offset:2px;
+}
+
+.console-shell .console-dynamic-source-link:hover,
+.console-shell .console-dynamic-source-copy:hover {
+  color:var(--color-primary);
+}
+
+.console-shell .console-roster-row {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:var(--space-3);
+  padding:var(--space-2) 0;
+  border-bottom:1px solid var(--console-line);
+  font-size:var(--text-md);
+}
+
+.console-shell .console-roster-row:last-child {
+  border-bottom:0;
+}
+
+.console-shell .console-roster-name {
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  font-weight:700;
+}
+
+.console-shell .console-roster-meta {
+  flex-shrink:0;
+  color:var(--console-dim);
+  font-size:var(--text-xs);
+}
+
+.console-shell .console-dot {
+  display:inline-block;
+  width:7px;
+  height:7px;
+  margin-right:7px;
+  border-radius:var(--radius-pill);
+  background:var(--color-line-strong);
+  vertical-align:1px;
+}
+
+.console-shell .console-dot-on {
+  background:var(--console-info);
+  box-shadow:0 0 0 3px color-mix(in srgb,var(--console-info) 16%,transparent);
+}
+
+.console-shell .console-bridge-group {
+  margin:10px 0 2px;
+  padding-top:var(--space-2);
+  border-top:1px dashed var(--console-line);
+  color:var(--console-faint);
+  font-size:var(--text-xs);
+  font-weight:700;
+  letter-spacing:.04em;
+}
+
+.console-shell .console-bridge-group:first-of-type {
+  margin-top:0;
+  padding-top:0;
+  border-top:0;
+}
+
+.console-shell .console-link {
+  display:flex;
+  width:100%;
+  justify-content:space-between;
+  align-items:center;
+  gap:var(--space-3);
+  padding:var(--space-2) 0;
+  background:transparent;
+  border:0;
+  border-bottom:1px solid var(--console-line);
+  color:var(--console-ink);
+  cursor:pointer;
+  text-decoration:none;
+  font-size:var(--text-md);
+  font-weight:700;
+  text-align:left;
+}
+
+.console-shell .console-link:hover,
+.console-shell .console-link:focus-visible {
+  color:var(--color-primary);
+}
+
+.console-shell .console-link:focus-visible {
+  outline:2px solid color-mix(in srgb,var(--color-primary) 24%,transparent);
+  outline-offset:3px;
+}
+
+.console-shell .console-link:last-child {
+  border-bottom:0;
+}
+
+.console-shell .console-link-meta {
+  color:var(--console-faint);
+  font-size:var(--text-xs);
+  font-family:var(--mono);
+  white-space:nowrap;
+  font-weight:400;
+}
+
+.console-shell .console-bridge-action:disabled {
+  cursor:wait;
+  opacity:.68;
+}
+
+.console-shell .console-morning-batch {
+  border-bottom:1px solid var(--console-line);
+}
+
+.console-shell .console-morning-batch-action {
+  border-bottom:0;
+}
+
+.console-shell .console-morning-batch-action:disabled {
+  cursor:wait;
+  opacity:.62;
+}
+
+.console-shell .console-morning-batch-results {
+  padding:0 0 var(--space-2);
+}
+
+.console-shell .console-morning-batch-step {
+  padding:7px 0;
+  border-top:1px dashed var(--console-line);
+  color:var(--console-ink);
+  font-size:var(--text-sm);
+}
+
+.console-shell .console-morning-batch-step.is-failed {
+  font-weight:700;
+}
+
+.console-shell .console-morning-batch-evidence {
+  margin-top:3px;
+  color:var(--console-faint);
+  font-family:var(--mono);
+  font-size:var(--text-xs);
+  font-weight:400;
+  overflow-wrap:anywhere;
+}
+
+.console-shell .console-bridge-action[data-bridge-state="ready"] .console-link-meta {
+  color:var(--console-ok);
+  font-weight:800;
+}
+
+.console-shell .console-bridge-action[data-bridge-state="pending"] .console-link-meta {
+  color:var(--console-warn);
+  font-weight:800;
+}
+
+.console-shell .console-network {
+  margin-top:var(--space-3);
+  padding-top:10px;
+  border-top:1px dashed var(--console-line);
+}
+
+.console-shell .console-network-head {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:var(--space-2);
+  margin-bottom:var(--space-2);
+  color:var(--console-faint);
+  font-size:var(--text-xs);
+  font-weight:800;
+  letter-spacing:.04em;
+}
+
+.console-shell .console-network-actions {
+  display:grid;
+  grid-template-columns:repeat(2, minmax(0, 1fr));
+  gap:var(--space-2);
+  margin-bottom:var(--space-2);
+}
+
+.console-shell .console-network-action {
+  min-height:32px;
+  padding:0 10px;
+  border:1px solid var(--console-line);
+  border-radius:var(--radius-2);
+  background:color-mix(in srgb,var(--console-info) 9%,var(--console-surface));
+  color:var(--console-ink);
+  font-size:var(--text-xs);
+  font-weight:850;
+  cursor:pointer;
+}
+
+.console-shell .console-network-action:hover,
+.console-shell .console-network-action:focus-visible {
+  border-color:color-mix(in srgb,var(--color-primary) 35%,var(--console-line));
+  color:var(--color-primary);
+}
+
+.console-shell .console-network-action:focus-visible {
+  outline:2px solid color-mix(in srgb,var(--color-primary) 18%,transparent);
+  outline-offset:2px;
+}
+
+.console-shell .console-network-action:disabled {
+  opacity:.62;
+  cursor:wait;
+}
+
+.console-shell .console-network-actions .console-network-action:last-child:nth-child(odd) {
+  grid-column:1 / -1;
+}
+
+.console-shell .console-network-doctor-summary {
+  display:flex;
+  flex-direction:column;
+  gap:3px;
+  margin-bottom:var(--space-2);
+  padding:9px 10px;
+  border:1px solid var(--console-line-soft);
+  border-radius:var(--radius-3);
+  background:var(--console-surface);
+}
+
+.console-shell .console-network-doctor-summary strong {
+  color:var(--console-dim);
+  font-size:var(--text-sm);
+}
+
+.console-shell .console-network-doctor-summary span {
+  color:var(--console-faint);
+  font-size:var(--text-2xs);
+  line-height:1.4;
+  overflow-wrap:anywhere;
+}
+
+.console-shell .console-network-doctor-summary.tone-good strong { color:var(--console-ok); }
+.console-shell .console-network-doctor-summary.tone-warn strong { color:var(--console-warn); }
+.console-shell .console-network-doctor-summary.tone-bad strong { color:var(--console-danger); }
+
+.console-shell .console-network-refresh {
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:28px;
+  height:28px;
+  flex:0 0 28px;
+  border:1px solid var(--console-line);
+  border-radius:var(--radius-2);
+  background:var(--console-surface);
+  color:var(--console-dim);
+  cursor:pointer;
+}
+
+.console-shell .console-network-refresh:hover,
+.console-shell .console-network-refresh:focus-visible {
+  color:var(--color-primary);
+  border-color:color-mix(in srgb,var(--color-primary) 28%,var(--console-line));
+}
+
+.console-shell .console-network-refresh:focus-visible {
+  outline:2px solid color-mix(in srgb,var(--color-primary) 18%,transparent);
+  outline-offset:2px;
+}
+
+.console-shell .console-network-refresh:disabled {
+  opacity:.62;
+  cursor:wait;
+}
+
+.console-shell .console-network-refresh svg {
+  width:15px;
+  height:15px;
+}
+
+.console-shell .console-network-refresh.is-loading svg {
+  animation:networkspin .9s linear infinite;
+}
+
+.console-shell .console-network-grid {
+  display:grid;
+  grid-template-columns:1fr;
+  gap:var(--space-2);
+}
+
+.console-shell .console-network-card {
+  padding:9px 10px;
+  border:1px solid var(--console-line-soft);
+  border-radius:var(--radius-3);
+  background:var(--console-surface);
+}
+
+.console-shell .console-network-card-title {
+  margin-bottom:var(--space-1);
+  color:var(--console-faint);
+  font-size:var(--text-2xs);
+  font-weight:800;
+  letter-spacing:.04em;
+}
+
+.console-shell .console-network-list {
+  display:flex;
+  flex-direction:column;
+}
+
+.console-shell .console-network-item {
+  display:grid;
+  grid-template-columns:minmax(0, 1fr) auto auto;
+  align-items:center;
+  gap:var(--space-2);
+  min-height:30px;
+  padding:7px 0;
+  border-bottom:1px solid var(--console-line-soft);
+}
+
+.console-shell .console-network-item:last-child {
+  border-bottom:0;
+}
+
+.console-shell .console-network-main {
+  display:flex;
+  align-items:center;
+  min-width:0;
+  gap:7px;
+}
+
+.console-shell .console-network-dot {
+  width:8px;
+  height:8px;
+  flex:0 0 8px;
+  border-radius:var(--radius-pill);
+  background:var(--color-line-strong);
+  box-shadow:0 0 0 3px color-mix(in srgb,var(--color-line-strong) 16%,transparent);
+}
+
+.console-shell .console-network-label {
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  color:var(--console-ink);
+  font-size:var(--text-sm);
+  font-weight:800;
+}
+
+.console-shell .console-network-status {
+  color:var(--console-dim);
+  font-size:var(--text-sm);
+  font-weight:800;
+  white-space:nowrap;
+}
+
+.console-shell .console-network-detail {
+  grid-column:1 / -1;
+  color:var(--console-faint);
+  font-size:var(--text-2xs);
+  line-height:1.3;
+}
+
+.console-shell .console-network-detail:empty {
+  display:none;
+}
+
+.console-shell .console-network-port {
+  min-width:40px;
+  padding:2px 7px;
+  border-radius:var(--radius-pill);
+  border:1px solid color-mix(in srgb,var(--console-info) 22%,var(--console-line));
+  background:color-mix(in srgb,var(--console-info) 8%,transparent);
+  color:var(--console-info);
+  font-family:var(--mono);
+  font-size:var(--text-xs);
+  font-weight:800;
+  text-align:center;
+}
+
+.console-shell .console-network-item.tone-good .console-network-dot {
+  background:var(--console-ok);
+  box-shadow:0 0 0 3px color-mix(in srgb,var(--console-ok) 16%,transparent);
+}
+
+.console-shell .console-network-item.tone-good .console-network-status {
+  color:var(--console-ok);
+}
+
+.console-shell .console-network-item.tone-warn .console-network-dot,
+.console-shell .console-network-item.tone-loading .console-network-dot {
+  background:var(--console-warn);
+  box-shadow:0 0 0 3px color-mix(in srgb,var(--console-warn) 14%,transparent);
+}
+
+.console-shell .console-network-item.tone-warn .console-network-status,
+.console-shell .console-network-item.tone-loading .console-network-status {
+  color:var(--console-warn);
+}
+
+.console-shell .console-network-item.tone-bad .console-network-dot {
+  background:var(--console-danger);
+  box-shadow:0 0 0 3px color-mix(in srgb,var(--console-danger) 14%,transparent);
+}
+
+.console-shell .console-network-item.tone-bad .console-network-status {
+  color:var(--console-danger);
+}
+
+/* 网络状态折叠摘要：默认一行小状态灯，点开展开完整明细 */
+.console-shell .console-network.is-collapsed .console-network-details {
+  display:none;
+}
+.console-shell .console-network-details {
+  margin-top:var(--space-2);
+}
+.console-shell .console-network-summary {
+  display:flex;
+  align-items:center;
+  gap:var(--space-2);
+  cursor:pointer;
+  min-height:28px;
+  user-select:none;
+}
+.console-shell .console-network-sum-title {
+  color:var(--console-dim);
+  font-size:var(--text-sm);
+  font-weight:800;
+}
+.console-shell .console-network-sumdots {
+  display:flex;
+  align-items:center;
+  gap:5px;
+}
+.console-shell .console-network-sumdot {
+  width:8px;
+  height:8px;
+  border-radius:var(--radius-pill);
+  background:var(--color-line-strong);
+}
+.console-shell .console-network-sumdot.tone-good { background:var(--console-ok); }
+.console-shell .console-network-sumdot.tone-warn,
+.console-shell .console-network-sumdot.tone-loading { background:var(--console-warn); }
+.console-shell .console-network-sumdot.tone-bad { background:var(--console-danger); }
+.console-shell .console-network-rollup {
+  margin-left:auto;
+  font-size:var(--text-xs);
+  font-weight:800;
+  color:var(--console-faint);
+  white-space:nowrap;
+}
+.console-shell .console-network-rollup.tone-good { color:var(--console-ok); }
+.console-shell .console-network-rollup.tone-warn { color:var(--console-warn); }
+.console-shell .console-network-rollup.tone-bad { color:var(--console-danger); }
+.console-shell .console-network-chevron {
+  color:var(--console-faint);
+  font-size:var(--text-sm);
+  line-height:1;
+}
+
+@keyframes networkspin {
+  to { transform:rotate(360deg); }
+}
+
+@media (max-width:900px) {
+  .console-shell .console-grid,
+  .console-shell .console-duty-grid,
+  .console-shell .sih-grid,
+  .console-shell .sih-scenario-layout {
+    grid-template-columns:1fr;
+  }
+
+  .console-shell .sih-rail,
+  .console-shell .sih-scenario-rail {
+    position:static;
+    border-left:0;
+    padding-left:0;
+  }
+
+  .console-shell .sih-metrics {
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+}
+
+@media (max-width:768px) {
+  #vw-console.console-shell,
+  #vw-sih-sources.console-shell {
+    padding:18px 14px 44px;
+  }
+
+  .console-shell .console-top {
+    align-items:flex-start;
+    flex-direction:column;
+  }
+
+  .console-shell .console-actions {
+    width:100%;
+  }
+
+  .console-shell .console-actions .btn {
+    flex:1;
+  }
+
+  .console-shell .console-duty-block-head {
+    align-items:flex-start;
+    flex-direction:column;
+  }
+
+  .console-shell .console-duty-source {
+    max-width:100%;
+  }
+
+  .console-shell .sih-metrics {
+    grid-template-columns:1fr;
+  }
+
+  .console-shell .sih-scenario-grid {
+    grid-template-columns:1fr;
+  }
+
+  .console-shell .sih-source-table {
+    min-width:860px;
+  }
+}
+
+/* Lil'Log-inspired console refresh: calm gray canvas, white content cards, black text emphasis. */
+#vw-console.console-shell,
+#vw-sih-sources.console-shell {
+  padding:30px 32px 52px;
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.58) 0%,rgba(255,255,255,0) 240px),
+    var(--color-canvas);
+}
+
+.console-shell .console-app {
+  width:min(1540px,100%);
+}
+
+.console-shell .console-workspace {
+  display:grid;
+  grid-template-columns:clamp(220px,18vw,280px) minmax(0,1fr);
+  gap:28px;
+  align-items:start;
+}
+
+.console-shell .console-dispatch-surface { min-width:0; }
+
+.console-shell .console-project-rail {
+  position:sticky;
+  top:94px;
+  min-height:calc(100vh - 146px);
+  display:flex;
+  flex-direction:column;
+  padding:2px 22px 18px 0;
+  border-right:1px solid var(--console-line);
+}
+
+.console-shell .console-project-rail-head {
+  display:flex;
+  align-items:baseline;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:12px;
+}
+
+.console-shell .console-project-rail-head strong {
+  font-size:16px;
+  font-weight:900;
+  letter-spacing:-.01em;
+}
+
+.console-shell .console-project-rail-head span {
+  color:var(--console-faint);
+  font-family:var(--mono);
+  font-size:10px;
+}
+
+.console-shell .console-project-create {
+  width:100%;
+  min-height:36px;
+  margin-bottom:15px;
+  padding:0 11px;
+  border:1px solid var(--console-line);
+  border-radius:7px;
+  background:var(--console-surface);
+  color:var(--console-ink);
+  text-align:left;
+  font-size:12px;
+  font-weight:800;
+  cursor:pointer;
+}
+
+.console-shell .console-project-create:hover {
+  border-color:var(--color-line-strong);
+  background:var(--console-surface-2);
+}
+
+.console-shell .console-project-list {
+  display:grid;
+  gap:3px;
+  max-height:calc(100vh - 292px);
+  overflow:auto;
+  padding-right:3px;
+}
+
+.console-shell .console-project-row {
+  width:100%;
+  min-width:0;
+  display:grid;
+  grid-template-columns:8px minmax(0,1fr);
+  align-items:start;
+  gap:9px;
+  padding:10px 9px;
+  border:1px solid transparent;
+  border-radius:7px;
+  background:transparent;
+  color:var(--console-ink);
+  text-align:left;
+  cursor:pointer;
+}
+
+.console-shell .console-project-row:hover,
+.console-shell .console-project-row:focus-visible {
+  border-color:var(--console-line);
+  background:var(--console-surface);
+  outline:0;
+}
+
+.console-shell .console-project-dot {
+  width:7px;
+  height:7px;
+  margin-top:5px;
+  border-radius:50%;
+  background:var(--console-faint);
+}
+
+.console-shell .console-project-row.tone-reply .console-project-dot { background:var(--console-danger); }
+.console-shell .console-project-row.tone-decision .console-project-dot { background:var(--console-warn); }
+.console-shell .console-project-row.tone-progress .console-project-dot { background:var(--console-info); }
+.console-shell .console-project-row.tone-complete { opacity:.62; }
+
+.console-shell .console-project-copy { min-width:0; display:grid; gap:3px; }
+.console-shell .console-project-copy strong {
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  font-size:12px;
+  font-weight:800;
+}
+.console-shell .console-project-copy small {
+  overflow:hidden;
+  color:var(--console-faint);
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  font-size:9px;
+}
+
+.console-shell .console-project-empty {
+  margin:6px 9px;
+  color:var(--console-faint);
+  font-size:11px;
+}
+
+.console-shell .console-top {
+  align-items:flex-start;
+  margin-bottom:28px;
+  padding-bottom:18px;
+  border-bottom:1px solid var(--color-line-strong);
+}
+
+.console-shell .console-brand h2 {
+  font-size:clamp(30px,4vw,42px);
+  font-weight:900;
+  letter-spacing:0;
+}
+
+.console-shell .console-me {
+  color:var(--color-text-muted);
+}
+
+.console-shell .console-action-primary,
+.console-shell .sih-action-btn.is-primary {
+  background:var(--color-text);
+  border-color:var(--color-text);
+  color:var(--color-surface);
+  box-shadow:none;
+}
+
+.console-shell .console-action-secondary,
+.console-shell .sih-action-btn,
+.console-shell .console-dispatch-btn,
+.console-shell .console-review-actions button {
+  border-radius:8px;
+}
+
+.console-shell .console-grid {
+  grid-template-columns:minmax(0,1fr) 210px;
+  gap:32px;
+}
+
+.console-shell .console-status-col {
+  border-left-color:var(--color-line);
+}
+
+.console-shell .console-status-label,
+.console-shell .console-status-row,
+.console-shell .console-dim,
+.console-shell .console-empty {
+  color:var(--color-text-muted);
+}
+
+.console-shell .console-cursor-bar {
+  margin:0 0 28px;
+  padding:0 0 14px;
+  border-bottom:1px solid var(--color-line);
+}
+
+.console-shell .console-cursor-seg {
+  color:var(--color-text);
+  font-weight:850;
+}
+
+.console-shell .console-cursor-seg.is-muted {
+  color:var(--color-text-muted);
+}
+
+.console-shell .console-lane {
+  margin-bottom:30px;
+}
+
+.console-shell .console-lane-hd {
+  margin-bottom:12px;
+  color:var(--color-text);
+  font-size:15px;
+  font-weight:900;
+}
+
+.console-shell .console-lane-count {
+  min-width:22px;
+  background:var(--color-surface);
+  color:var(--color-text-muted);
+  border-color:var(--color-line);
+}
+
+.console-shell .console-lane .console-card,
+.console-shell .console-drawer .console-card,
+.console-shell .console-project-row,
+.console-shell .console-team-block,
+.console-shell .console-roster,
+.console-shell .console-bridges,
+.console-shell .console-dynamic-card,
+.console-shell .sih-panel,
+.console-shell .sih-metric,
+.console-shell .sih-prompt-card,
+.console-shell .sih-scenario-card {
+  background:var(--color-surface);
+  border:1px solid var(--color-line);
+  border-radius:8px;
+  box-shadow:var(--shadow-1);
+}
+
+.console-shell .console-lane .console-card,
+.console-shell .console-drawer .console-card {
+  padding:14px 16px;
+  margin-bottom:10px;
+}
+
+.console-shell .console-card:hover,
+.console-shell .console-project-row:hover,
+.console-shell .console-project-row:focus-visible,
+.console-shell .sih-scenario-card:hover,
+.console-shell .sih-scenario-card:focus-visible {
+  border-color:var(--color-line-strong);
+  background:var(--color-surface);
+  box-shadow:var(--shadow-2);
+  transform:translateY(-1px);
+}
+
+.console-shell .console-card .t {
+  color:var(--color-text);
+  font-size:15px;
+  font-weight:850;
+  line-height:1.38;
+  margin-bottom:6px;
+}
+
+.console-shell .console-lane-attention .console-card .t {
+  font-weight:760;
+}
+
+.console-shell .console-card .b {
+  color:var(--color-text-muted) !important;
+}
+
+.console-shell .console-card.is-pending-ai-dispatch,
+.console-shell .console-card.is-console-unrouted {
+  border-left:1px solid var(--color-line) !important;
+  padding-left:16px;
+  background:var(--color-surface);
+}
+
+.console-shell .console-card .console-chip-pending-ai,
+.console-shell .console-card .console-chip-unrouted {
+  background:var(--color-surface-muted) !important;
+  border-color:var(--color-line) !important;
+  color:var(--color-text-muted) !important;
+}
+
+.console-shell .console-drawers {
+  margin-top:28px;
+  padding-top:16px;
+  border-top-color:var(--color-line);
+}
+
+.console-shell .console-drawer > summary {
+  color:var(--color-text-muted);
+  font-weight:850;
+}
+
+.console-shell .console-panorama {
+  padding-bottom:18px;
+  margin-bottom:24px;
+  border-bottom:1px solid var(--color-line);
+}
+
+.console-shell .console-project-map-link,
+.console-shell .console-project-row {
+  border-radius:8px;
+}
+
+/* KAN-979：进度条改中性灰细线（覆盖此处旧的近黑填充），低分链 accent 在上方规则。 */
+.console-shell .console-project-bar-fill {
+  background:var(--color-line-strong);
+}
+
+.console-shell .sih-scenario-layout {
+  gap:32px;
+}
+
+.console-shell .sih-scenario-card {
+  min-height:190px;
+  padding:20px;
+}
+
+.console-shell .sih-scenario-card.is-active {
+  border-color:var(--color-text);
+  box-shadow:0 0 0 1px var(--color-text),var(--shadow-2);
+}
+
+.console-shell .sih-scenario-card h3 {
+  font-size:21px;
+  font-weight:900;
+}
+
+.console-shell .sih-scenario-card p {
+  color:var(--color-text-muted);
+  font-size:14px;
+  line-height:1.58;
+}
+
+.console-shell .sih-scenario-card-actions {
+  margin-top:auto;
+}
+
+.console-shell .sih-scenario-rail {
+  border-left-color:var(--color-line);
+}
+
+@media (max-width:768px) {
+  #vw-console.console-shell,
+  #vw-sih-sources.console-shell {
+    padding:18px 14px 44px;
+  }
+
+  .console-shell .console-top {
+    margin-bottom:22px;
+  }
+
+  .console-shell .console-grid {
+    grid-template-columns:1fr;
+  }
+
+  .console-shell .console-status-col {
+    border-left:0;
+    border-top:1px solid var(--color-line);
+    padding:14px 0 0;
+  }
+}
+
+/* ── KAN-998 治理顶层视图：决策流分组的三段式排版（仅布局，不引新色）────── */
+#vw-governance.console-shell .gov-view-section {
+  margin-bottom:var(--space-8);
+  padding-bottom:var(--space-6);
+  border-bottom:1px solid var(--console-line-soft);
+}
+
+#vw-governance.console-shell .gov-view-section:last-child {
+  margin-bottom:0;
+  padding-bottom:0;
+  border-bottom:0;
+}
+
+#vw-governance.console-shell .gov-view-section-hint {
+  color:var(--console-faint);
+  font-size:var(--text-2xs);
+}
+
+#vw-governance.console-shell .gov-view-health {
+  margin-bottom:var(--space-4);
+}
+
+/* KAN-1002：Flow 详情块迁治理页（项目健康一览下方，链行点击页内展开）。 */
+#vw-governance.console-shell .gov-view-flow {
+  margin-bottom:var(--space-4);
+}
+
+/* ── KAN-1001 人闸值守段：断言主干行（白话+源指针）+ 折叠明细，纯布局零新色 ── */
+#vw-governance.console-shell .gov-duty-lines {
+  display:flex;
+  flex-direction:column;
+  gap:var(--space-2);
+}
+
+#vw-governance.console-shell .gov-duty-line {
+  display:flex;
+  align-items:baseline;
+  justify-content:space-between;
+  gap:var(--space-3);
+  min-width:0;
+}
+
+#vw-governance.console-shell .gov-duty-line-text {
+  color:var(--console-dim);
+  font-size:var(--text-sm);
+  line-height:var(--leading-normal);
+  min-width:0;
+}
+
+#vw-governance.console-shell .gov-duty-line-text.is-waiting {
+  color:var(--console-danger);
+  font-weight:750;
+}
+
+#vw-governance.console-shell .gov-duty-line .console-duty-source {
+  flex:0 0 auto;
+}
+
+#vw-governance.console-shell .gov-view-section > .gov-duty-line {
+  margin-top:var(--space-2);
+}
+
+#vw-governance.console-shell .gov-duty-fold {
+  margin-top:var(--space-3);
+}
+
+#vw-governance.console-shell .gov-duty-fold-body {
+  margin-top:var(--space-2);
+}
+
+#vw-governance.console-shell .gov-view-matrix-mount {
+  margin-top:var(--space-4);
+}
+
+#vw-governance.console-shell .gov-maint-list {
+  display:flex;
+  flex-direction:column;
+  gap:var(--space-2);
+  margin-top:var(--space-2);
+}
+
+#vw-governance.console-shell .gov-maint-event {
+  padding:var(--space-2) var(--space-3);
+  border:1px solid var(--console-line);
+  border-radius:var(--radius-2);
+  background:var(--console-surface);
+}
+
+#vw-governance.console-shell .gov-maint-event-head {
+  display:flex;
+  align-items:baseline;
+  justify-content:space-between;
+  gap:var(--space-2);
+}
+
+#vw-governance.console-shell .gov-maint-event-action {
+  color:var(--console-ink);
+  font-weight:750;
+  font-size:var(--text-xs);
+}
+
+#vw-governance.console-shell .gov-maint-event-when {
+  color:var(--console-faint);
+  font-family:var(--mono);
+  font-size:var(--text-2xs);
+}
+
+#vw-governance.console-shell .gov-maint-event-meta {
+  margin-top:2px;
+  color:var(--console-dim);
+  font-size:var(--text-2xs);
+}
+
+#vw-governance.console-shell .gov-maint-event-reason {
+  margin-top:4px;
+  color:var(--console-dim);
+  font-size:var(--text-2xs);
+  line-height:var(--leading-normal);
+}
+
+/* 调度台分流账「治理区」计数改可点击链接（切到治理页），沿用 diversion-note 灰阶。 */
+.console-diversion-link {
+  padding:0;
+  border:0;
+  background:none;
+  color:inherit;
+  font:inherit;
+  text-decoration:underline;
+  text-underline-offset:2px;
+  cursor:pointer;
+}
+
+.console-diversion-link:hover,
+.console-diversion-link:focus-visible {
+  color:var(--color-primary);
+  outline:0;
+}
+
+/* ── 2026-07-23 调度台收束：编辑部式运行索引 + 互斥后台区 ─────────────── */
+.console-shell .console-grid {
+  grid-template-columns:minmax(0,1fr) 248px;
+  gap:40px;
+}
+
+.console-shell .console-status-col {
+  position:sticky;
+  top:18px;
+  padding-left:20px;
+  border-left:1px solid var(--color-line);
+}
+
+.console-shell .console-rail-panel {
+  padding:0;
+  border:0;
+  border-top:1px solid var(--color-line);
+}
+
+.console-shell .console-rail-panel:first-child {
+  border-top:2px solid var(--color-text);
+}
+
+.console-shell .console-rail-panel > summary {
+  list-style:none;
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto 12px;
+  align-items:center;
+  gap:8px;
+  min-height:48px;
+  cursor:pointer;
+  user-select:none;
+}
+
+.console-shell .console-rail-panel > summary::-webkit-details-marker {
+  display:none;
+}
+
+.console-shell .console-rail-panel-title {
+  min-width:0;
+  color:var(--color-text);
+  font-size:13px;
+  font-weight:850;
+  letter-spacing:-0.01em;
+}
+
+.console-shell .console-rail-panel-meta {
+  color:var(--color-text-muted);
+  font-family:var(--mono);
+  font-size:10px;
+  white-space:nowrap;
+}
+
+.console-shell .console-rail-panel-meta.is-danger {
+  color:var(--console-danger);
+}
+
+.console-shell .console-rail-panel-chevron {
+  color:var(--color-text-faint);
+  font-size:18px;
+  line-height:1;
+  transform:rotate(0deg);
+  transition:transform .18s ease;
+}
+
+.console-shell .console-rail-panel[open] .console-rail-panel-chevron {
+  transform:rotate(90deg);
+}
+
+.console-shell .console-rail-panel-body {
+  padding:0 0 14px;
+  animation:consoleRailReveal .18s ease-out;
+}
+
+@keyframes consoleRailReveal {
+  from { opacity:0; transform:translateY(-4px); }
+  to { opacity:1; transform:translateY(0); }
+}
+
+.console-shell .console-status-rows {
+  gap:0;
+}
+
+.console-shell .console-status-row {
+  min-height:30px;
+  padding:6px 0;
+  border-bottom:1px solid color-mix(in srgb,var(--color-line) 58%,transparent);
+  font-size:11px;
+}
+
+.console-shell .console-status-row:last-child {
+  border-bottom:0;
+}
+
+.console-shell .console-status-label {
+  color:var(--color-text-muted);
+  font-size:11px;
+}
+
+.console-shell .console-status-value {
+  color:var(--color-text);
+  font-family:var(--mono);
+  font-size:10px;
+}
+
+.console-shell .console-status-value.is-warn {
+  color:var(--console-warn);
+}
+
+.console-shell .console-status-value.is-danger {
+  color:var(--console-danger);
+  font-weight:800;
+}
+
+.console-shell .console-rail-item {
+  border-bottom:1px solid color-mix(in srgb,var(--color-line) 58%,transparent);
+}
+
+.console-shell .console-rail-item:last-child {
+  border-bottom:0;
+}
+
+.console-shell .console-rail-row {
+  min-height:34px;
+  padding:7px 0;
+  font-size:12px;
+}
+
+.console-shell .console-rail-row:hover,
+.console-shell .console-rail-row:focus-visible {
+  outline:0;
+  background:linear-gradient(90deg,transparent,color-mix(in srgb,var(--color-surface-muted) 76%,transparent));
+}
+
+.console-shell .console-rail-name {
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  font-weight:720;
+}
+
+.console-shell .console-rail-meta {
+  color:var(--color-text-muted);
+  font-family:var(--mono);
+  font-size:10px;
+}
+
+.console-shell .console-rail-studio {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  min-height:42px;
+  padding:7px 0;
+}
+
+.console-shell .console-rail-studio-actions {
+  display:flex;
+  flex-direction:column;
+  align-items:flex-end;
+  gap:3px;
+}
+
+.console-shell .console-rail-studio-action {
+  padding:0;
+  border:0;
+  background:transparent;
+  color:var(--color-text-muted);
+  font-family:var(--mono);
+  font-size:10px;
+  cursor:pointer;
+}
+
+.console-shell .console-rail-studio-action:hover,
+.console-shell .console-rail-studio-action:focus-visible {
+  color:var(--color-text);
+  text-decoration:underline;
+  text-underline-offset:3px;
+  outline:0;
+}
+
+/* 网络正常时只留一行结论；节点明细仍可展开，不再用无标签圆点占宽度。 */
+.console-shell .console-status-col .console-network {
+  margin-top:10px;
+  padding-top:10px;
+  border-top:1px solid var(--color-line);
+}
+
+.console-shell .console-status-col .console-network-summary {
+  min-height:30px;
+  gap:8px;
+}
+
+.console-shell .console-status-col .console-network-sum-title {
+  color:var(--color-text-muted);
+  font-size:11px;
+  font-weight:650;
+  white-space:nowrap;
+}
+
+.console-shell .console-status-col .console-network-sumdots {
+  display:none;
+}
+
+.console-shell .console-status-col .console-network-rollup {
+  font-family:var(--mono);
+  font-size:10px;
+}
+
+/* 项目层不再单开一级首页：压成调度台内一条可核对、可下钻的组合态势。 */
+.console-shell .console-project-posture {
+  display:grid;
+  grid-template-columns:minmax(260px,1fr) auto auto;
+  align-items:center;
+  gap:18px;
+  margin:18px 0 28px;
+  padding:15px 0 16px;
+  border-top:1px solid var(--color-line);
+  border-bottom:1px solid var(--color-line);
+}
+
+.console-shell .console-project-posture-lead {
+  display:grid;
+  grid-template-columns:auto minmax(0,1fr);
+  align-items:baseline;
+  column-gap:12px;
+  row-gap:3px;
+  min-width:0;
+}
+
+.console-shell .console-project-posture-kicker {
+  grid-row:1 / span 2;
+  align-self:center;
+  color:var(--color-text-muted);
+  font-size:10px;
+  font-weight:900;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  writing-mode:vertical-rl;
+  transform:rotate(180deg);
+}
+
+.console-shell .console-project-posture-lead strong {
+  min-width:0;
+  color:var(--color-text);
+  font-size:14px;
+  font-weight:900;
+  letter-spacing:-.015em;
+}
+
+.console-shell .console-project-posture-summary {
+  color:var(--color-text-muted);
+  font-size:10px;
+}
+
+.console-shell .console-project-posture-metrics {
+  display:flex;
+  align-items:center;
+  gap:14px;
+}
+
+.console-shell .console-project-posture-metric {
+  display:flex;
+  align-items:baseline;
+  gap:5px;
+  white-space:nowrap;
+}
+
+.console-shell .console-project-posture-metric strong {
+  color:var(--color-text);
+  font-family:var(--mono);
+  font-size:15px;
+  font-weight:800;
+}
+
+.console-shell .console-project-posture-metric span {
+  color:var(--color-text-muted);
+  font-size:10px;
+}
+
+.console-shell .console-project-posture-metric.is-attention strong,
+.console-shell .console-project-posture-metric.is-attention span {
+  color:var(--console-danger);
+}
+
+.console-shell .console-project-posture-pending {
+  grid-column:1 / -1;
+  justify-self:start;
+  margin-top:-6px;
+  padding:3px 7px;
+  border:1px solid color-mix(in srgb,var(--console-warn) 34%,var(--color-line));
+  border-radius:999px;
+  color:var(--console-warn);
+  font-size:9px;
+}
+
+.console-shell .console-project-attention-list {
+  grid-column:1 / -1;
+  display:grid;
+  gap:6px;
+  padding-top:2px;
+}
+
+.console-shell .console-project-attention-item {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:18px;
+  width:100%;
+  padding:10px 12px;
+  border:1px solid color-mix(in srgb,var(--console-danger) 24%,var(--color-line));
+  border-left:3px solid var(--console-danger);
+  border-radius:8px;
+  background:var(--color-surface);
+  color:var(--color-text);
+  text-align:left;
+  cursor:pointer;
+}
+
+.console-shell .console-project-attention-item:hover,
+.console-shell .console-project-attention-item:focus-visible {
+  border-color:color-mix(in srgb,var(--console-danger) 48%,var(--color-line));
+  outline:0;
+}
+
+.console-shell .console-project-attention-copy {
+  display:grid;
+  gap:2px;
+  min-width:0;
+}
+
+.console-shell .console-project-attention-copy strong {
+  overflow:hidden;
+  color:var(--color-text);
+  font-size:12px;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+.console-shell .console-project-attention-copy span,
+.console-shell .console-project-attention-cue {
+  color:var(--color-text-muted);
+  font-size:10px;
+}
+
+.console-shell .console-project-attention-cue {
+  flex:none;
+  font-family:var(--mono);
+}
+
+/* 后台区只把互斥运行状态做成主卡；标签、来源、历史降成索引。 */
+.console-shell .console-backstage {
+  margin-top:36px;
+  padding-top:0;
+  border-top:2px solid var(--color-text);
+}
+
+.console-shell .console-backstage-cluster {
+  padding:20px 0 22px;
+  border-bottom:1px solid var(--color-line);
+}
+
+.console-shell .console-backstage-cluster:last-child {
+  border-bottom:0;
+}
+
+.console-shell .console-backstage-head {
+  display:grid;
+  grid-template-columns:140px minmax(0,1fr);
+  align-items:baseline;
+  gap:18px;
+  margin-bottom:14px;
+}
+
+.console-shell .console-backstage-head h3 {
+  margin:0;
+  color:var(--color-text);
+  font-size:14px;
+  font-weight:900;
+  letter-spacing:-0.01em;
+}
+
+.console-shell .console-backstage-head p {
+  margin:0;
+  color:var(--color-text-muted);
+  font-size:11px;
+  line-height:1.45;
+}
+
+.console-shell .console-backstage-grid {
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+}
+
+.console-shell .console-backstage .console-drawer {
+  min-width:0;
+  margin:0;
+  border:1px solid var(--color-line);
+  border-radius:10px;
+  background:var(--color-surface);
+  overflow:hidden;
+  transition:border-color .18s ease,box-shadow .18s ease,transform .18s ease;
+}
+
+.console-shell .console-backstage .console-drawer:hover {
+  border-color:var(--color-line-strong);
+  box-shadow:var(--shadow-1);
+  transform:translateY(-1px);
+}
+
+.console-shell .console-backstage .console-drawer[open] {
+  grid-column:1 / -1;
+  box-shadow:var(--shadow-2);
+  transform:none;
+}
+
+.console-shell .console-backstage .console-drawer > summary {
+  min-height:52px;
+  padding:0 14px;
+  color:var(--color-text);
+  font-size:13px;
+  font-weight:850;
+}
+
+.console-shell .console-backstage .console-drawer > summary::before {
+  margin-right:2px;
+  color:var(--color-text-faint);
+}
+
+.console-shell .console-backstage .console-drawer .console-lane-count {
+  margin-left:auto;
+  min-width:26px;
+  padding:3px 8px;
+  border:1px solid var(--color-line);
+  border-radius:999px;
+  background:var(--color-surface-muted);
+  color:var(--color-text-muted);
+  font-family:var(--mono);
+  font-size:10px;
+  text-align:center;
+}
+
+.console-shell .console-backstage .console-drawer-body {
+  padding:12px 14px 14px;
+  border-top:1px solid var(--color-line);
+  background:color-mix(in srgb,var(--color-surface-muted) 44%,var(--color-surface));
+  animation:consoleRailReveal .2s ease-out;
+}
+
+.console-shell .console-backstage-cluster.is-alert {
+  border-bottom-color:color-mix(in srgb,var(--console-danger) 22%,var(--color-line));
+}
+
+.console-shell .console-backstage .console-drawer.is-alert > summary {
+  color:var(--console-danger);
+}
+
+.console-shell .console-backstage-cluster.is-reference .console-backstage-grid {
+  grid-template-columns:repeat(auto-fit,minmax(148px,1fr));
+}
+
+.console-shell .console-backstage .console-drawer.is-reference {
+  border-style:dashed;
+  background:transparent;
+}
+
+.console-shell .console-backstage .console-drawer.is-reference > summary {
+  min-height:44px;
+  color:var(--color-text-muted);
+  font-size:12px;
+}
+
+.console-shell .console-diversion-note {
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:6px;
+  margin:12px 0 0 158px;
+  color:var(--color-text-faint);
+  font-size:10px;
+}
+
+.console-shell .console-diversion-note span {
+  padding:3px 7px;
+  border:1px solid var(--color-line);
+  border-radius:999px;
+}
+
+.console-shell .console-diversion-note span:first-child {
+  padding-left:0;
+  border:0;
+  border-radius:0;
+  color:var(--color-text-muted);
+  font-weight:800;
+}
+
+@media (max-width:1100px) {
+  .console-shell .console-grid {
+    grid-template-columns:minmax(0,1fr) 220px;
+    gap:28px;
+  }
+}
+
+@media (max-width:900px) {
+  .console-shell .console-grid {
+    grid-template-columns:1fr;
+  }
+
+  .console-shell .console-status-col {
+    position:static;
+    padding:0;
+    border-left:0;
+  }
+
+  .console-shell .console-backstage-head {
+    grid-template-columns:1fr;
+    gap:4px;
+  }
+
+  .console-shell .console-diversion-note {
+    margin-left:0;
+  }
+
+  .console-shell .console-project-posture {
+    grid-template-columns:minmax(0,1fr) auto;
+  }
+
+  .console-shell .console-project-posture-metrics {
+    grid-column:1 / -1;
+    grid-row:2;
+  }
+}
+
+@media (max-width:640px) {
+  .console-shell .console-project-posture {
+    grid-template-columns:1fr;
+    gap:12px;
+  }
+
+  .console-shell .console-project-posture-metrics {
+    grid-column:auto;
+    grid-row:auto;
+  }
+
+  .console-shell .console-project-posture-metrics {
+    justify-content:space-between;
+  }
+
+  .console-shell .console-backstage-grid {
+    grid-template-columns:1fr;
+  }
+
+  .console-shell .console-backstage .console-drawer[open] {
+    grid-column:auto;
+  }
+}
+
+/* 2026-08-09 极简调度台：一个行动流，所有运维能力退入底部折叠层。 */
+#vw-console.console-shell{
+  min-height:calc(100vh - 76px);
+  padding-top:18px;
+}
+
+.console-shell .console-grid.is-minimal{
+  grid-template-columns:minmax(0,1fr);
+  width:100%;
+  margin:0;
+}
+
+.console-shell .console-grid.is-minimal .console-main{
+  width:100%;
+}
+
+.console-shell .console-cursor-bar{
+  width:100%;
+  margin-left:0;
+  margin-right:0;
+  padding:10px 0 13px;
+}
+
+.console-shell .console-cursor-primary{
+  gap:12px 22px;
+}
+
+.console-shell .console-utilities{
+  margin-top:30px;
+  border-top:1px solid var(--console-line-soft);
+}
+
+.console-shell .console-utilities > summary{
+  list-style:none;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  min-height:46px;
+  color:var(--console-dim);
+  font-size:13px;
+  font-weight:800;
+  cursor:pointer;
+}
+
+.console-shell .console-utilities > summary::-webkit-details-marker{display:none}
+.console-shell .console-utilities > summary::before{
+  content:'＋';
+  width:18px;
+  color:var(--console-faint);
+  font-family:var(--mono);
+  font-weight:500;
+}
+.console-shell .console-utilities[open] > summary::before{content:'－'}
+.console-shell .console-utilities > summary > span{
+  margin-left:auto;
+  color:var(--console-faint);
+  font-family:var(--mono);
+  font-size:10px;
+  font-weight:600;
+}
+
+.console-shell .console-utilities-body{
+  padding:4px 0 18px 18px;
+}
+
+.console-shell .console-utilities .console-status-col{
+  position:static;
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:28px;
+  padding:0;
+  border-left:0;
+}
+
+.console-shell .console-utilities .console-rail-panel,
+.console-shell .console-utilities .console-rail-panel:first-child{
+  border-top:1px solid var(--console-line-soft);
+}
+
+.console-shell .console-lane .console-card,
+.console-shell .console-drawer .console-card{
+  padding:11px 13px;
+  margin-bottom:7px;
+  box-shadow:none;
+}
+
+.console-shell .console-card .t{
+  font-size:13px;
+  line-height:1.34;
+  margin-bottom:4px;
+}
+
+.console-shell .console-agent-groups{
+  display:grid;
+  gap:7px;
+}
+
+.console-shell .console-agent-group{
+  overflow:hidden;
+  border:1px solid var(--console-line);
+  border-radius:8px;
+  background:var(--console-surface);
+}
+
+.console-shell .console-agent-group > summary{
+  list-style:none;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+  min-height:46px;
+  padding:7px 11px;
+  cursor:pointer;
+}
+
+.console-shell .console-agent-group > summary::-webkit-details-marker{display:none}
+.console-shell .console-agent-group > summary:hover{background:var(--console-surface-2)}
+.console-shell .console-agent-identity{display:grid;gap:2px}
+.console-shell .console-agent-identity strong{font-size:12px}
+.console-shell .console-agent-identity small{color:var(--console-faint);font-family:var(--mono);font-size:9px}
+.console-shell .console-agent-group-body{padding:0 8px 7px;border-top:1px solid var(--console-line-soft)}
+
+@media (max-width:760px){
+  #vw-console.console-shell{padding-top:10px}
+  .console-shell .console-cursor-primary{gap:9px 16px}
+  .console-shell .console-cursor-seg{font-size:12px}
+  .console-shell .console-utilities .console-status-col{grid-template-columns:1fr;gap:8px}
+}
+
+@media (max-width:1080px){
+  #vw-console.console-shell{padding-left:18px;padding-right:18px}
+  .console-shell .console-workspace{grid-template-columns:190px minmax(0,1fr);gap:18px}
+  .console-shell .console-project-rail{display:flex;padding-right:14px}
+  .console-shell .console-dispatch-surface{width:100%;margin:0}
+  .console-shell .console-project-row{padding:9px 5px}
+  .console-shell .console-project-copy strong{font-size:11px}
+  .console-shell .console-project-copy small{font-size:9px}
+}
+
+@media (max-width:720px){
+  .console-shell .console-workspace{grid-template-columns:minmax(0,1fr)}
+  .console-shell .console-project-rail{position:static;min-height:0;padding:0 0 14px;border-right:0;border-bottom:1px solid var(--console-line)}
+  .console-shell .console-project-list{grid-template-columns:repeat(2,minmax(0,1fr));max-height:190px}
+}

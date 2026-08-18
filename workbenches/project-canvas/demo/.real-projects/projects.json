@@ -1,0 +1,80 @@
+{
+  "schema": "kanban-real-projects/v1",
+  "updated_at": "2026-08-18",
+  "projects": [
+    {
+      "project_ref": "literature-review",
+      "title": "免疫代谢文献综述演示",
+      "confirmed_by": "demo_owner",
+      "confirmed_at": "2026-08-18",
+      "lifecycle": "active",
+      "health": "normal",
+      "current_intent": "演示从检索范围定义到可追踪综述初稿的虚构工作流。",
+      "latest_update": "虚构演示卡已覆盖范围定义、检索、证据提取与初稿整理。",
+      "impact": "用于验证 Project Canvas 的项目聚合与卡片导航，不代表真实研究结论。",
+      "recommendation": "从 DEMO-001 打开项目卡片并检查画布引用。",
+      "primary_action": {
+        "type": "no_action",
+        "summary": "演示数据已就绪",
+        "reason": "该项目仅用于本地产品演示"
+      },
+      "facts": [
+        {
+          "canonical_key": "demo-literature-review-fixture",
+          "summary": "这是完全虚构的文献综述项目 fixture。",
+          "impact": "只能作为界面与流程测试数据使用。",
+          "observed_at": "2026-08-18",
+          "certainty": "fixture",
+          "sources": [
+            {
+              "kind": "demo_fixture",
+              "path": "demo/projects/literature-review/project.json",
+              "label": "虚构项目说明"
+            }
+          ]
+        }
+      ],
+      "milestones": [],
+      "unknowns": [],
+      "workdir": "demo/projects/literature-review",
+      "fact_roots": ["demo/projects/literature-review"]
+    },
+    {
+      "project_ref": "data-analysis",
+      "title": "虚构转录组分析与投稿演示",
+      "confirmed_by": "demo_owner",
+      "confirmed_at": "2026-08-18",
+      "lifecycle": "active",
+      "health": "normal",
+      "current_intent": "演示从数据质控到图表复核与投稿准备的虚构分析工作流。",
+      "latest_update": "虚构演示卡已覆盖质控、统计分析、图表复核与投稿准备。",
+      "impact": "用于验证 Project Canvas 的项目聚合与卡片导航，不代表真实数据分析。",
+      "recommendation": "打开项目并核对四张 DEMO 卡的聚合结果。",
+      "primary_action": {
+        "type": "no_action",
+        "summary": "演示数据已就绪",
+        "reason": "该项目仅用于本地产品演示"
+      },
+      "facts": [
+        {
+          "canonical_key": "demo-data-analysis-fixture",
+          "summary": "这是完全虚构的转录组分析项目 fixture。",
+          "impact": "只能作为界面与流程测试数据使用。",
+          "observed_at": "2026-08-18",
+          "certainty": "fixture",
+          "sources": [
+            {
+              "kind": "demo_fixture",
+              "path": "demo/projects/data-analysis/project.json",
+              "label": "虚构项目说明"
+            }
+          ]
+        }
+      ],
+      "milestones": [],
+      "unknowns": [],
+      "workdir": "demo/projects/data-analysis",
+      "fact_roots": ["demo/projects/data-analysis"]
+    }
+  ]
+}

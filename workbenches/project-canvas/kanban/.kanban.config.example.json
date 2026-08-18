@@ -1,0 +1,158 @@
+{
+  "paths": {
+    "_comment": "Relative paths resolve from the cloned repository root.",
+    "repo_root": ".",
+    "workspace_root": ".",
+    "data_root": "demo"
+  },
+  "bind_host": "127.0.0.1",
+  "allowed_hosts": [],
+  "port": 8890,
+  "members": [
+    "Project Owner"
+  ],
+  "ai_members": [
+    "Automation Operator",
+    "Quality Reviewer"
+  ],
+  "roles": {
+    "owner": {"actor": "project_owner", "member": "Project Owner"},
+    "operator": {"actor": "automation_operator", "member": "Automation Operator"},
+    "reviewer": {"actor": "quality_reviewer", "member": "Quality Reviewer"}
+  },
+  "scan_dirs": [
+    "demo/projects/literature-review",
+    "demo/projects/data-analysis"
+  ],
+  "real_projects_dir": "demo/.real-projects",
+  "open_allowed_roots": [
+    ".",
+    "demo"
+  ],
+  "canvas_studio_url": "/canvas",
+  "studio_dist_dir": "canvas-studio/dist",
+  "conversation_maps_dir": "",
+  "research_boards_dir": "",
+  "research_boards": [],
+  "brainloop_scenarios_dir": "",
+  "km_chain_data": "",
+  "infoops_contract": "",
+  "freshness_config": "",
+  "chains": [],
+  "dynamic_boards": [],
+  "skill_invocation_targets": {},
+  "network_doctor": {
+    "enabled": false,
+    "script": "/absolute/path/to/net-doctor.sh"
+  },
+  "integrations": {
+    "_comment": "Every sibling/workspace adapter is opt-in. Set enabled=true, provide paths, and add those paths to open_allowed_roots.",
+    "local_tools": {
+      "brainloop-lite": {
+        "enabled": false,
+        "name": "Brainloop Lite",
+        "cwd": "/absolute/path/to/brainloop-lite",
+        "command": "npm run dev",
+        "url": "http://localhost:3000/",
+        "port": 3000,
+        "open_browser": true
+      },
+      "skill-board": {
+        "enabled": false,
+        "name": "Skill Board",
+        "cwd": "/absolute/path/to/skill-board",
+        "command": "python3 launcher.py",
+        "url": "http://127.0.0.1:8766/",
+        "url_file": "runtime/skill-board-url.txt",
+        "open_browser": true
+      }
+    },
+    "infoops": {
+      "enabled": false,
+      "content_queue": "/absolute/path/to/content-queue.md",
+      "article_dir": "/absolute/path/to/article-notes",
+      "content_card_dir": "/absolute/path/to/content-cards",
+      "public_drafts_dir": "/absolute/path/to/public-drafts",
+      "daily_reports_dir": "/absolute/path/to/daily-reports"
+    },
+    "workspace_governance": {
+      "enabled": false,
+      "root": "/absolute/path/to/workspace-governance-data"
+    },
+    "owner_world": {
+      "enabled": false,
+      "source": "/absolute/path/to/world.json"
+    },
+    "relationships": {
+      "enabled": false,
+      "people_dir": "/absolute/path/to/relationships",
+      "team_projection_dir": "/absolute/path/to/team-projection"
+    },
+    "codex_sessions": {
+      "enabled": false,
+      "roots": [
+        "/absolute/path/to/codex-sessions"
+      ]
+    },
+    "agent_mail": {
+      "enabled": false,
+      "home": "/absolute/path/to/agent-mail-data",
+      "cli": "/absolute/path/to/agent-mail-cli.py"
+    },
+    "skills_root": {
+      "enabled": false,
+      "root": "/absolute/path/to/skills"
+    },
+    "summarizers": {
+      "local": {
+        "enabled": false,
+        "env_files": [
+          "/absolute/path/to/provider.env"
+        ]
+      },
+      "deepseek": {
+        "enabled": false,
+        "api_key": ""
+      }
+    }
+  },
+  "team_kanban_url": "http://localhost:8899/",
+  "team_sync": {
+    "enabled": false,
+    "source": "remote_api",
+    "local_repo_path": "",
+    "local_scan_dirs": [],
+    "auto_sync": false
+  },
+  "git_sync": {
+    "enabled": false,
+    "mode": "desktop"
+  },
+  "attention_gate": {
+    "enabled": false
+  },
+  "auth": {
+    "_comment": "Safe default: random first-start token in a gitignored 0600 file. local_bypass/autologin skip authentication and must only be enabled deliberately for a loopback-only disposable demo. mode=quiz is legacy and enumerable.",
+    "mode": "token",
+    "token_file": ".kanban.auth-token",
+    "local_bypass": false,
+    "autologin": false,
+    "bypass_user": "",
+    "session_ttl_seconds": 604800
+  },
+  "s3": {
+    "bucket": "",
+    "region": "",
+    "access_key_id": "",
+    "secret_access_key": "",
+    "public_base_url": "",
+    "upload_url": ""
+  },
+  "feishu": {
+    "app_id": "",
+    "app_secret": "",
+    "kanban_base_url": "",
+    "member_open_ids": {},
+    "transport": "api"
+  }
+}

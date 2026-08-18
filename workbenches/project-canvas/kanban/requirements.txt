@@ -1,0 +1,8 @@
+# Kanban Git Sync 依赖
+# 安装: python3 -m pip install --user -r requirements.txt
+
+# 文件系统监控 — git-sync.py 自动同步核心依赖
+watchdog>=4.0.0
+
+# Conversation Map manifest YAML parsing (KAN-176)
+PyYAML>=6.0.1

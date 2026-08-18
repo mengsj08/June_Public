@@ -1,0 +1,45 @@
+{
+  "paths": {
+    "repo_root": ".",
+    "workspace_root": ".",
+    "data_root": "demo"
+  },
+  "bind_host": "127.0.0.1",
+  "allowed_hosts": [],
+  "port": 8890,
+  "members": ["Demo Owner"],
+  "ai_members": ["Demo Operator", "Demo Reviewer"],
+  "roles": {
+    "owner": {"actor": "demo_owner", "member": "Demo Owner"},
+    "operator": {"actor": "demo_operator", "member": "Demo Operator"},
+    "reviewer": {"actor": "demo_reviewer", "member": "Demo Reviewer"}
+  },
+  "scan_dirs": [
+    "demo/projects/literature-review",
+    "demo/projects/data-analysis"
+  ],
+  "real_projects_dir": "demo/.real-projects",
+  "open_allowed_roots": [".", "demo"],
+  "studio_dist_dir": "canvas-studio/dist",
+  "demo_mode": true,
+  "canvas_ai": {
+    "enabled": false
+  },
+  "chains": [],
+  "dynamic_boards": [],
+  "integrations": {
+    "local_tools": {}
+  },
+  "network_doctor": {"enabled": false, "script": ""},
+  "team_sync": {"enabled": false, "auto_sync": false},
+  "git_sync": {"enabled": false},
+  "auth": {
+    "_comment": "INTENTIONAL RISK: local_bypass is enabled only for the fictional one-click loopback demo. Do not copy this setting to shared or externally reachable deployments.",
+    "mode": "token",
+    "token_file": ".kanban.auth-token",
+    "local_bypass": true,
+    "autologin": false,
+    "bypass_user": "Demo Owner",
+    "session_ttl_seconds": 604800
+  }
+}

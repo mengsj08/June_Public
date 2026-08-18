@@ -1,0 +1,66 @@
+{
+  "schema": "kanban.canvas/v1",
+  "id": "DEMO-001",
+  "name": "虚构科研工作流",
+  "scope": {
+    "type": "card",
+    "task_id": "DEMO-001",
+    "task_path": "demo/projects/literature-review/DEMO-001.md"
+  },
+  "nodes": [
+    {
+      "id": "scope",
+      "type": "ref",
+      "position": {"x": 80, "y": 120},
+      "data": {
+        "label": "综述范围",
+        "origin": "manual",
+        "source_ref": {"kind": "card", "path": "demo/projects/literature-review/DEMO-001.md"}
+      }
+    },
+    {
+      "id": "evidence",
+      "type": "ref",
+      "position": {"x": 360, "y": 120},
+      "data": {
+        "label": "证据提取",
+        "origin": "manual",
+        "source_ref": {"kind": "card", "path": "demo/projects/literature-review/DEMO-003.md"}
+      }
+    },
+    {
+      "id": "analysis",
+      "type": "ref",
+      "position": {"x": 360, "y": 320},
+      "data": {
+        "label": "差异分析",
+        "origin": "manual",
+        "source_ref": {"kind": "card", "path": "demo/projects/data-analysis/DEMO-006.md"}
+      }
+    },
+    {
+      "id": "submission",
+      "type": "ref",
+      "position": {"x": 650, "y": 220},
+      "data": {
+        "label": "投稿准备",
+        "origin": "manual",
+        "source_ref": {"kind": "card", "path": "demo/projects/data-analysis/DEMO-008.md"}
+      }
+    }
+  ],
+  "edges": [
+    {"id": "scope-evidence", "source": "scope", "target": "evidence", "data": {"origin": "manual"}},
+    {"id": "evidence-submission", "source": "evidence", "target": "submission", "data": {"origin": "manual"}},
+    {"id": "analysis-submission", "source": "analysis", "target": "submission", "data": {"origin": "manual"}}
+  ],
+  "viewport": {"x": 0, "y": 0, "zoom": 0.9},
+  "metadata": {
+    "generator": "demo-fixture-v2",
+    "path_status_counts": {"resolved": 4, "corrected": 0, "missing": 0, "ambiguous": 0, "forbidden": 0}
+  },
+  "timestamps": {
+    "createdAt": "2026-08-18T00:00:00",
+    "updatedAt": "2026-08-18T00:00:00"
+  }
+}

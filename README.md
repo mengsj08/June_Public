@@ -6,7 +6,7 @@
 
 <p align="center">
   <img alt="Local first" src="https://img.shields.io/badge/Local--first-127.0.0.1-16794b">
-  <img alt="Workbenches" src="https://img.shields.io/badge/Workbenches-2-4f46e5">
+  <img alt="Workbenches" src="https://img.shields.io/badge/Workbenches-3-4f46e5">
   <img alt="Skills" src="https://img.shields.io/badge/Skill%20packages-3-c2410c">
   <img alt="Language" src="https://img.shields.io/badge/README-中文-0f766e">
 </p>
@@ -19,14 +19,21 @@ Workbench，也有交给 Codex、Claude 等 Agent 执行的 Skill，还有通过
 
 <table>
   <tr>
-    <td width="50%" align="center">
+    <td width="33%" align="center">
+      <a href="workbenches/project-canvas/">
+        <img src="workbenches/project-canvas/docs/images/readme-project-canvas.png" alt="Project Canvas 项目画布与调度台界面">
+      </a>
+      <br><strong>Project Canvas</strong><br>
+      任务卡调度台、项目画布与 Codex / Claude 派活复核
+    </td>
+    <td width="33%" align="center">
       <a href="workbenches/comma-review-studio/">
         <img src="workbenches/comma-review-studio/docs/images/readme-workbench.png" alt="Comma Review Studio 本地论文评审界面">
       </a>
       <br><strong>Comma Review Studio</strong><br>
       Markdown / 科研稿件审阅、锚定批注、版本恢复与导出
     </td>
-    <td width="50%" align="center">
+    <td width="33%" align="center">
       <a href="workbenches/scientific-pdf-bilingual-reader/">
         <img src="workbenches/scientific-pdf-bilingual-reader/assets/readme/workbench-bilingual.png" alt="长 PDF 双语阅读器左右对照界面">
       </a>
@@ -51,6 +58,7 @@ Workbench，也有交给 Codex、Claude 等 Agent 执行的 Skill，还有通过
 
 | 项目 | 一句话说明 | 当前平台 / 许可 |
 | --- | --- | --- |
+| [Project Canvas](workbenches/project-canvas/) | 把任务卡、项目画布和 Codex / Claude 派活收进一个本地 AI 调度台;卡是 Markdown 事实源,复核走独立上下文 | macOS 已实机验证,Linux 未验证;AGPL-3.0 |
 | [Comma Review Studio](workbenches/comma-review-studio/) | 把 Markdown / 科研稿件变成可审阅、可批注、可恢复版本的本地工作台 | macOS / Linux 友好；June 源码仅供评估，详见目录 LICENSE |
 | [长 PDF 双语阅读器](workbenches/scientific-pdf-bilingual-reader/) | 文本型或扫描版英文 PDF → 中文 PDF + 同页双语 PDF + 确定性 QA + 人工修复环路 | macOS Apple Silicon 已验证；AGPL-3.0 |
 
@@ -76,6 +84,12 @@ cd June_Public
 ### 2. 选择一种入口
 
 如果你想直接使用界面：
+
+```bash
+# 任务卡调度台 + 项目画布 + AI 派活复核
+cd workbenches/project-canvas
+./start.sh
+```
 
 ```bash
 # Markdown / 科研稿件评审
@@ -122,6 +136,7 @@ Workbench 可以同时携带 `SKILL.md`，让 Agent 帮你安装或启动；但�
 June_Public/
 ├── docs/                         # GitHub Pages：Source Atlas 与公开页面
 ├── workbenches/
+│   ├── project-canvas/           # 任务卡调度台 + 项目画布 + AI 派活复核
 │   ├── comma-review-studio/      # Markdown / 科研稿件评审工作台
 │   └── scientific-pdf-bilingual-reader/
 ├── skills/

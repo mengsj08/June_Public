@@ -1,0 +1,41 @@
+{
+  "name": "canvas-studio",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "lint": "eslint .",
+    "test:home": "node scripts/test-home-structure.mjs",
+    "test:fact-layer": "node scripts/test-fact-layer-contracts.mjs",
+    "test:reorganize-state": "node --experimental-strip-types --no-warnings scripts/test-project-reorganize-state.mjs",
+    "test:context": "node scripts/test-context-graph-core.mjs",
+    "test:kan851": "node scripts/test-kan851-guards.mjs",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@reactflow/node-resizer": "^2.2.14",
+    "@vitejs/plugin-react": "^5.0.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-markdown": "^10.1.0",
+    "reactflow": "^11.11.4",
+    "rehype-highlight": "^7.0.2",
+    "remark-gfm": "^4.0.1",
+    "zustand": "^5.0.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.30.1",
+    "@types/node": "^24.0.10",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "eslint": "^9.30.1",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-refresh": "^0.4.20",
+    "globals": "^16.3.0",
+    "typescript": "~5.8.3",
+    "typescript-eslint": "^8.35.1",
+    "vite": "^7.0.0"
+  }
+}

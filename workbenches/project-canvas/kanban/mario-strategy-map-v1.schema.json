@@ -1,0 +1,252 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://local.owner/mario-strategy-map-v1.schema.json",
+  "title": "Mario Person World Strategy Map v1",
+  "description": "A presentation-only, evidence-referenced campaign map derived from Mario Units and Event projections.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "map_id",
+    "subject",
+    "status",
+    "source_inputs",
+    "sources",
+    "worlds",
+    "boundaries",
+    "projection_hash"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "mario.strategy-map/v1"
+    },
+    "map_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "subject": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ref", "label", "role"],
+      "properties": {
+        "ref": {"type": "string"},
+        "label": {"type": "string", "minLength": 1},
+        "role": {"type": "string", "minLength": 1}
+      }
+    },
+    "status": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "as_of",
+        "checkpoint",
+        "main_quest",
+        "confirmed_event_count",
+        "candidate_event_count"
+      ],
+      "properties": {
+        "as_of": {"type": "string", "minLength": 1},
+        "checkpoint": {"type": "string", "minLength": 1},
+        "main_quest": {"type": "string", "minLength": 1},
+        "confirmed_event_count": {"type": "integer", "minimum": 0},
+        "candidate_event_count": {"type": "integer", "minimum": 0}
+      }
+    },
+    "source_inputs": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["input_ref", "label", "path", "sha256"],
+        "properties": {
+          "input_ref": {"type": "string", "minLength": 1},
+          "label": {"type": "string", "minLength": 1},
+          "path": {"type": "string", "minLength": 1},
+          "sha256": {
+            "type": "string",
+            "pattern": "^(sha256:)?[0-9a-f]{64}$"
+          }
+        }
+      }
+    },
+    "sources": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["source_ref", "label", "path", "kind"],
+        "properties": {
+          "source_ref": {"type": "string", "minLength": 1},
+          "label": {"type": "string", "minLength": 1},
+          "path": {"type": "string", "minLength": 1},
+          "kind": {"type": "string", "minLength": 1},
+          "sha256": {
+            "type": "string",
+            "pattern": "^(sha256:)?[0-9a-f]{64}$"
+          }
+        }
+      }
+    },
+    "worlds": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/world"
+      }
+    },
+    "boundaries": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["label", "detail"],
+        "properties": {
+          "label": {"type": "string", "minLength": 1},
+          "detail": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "projection_hash": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    }
+  },
+  "$defs": {
+    "claim": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["text", "basis"],
+      "properties": {
+        "text": {"type": "string", "minLength": 1},
+        "basis": {
+          "enum": ["source_backed", "owner_confirmed", "derived", "unknown"]
+        }
+      }
+    },
+    "mission": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mission_id",
+        "kind",
+        "code",
+        "label",
+        "status",
+        "event_refs",
+        "lenses"
+      ],
+      "properties": {
+        "mission_id": {"type": "string", "minLength": 1},
+        "kind": {
+          "enum": ["event", "candidate_event", "episode", "checkpoint", "gate"]
+        },
+        "code": {"type": "string", "minLength": 1},
+        "label": {"type": "string", "minLength": 1},
+        "status": {"type": "string", "minLength": 1},
+        "date": {"type": "string"},
+        "event_refs": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1}
+        },
+        "lenses": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["action", "relationship", "capability", "evidence"],
+          "properties": {
+            "action": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["moves"],
+              "properties": {
+                "moves": {
+                  "type": "array",
+                  "minItems": 3,
+                  "maxItems": 3,
+                  "items": {
+                    "allOf": [
+                      {"$ref": "#/$defs/claim"},
+                      {
+                        "type": "object",
+                        "required": ["actor"],
+                        "properties": {
+                          "actor": {"enum": ["对方", "我们", "世界变化"]}
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            "relationship": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["items"],
+              "properties": {
+                "items": {
+                  "type": "array",
+                  "minItems": 1,
+                  "items": {"$ref": "#/$defs/claim"}
+                }
+              }
+            },
+            "capability": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["items"],
+              "properties": {
+                "items": {
+                  "type": "array",
+                  "minItems": 1,
+                  "items": {"$ref": "#/$defs/claim"}
+                }
+              }
+            },
+            "evidence": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["source_refs", "boundary"],
+              "properties": {
+                "source_refs": {
+                  "type": "array",
+                  "minItems": 1,
+                  "items": {"type": "string", "minLength": 1}
+                },
+                "boundary": {"type": "string", "minLength": 1}
+              }
+            }
+          }
+        }
+      }
+    },
+    "world": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "world_id",
+        "title",
+        "kind",
+        "state",
+        "badge",
+        "summary",
+        "main_quest",
+        "missions"
+      ],
+      "properties": {
+        "world_id": {"type": "string", "minLength": 1},
+        "title": {"type": "string", "minLength": 1},
+        "kind": {"type": "string", "minLength": 1},
+        "state": {"type": "string", "minLength": 1},
+        "badge": {"type": "string", "minLength": 1},
+        "summary": {"type": "string", "minLength": 1},
+        "main_quest": {"type": "string", "minLength": 1},
+        "missions": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/mission"}
+        }
+      }
+    }
+  }
+}

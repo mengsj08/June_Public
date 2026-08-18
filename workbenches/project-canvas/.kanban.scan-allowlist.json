@@ -1,0 +1,6 @@
+{
+  "scan_dirs": [
+    "demo/projects/literature-review",
+    "demo/projects/data-analysis"
+  ]
+}

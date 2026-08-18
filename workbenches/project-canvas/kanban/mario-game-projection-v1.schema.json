@@ -1,0 +1,174 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://local.owner/mario-game-projection-v1.schema.json",
+  "title": "Mario Game Projection v1",
+  "description": "Presentation-only map primitives derived from one evidence-backed Mario Unit.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "projection_id",
+    "unit_ref",
+    "subject",
+    "status",
+    "levels",
+    "worlds",
+    "quests",
+    "gates",
+    "excluded_signals",
+    "sources",
+    "renderer_hints",
+    "projection_hash"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "mario.game-projection/v1"
+    },
+    "projection_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "unit_ref": {
+      "type": "string",
+      "minLength": 1
+    },
+    "subject": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ref",
+        "label",
+        "role"
+      ],
+      "properties": {
+        "ref": {
+          "type": "string"
+        },
+        "label": {
+          "type": "string"
+        },
+        "role": {
+          "type": "string"
+        }
+      }
+    },
+    "status": {
+      "type": "object",
+      "required": [
+        "checkpoint",
+        "label",
+        "as_of",
+        "confirmed_interaction_count",
+        "interaction_count_basis"
+      ]
+    },
+    "levels": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "level_id",
+          "level_number",
+          "canonical_time",
+          "title",
+          "participants",
+          "fact_drops",
+          "asset_drops",
+          "world_links",
+          "source_refs"
+        ],
+        "properties": {
+          "asset_drops": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "asset_id",
+                "label",
+                "kind",
+                "stage",
+                "origin",
+                "sensitivity",
+                "interaction_effect",
+                "world_links",
+                "source_role",
+                "canonical_path",
+                "sha256",
+                "size_bytes"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "worlds": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "world_ref",
+          "world_type",
+          "title",
+          "state",
+          "event_refs"
+        ]
+      }
+    },
+    "quests": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "quest_ref",
+          "title",
+          "state",
+          "linked_event_ids",
+          "proof",
+          "blocker"
+        ]
+      }
+    },
+    "gates": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "gate_id",
+          "title",
+          "unlock_condition",
+          "state"
+        ]
+      }
+    },
+    "excluded_signals": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "signal_id",
+          "statement",
+          "reason"
+        ]
+      }
+    },
+    "sources": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "label",
+          "role",
+          "path",
+          "status"
+        ]
+      }
+    },
+    "renderer_hints": {
+      "type": "object"
+    },
+    "projection_hash": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    }
+  }
+}

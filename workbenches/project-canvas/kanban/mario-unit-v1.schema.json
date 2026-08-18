@@ -1,0 +1,207 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://local.owner/mario-unit-v1.schema.json",
+  "title": "Mario Unit v1",
+  "description": "A deterministic, evidence-backed Mario projection. It is derived state and never owns its input facts.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "unit_id",
+    "unit_type",
+    "scope_refs",
+    "input_event_ids",
+    "input_object_refs",
+    "source_snapshot",
+    "facts",
+    "ai_assessment",
+    "official_state",
+    "conflict_set",
+    "as_of",
+    "adapter_version",
+    "reducer_version",
+    "projection_hash",
+    "status"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "mario.unit/v1"
+    },
+    "unit_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "unit_type": {
+      "enum": [
+        "project",
+        "relationship",
+        "scene",
+        "case",
+        "opportunity",
+        "other"
+      ]
+    },
+    "scope_refs": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "project_ref",
+        "project_refs",
+        "person_refs"
+      ],
+      "properties": {
+        "project_ref": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "project_refs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "person_refs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        }
+      }
+    },
+    "input_event_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "input_object_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "source_snapshot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_health",
+        "source_hashes",
+        "sources"
+      ],
+      "properties": {
+        "source_health": {
+          "type": "object"
+        },
+        "source_hashes": {
+          "type": "object",
+          "additionalProperties": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "sources": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "label",
+              "role",
+              "path",
+              "status"
+            ],
+            "properties": {
+              "label": {
+                "type": "string"
+              },
+              "role": {
+                "type": "string"
+              },
+              "path": {
+                "type": "string"
+              },
+              "status": {
+                "enum": [
+                  "success",
+                  "missing",
+                  "unreadable"
+                ]
+              },
+              "sha256": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "message": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "facts": {
+      "type": "object"
+    },
+    "ai_assessment": {
+      "type": "object",
+      "required": [
+        "stage",
+        "obstacle",
+        "main_action",
+        "value_signal",
+        "confidence",
+        "evidence_refs",
+        "unknowns"
+      ]
+    },
+    "official_state": {
+      "type": "object",
+      "required": [
+        "checkpoint",
+        "confirmation_status",
+        "writeback_allowed"
+      ],
+      "properties": {
+        "writeback_allowed": {
+          "const": false
+        }
+      }
+    },
+    "conflict_set": {
+      "type": "array"
+    },
+    "as_of": {
+      "type": "string"
+    },
+    "adapter_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "reducer_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "projection_hash": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "status": {
+      "enum": [
+        "draft",
+        "confirmed",
+        "stale",
+        "superseded"
+      ]
+    }
+  }
+}
