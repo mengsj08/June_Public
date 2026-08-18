@@ -50,8 +50,8 @@ Workbench，也有交给 Codex、Claude 等 Agent 执行的 Skill，还有通过
 
 | 类型 | 适合谁 | 你会得到什么 | 入口 |
 | --- | --- | --- | --- |
-| Workbench | 想直接在浏览器界面完成长文档工作的使用者 | 本地服务、可视化工作区、任务留存、人工确认门 | [`workbenches/`](workbenches/) |
-| Skill | 已经使用 Codex、Claude 等 Agent，希望复用稳定工作流的人 | `SKILL.md`、脚本、模板、验证说明 | [`skills/`](skills/) |
+| Workbench | 想要一个常驻本地界面来承载工作过程的人——调度任务卡与 AI 派活、审阅稿件、双语读长 PDF | 本地服务、可视化工作区、任务留存、人工确认门 | [`workbenches/`](workbenches/) |
+| Skill | 不需要常驻界面，想把一套稳定工作流直接交给 Codex、Claude 等 Agent 执行的人 | `SKILL.md`、脚本、模板、验证说明 | [`skills/`](skills/) |
 | Site | 想浏览 AI × Life Science 公开信息源的人 | Source Atlas、作者文献地图入口 | [GitHub Pages](https://mengsj08.github.io/June_Public/) |
 
 ### Workbenches
