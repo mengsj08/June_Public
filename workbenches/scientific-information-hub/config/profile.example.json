@@ -1,0 +1,39 @@
+{
+  "name": "synthetic-ai-life-science-profile",
+  "freshness_days": 45,
+  "topic_terms": {
+    "organoid": 0.35,
+    "single-cell": 0.3,
+    "multimodal": 0.35,
+    "agent": 0.25,
+    "protein": 0.2,
+    "medical": 0.15
+  },
+  "negative_terms": {
+    "advertisement": 0.5
+  },
+  "novelty_terms": [
+    "atlas",
+    "benchmark",
+    "framework",
+    "protocol"
+  ],
+  "source_weights": {
+    "pubmed": 0.08,
+    "pubmed_journals": 0.08,
+    "arxiv": 0.05,
+    "openalex_author": 0.05
+  },
+  "thresholds": {
+    "must_read": {
+      "topic_relevance": 0.55,
+      "method_novelty_hint": 0.25
+    },
+    "skim": {
+      "topic_relevance": 0.3
+    },
+    "collapsed": {
+      "topic_relevance": 0.1
+    }
+  }
+}

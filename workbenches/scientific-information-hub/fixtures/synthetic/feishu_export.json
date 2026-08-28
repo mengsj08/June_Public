@@ -1,0 +1,14 @@
+{
+  "records": [
+    {
+      "record_id": "synthetic-feishu-001",
+      "fields": {
+        "title": "Team reading note: organoid protocol comparison",
+        "summary": "A fictional collaboration note flags a protocol comparison for human review.",
+        "date": "2026-01-15",
+        "url": "https://example.org/synthetic/feishu-001",
+        "tags": ["organoid", "protocol"]
+      }
+    }
+  ]
+}

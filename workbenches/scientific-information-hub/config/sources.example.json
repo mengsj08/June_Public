@@ -1,0 +1,129 @@
+{
+  "schema_version": "1.0",
+  "synthetic_demo": false,
+  "sources": [
+    {
+      "id": "pubmed_topic",
+      "kind": "pubmed",
+      "enabled": false,
+      "required": true,
+      "role": "primary",
+      "query": "organoid AND single-cell",
+      "lookback_days": 14,
+      "max_results": 20
+    },
+    {
+      "id": "pubmed_journal_watch",
+      "kind": "pubmed_journals",
+      "enabled": false,
+      "required": false,
+      "journals": ["Example Journal Name"],
+      "lookback_days": 14
+    },
+    {
+      "id": "arxiv_topic",
+      "kind": "arxiv",
+      "enabled": false,
+      "required": true,
+      "role": "primary",
+      "query": "cat:q-bio.QM AND all:organoid",
+      "max_results": 20
+    },
+    {
+      "id": "official_ai_tool_updates",
+      "kind": "rss",
+      "enabled": false,
+      "required": false,
+      "url": "https://example.org/feed.xml",
+      "max_results": 20
+    },
+    {
+      "id": "community_ai_signals",
+      "kind": "hacker_news",
+      "enabled": false,
+      "required": false,
+      "keywords": ["agent", "biology", "medical"],
+      "scan_limit": 30,
+      "max_results": 5
+    },
+    {
+      "id": "author_watch",
+      "kind": "openalex_author",
+      "enabled": false,
+      "required": false,
+      "author_ids": ["https://openalex.org/A0000000000"],
+      "lookback_days": 30
+    },
+    {
+      "id": "email_export",
+      "kind": "email_directory",
+      "enabled": false,
+      "required": false,
+      "path": "/outside/public/repo/email-export"
+    },
+    {
+      "id": "email_imap_readonly",
+      "kind": "imap",
+      "enabled": false,
+      "required": false,
+      "host": "imap.example.org",
+      "username_env": "SIH_IMAP_USERNAME",
+      "password_env": "SIH_IMAP_PASSWORD",
+      "mailbox": "INBOX",
+      "max_results": 10
+    },
+    {
+      "id": "feishu_export",
+      "kind": "feishu_export",
+      "enabled": false,
+      "required": false,
+      "path": "/outside/public/repo/feishu-export.json",
+      "field_map": {
+        "title": "title",
+        "summary": "summary",
+        "published_at": "date",
+        "url": "url"
+      }
+    },
+    {
+      "id": "stork_inbox",
+      "kind": "stork_inbox",
+      "enabled": false,
+      "required": false,
+      "path": "/outside/public/repo/stork-items.jsonl"
+    },
+    {
+      "id": "browser_authenticated_snapshot",
+      "kind": "browser_snapshot",
+      "enabled": false,
+      "required": false,
+      "path": "/outside/public/repo/browser-snapshot.json"
+    },
+    {
+      "id": "legacy_fetcher_bridge",
+      "kind": "legacy_jsonl",
+      "enabled": false,
+      "required": false,
+      "path": "/outside/public/repo/legacy-export.csv",
+      "field_map": {
+        "title": "headline",
+        "summary": "snippet",
+        "published_at": "observed_date",
+        "url": "canonical_url"
+      }
+    }
+  ],
+  "llm": {
+    "enabled": false,
+    "endpoint_env": "SIH_LLM_ENDPOINT",
+    "api_key_env": "SIH_LLM_API_KEY",
+    "model_env": "SIH_LLM_MODEL",
+    "requires_api_key": true,
+    "timeout_seconds": 60
+  },
+  "delivery": {
+    "enabled": false,
+    "endpoint_env": "SIH_WEBHOOK_ENDPOINT",
+    "timeout_seconds": 20
+  }
+}

@@ -1,0 +1,6 @@
+demo/output/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.state/
+.DS_Store

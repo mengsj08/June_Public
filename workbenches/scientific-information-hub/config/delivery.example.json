@@ -1,0 +1,5 @@
+{
+  "enabled": false,
+  "endpoint_env": "SIH_WEBHOOK_ENDPOINT",
+  "timeout_seconds": 20
+}

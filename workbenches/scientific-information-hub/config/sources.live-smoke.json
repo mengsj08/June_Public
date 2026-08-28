@@ -1,0 +1,30 @@
+{
+  "schema_version": "1.0",
+  "synthetic_demo": false,
+  "sources": [
+    {
+      "id": "pubmed_smoke",
+      "kind": "pubmed",
+      "enabled": true,
+      "required": true,
+      "role": "primary",
+      "query": "organoid AND single-cell",
+      "lookback_days": 30,
+      "max_results": 3
+    },
+    {
+      "id": "arxiv_smoke",
+      "kind": "arxiv",
+      "enabled": true,
+      "required": false,
+      "query": "cat:q-bio.QM AND all:organoid",
+      "max_results": 3
+    }
+  ],
+  "llm": {
+    "enabled": false
+  },
+  "delivery": {
+    "enabled": false
+  }
+}

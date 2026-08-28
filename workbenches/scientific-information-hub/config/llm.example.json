@@ -1,0 +1,8 @@
+{
+  "enabled": false,
+  "endpoint_env": "SIH_LLM_ENDPOINT",
+  "api_key_env": "SIH_LLM_API_KEY",
+  "model_env": "SIH_LLM_MODEL",
+  "requires_api_key": true,
+  "timeout_seconds": 60
+}

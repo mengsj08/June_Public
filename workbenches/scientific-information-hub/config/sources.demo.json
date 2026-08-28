@@ -1,0 +1,67 @@
+{
+  "schema_version": "1.0",
+  "synthetic_demo": true,
+  "sources": [
+    {
+      "id": "synthetic_public_feed",
+      "kind": "fixture_jsonl",
+      "enabled": true,
+      "required": true,
+      "role": "primary",
+      "path": "../fixtures/synthetic/source_items.jsonl",
+      "tags": ["synthetic"]
+    },
+    {
+      "id": "synthetic_email_digest",
+      "kind": "email_directory",
+      "enabled": true,
+      "required": false,
+      "path": "../fixtures/synthetic/email"
+    },
+    {
+      "id": "synthetic_feishu_export",
+      "kind": "feishu_export",
+      "enabled": true,
+      "required": false,
+      "path": "../fixtures/synthetic/feishu_export.json"
+    },
+    {
+      "id": "synthetic_stork_inbox",
+      "kind": "stork_inbox",
+      "enabled": true,
+      "required": false,
+      "path": "../fixtures/synthetic/stork_items.jsonl"
+    },
+    {
+      "id": "synthetic_browser_snapshot",
+      "kind": "browser_snapshot",
+      "enabled": true,
+      "required": false,
+      "path": "../fixtures/synthetic/browser_snapshot.json"
+    },
+    {
+      "id": "synthetic_legacy_import",
+      "kind": "legacy_jsonl",
+      "enabled": true,
+      "required": false,
+      "path": "../fixtures/synthetic/legacy_items.csv",
+      "field_map": {
+        "title": "headline",
+        "summary": "snippet",
+        "published_at": "observed_date",
+        "url": "canonical_url"
+      }
+    }
+  ],
+  "llm": {
+    "enabled": false,
+    "endpoint_env": "SIH_LLM_ENDPOINT",
+    "api_key_env": "SIH_LLM_API_KEY",
+    "model_env": "SIH_LLM_MODEL",
+    "requires_api_key": true
+  },
+  "delivery": {
+    "enabled": false,
+    "endpoint_env": "SIH_WEBHOOK_ENDPOINT"
+  }
+}

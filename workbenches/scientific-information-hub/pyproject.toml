@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "scientific-information-hub-reference"
+version = "0.1.0"
+description = "Privacy-safe reference pipeline for reproducible scientific information intake, triage, and delivery."
+readme = "README.md"
+requires-python = ">=3.10"
+license = {file = "LICENSE"}
+authors = [{name = "June Public contributors"}]
+dependencies = []
+
+[project.scripts]
+sih-reference = "sih_ref.cli:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]

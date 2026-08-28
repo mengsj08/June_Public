@@ -1,0 +1,3 @@
+# Copy outside this repository and replace every /ABSOLUTE/... placeholder locally.
+# This example writes locally and does not enable --live, --llm, or --publish.
+15 7 * * * cd /ABSOLUTE/PATH/scientific-information-hub && /usr/bin/env PYTHONPATH=src /usr/bin/python3 -m sih_ref.cli run --config /ABSOLUTE/PRIVATE/sources.json --profile /ABSOLUTE/PRIVATE/profile.json --output-dir /ABSOLUTE/PRIVATE/output >> /ABSOLUTE/PRIVATE/scheduler.log 2>&1
