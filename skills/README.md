@@ -9,6 +9,7 @@
 | 领域 | Skill | 适合解决的问题 | 依赖 |
 | --- | --- | --- | --- |
 | 研究工具 | [Author Literature Map](research-tools/author-literature-map/) | 已确认作者身份后，生成来源可追溯、可检测证据漂移的文献地图 | Python 3.9+；在线补充可选 |
+| 研究工具 | [药品说明书权威归档](research-tools/drug-label-html2pdf/) | 按地区与具体产品取得官方说明书，输出可核验 HTML/PDF | Python 3.10+；requests、BeautifulSoup、lxml、PyMuPDF |
 | 内容可视化 | [Article Visualization](ip-operations/article-visualization/) | 文章 / 论文 → 科普长图、小红书卡、公众号封面与短文 | Node.js 21+、Chrome |
 | 平台运营 | [小红书自动化 Skills](ip-operations/xiaohongshu-skills/) | 小红书认证、搜索、发布、互动、复合运营与飞书 Base 入库 | Python 3.11+、uv、Chrome 扩展；飞书写入时需 lark-cli |
 
@@ -58,5 +59,6 @@ Skill。
 每个 Skill 的测试命令都不同：
 
 - `author-literature-map`：可用合成数据离线构建账本与 HTML。
+- `drug-label-html2pdf`：运行 10 项离线安全/解析/工作流测试，再用 `doctor` 检查运行依赖。
 - `article-visualization`：检查 Node 脚本语法，并用公开样例跑渲染和密度检查。
 - `xiaohongshu-skills`：`uv sync --extra dev && PYTHONPATH=scripts uv run pytest`；可另跑 `uv run ruff check .` 查看现存静态检查欠账，真实账号动作不属于离线测试。

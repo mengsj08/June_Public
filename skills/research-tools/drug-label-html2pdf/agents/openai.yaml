@@ -1,0 +1,7 @@
+interface:
+  display_name: "药品说明书获取与归档"
+  short_description: "从权威来源获取药品说明书并输出可核验 HTML 或 PDF"
+  default_prompt: "Use $drug-label-html2pdf to find the official label for this medicine, confirm the exact product and jurisdiction, and ask me to choose HTML, PDF, or both before downloading."
+
+policy:
+  allow_implicit_invocation: true
