@@ -1,0 +1,47 @@
+{
+  "schema": "skill-publication/v1",
+  "skill": "feature-definition-research",
+  "date": "2026-09-12",
+  "edition": "experimental-public",
+  "canonicalIdentity": "personal/feature-definition-research",
+  "validationScope": "structure-links-privacy-only; no native-business-validation claim",
+  "files": [
+    {
+      "path": "README.md",
+      "canonicalSha256": "5e63ed1026403e428427a9aea6f4dafb8bf2ad219eed8acf7dc62d787a426948",
+      "publicSha256": "e5ba9ce5c4e909cebb9730b36e12a1bce7326f15a827dae9ca8183b20aeebc8c",
+      "transform": "publication-provenance-and-local-entry-removal"
+    },
+    {
+      "path": "SKILL.md",
+      "canonicalSha256": "4862ce7d26ffa47e1337c275d8248d732cebef975c11c97ec021bbec8e7ec69a",
+      "publicSha256": "1713b289d8cf907dbf69b181af9099e870c3b69f99d3b076fffbeaead3fed3a1",
+      "transform": "generic-document-wording"
+    },
+    {
+      "path": "SOURCE.md",
+      "canonicalSha256": "1b8d835cc8796ae9f398ea130dd508b8a330c5c4e5b4913e02eceeef8c725a1d",
+      "publicSha256": "2c34cb440df05428b9c153a6ef84238fea7b0c1e5c4ee78a74af8ba7d2811a6d",
+      "transform": "publication-provenance-and-local-entry-removal"
+    },
+    {
+      "path": "agents/openai.yaml",
+      "canonicalSha256": "7561c7ecb4c5dacbf4001244b39d9274fabde8dd57493bb92487d8b4990a2389",
+      "publicSha256": "7561c7ecb4c5dacbf4001244b39d9274fabde8dd57493bb92487d8b4990a2389",
+      "transform": "unchanged"
+    },
+    {
+      "path": "assets/analysis-template.md",
+      "canonicalSha256": "12924a1e9552a480b6e46b0731bc874d3b4668af5ce9e7fb87132b5b75157c62",
+      "publicSha256": "431c4c830d0250c9e63907fb6300394f30769dd18477983c3935f721b9433149",
+      "transform": "markdown-hard-breaks-to-paragraphs"
+    },
+    {
+      "path": "references/calibration.md",
+      "canonicalSha256": "f14006bd8b9cb72a2dd9de34c89475b6394c8e014355e7dfb4ac48ce4017c784",
+      "publicSha256": "f14006bd8b9cb72a2dd9de34c89475b6394c8e014355e7dfb4ac48ce4017c784",
+      "transform": "unchanged"
+    }
+  ],
+  "manifestSelfExcluded": true
+}

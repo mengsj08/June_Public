@@ -1,0 +1,4 @@
+interface:
+  display_name: "产品与功能族谱调研"
+  short_description: "梳理产品世代、发布节点与功能演进，形成有依据的升级判断"
+  default_prompt: "使用 $product-feature-genealogy 调研这个品牌的产品与功能族谱，结合既有资料梳理分支、发布节点、前代变化及证据，标明地区差异和关键缺口。"

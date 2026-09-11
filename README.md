@@ -7,7 +7,7 @@
 <p align="center">
   <img alt="Local first" src="https://img.shields.io/badge/Local--first-127.0.0.1-16794b">
   <img alt="Workbenches" src="https://img.shields.io/badge/Workbenches-4-4f46e5">
-  <img alt="Skills" src="https://img.shields.io/badge/Skill%20packages-4-c2410c">
+  <img alt="Skills" src="https://img.shields.io/badge/Skill%20packages-6-c2410c">
   <img alt="Language" src="https://img.shields.io/badge/README-中文-0f766e">
 </p>
 
@@ -77,6 +77,8 @@ Workbench，也有交给 Codex、Claude 等 Agent 执行的 Skill，还有通过
 | Skill | 典型任务 | 主要输出 |
 | --- | --- | --- |
 | [Author Literature Map](skills/research-tools/author-literature-map/) | 按已确认作者身份生成可核验文献地图 | 单一事实账本、静态 HTML、来源与漂移提示 |
+| [以功能定义为主线的竞品研究](skills/research-tools/feature-definition-research/) | 从用户任务拆解竞品功能、前代变化、实现假说与价值 | 有据的功能分析、定向补证清单；实验版 |
+| [产品与功能族谱调研](skills/research-tools/product-feature-genealogy/) | 梳理产品分支、发布事件与功能演进 | 产品族谱、事件表、功能变化矩阵；实验版 |
 | [药品说明书权威归档](skills/research-tools/drug-label-html2pdf/) | 按地区和具体产品获取官方药品说明书 | 官方原件、可搜索 HTML/PDF、来源 manifest 与验证报告 |
 | [小红书自动化 Skills](skills/ip-operations/xiaohongshu-skills/) | 登录、搜索、详情、发布、互动、采集到飞书 Base | 结构化 JSON、浏览器操作结果、飞书记录 |
 | [Article Visualization](skills/ip-operations/article-visualization/) | 把论文、研究博客或技术文章做成大众可读的图文 | 科普长图、小红书卡片、公众号封面、短文 |

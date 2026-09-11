@@ -1,0 +1,4 @@
+interface:
+  display_name: "以功能定义为主线的竞品研究"
+  short_description: "从用户任务出发拆解竞品功能，用定向补证形成实现、价值与创新判断"
+  default_prompt: "使用 $feature-definition-research 分析这个产品，从用户任务到竞品能力、前代变化、实现假说与价值判断，优先补充会改变功能定义的证据。"

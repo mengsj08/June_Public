@@ -1,0 +1,53 @@
+{
+  "schema": "skill-publication/v1",
+  "skill": "product-feature-genealogy",
+  "date": "2026-09-12",
+  "edition": "experimental-public",
+  "canonicalIdentity": "personal/product-feature-genealogy",
+  "validationScope": "structure-links-privacy-only; no native-business-validation claim",
+  "files": [
+    {
+      "path": "README.md",
+      "canonicalSha256": "5ae3cb4c8375eea9779347977613698e9c613533ea2f984c7fc72f35e345259a",
+      "publicSha256": "ef8fb05a31f04521971c2824259557f130ff1964b3cacb46b1a1103565120f61",
+      "transform": "publication-provenance-and-local-entry-removal"
+    },
+    {
+      "path": "SKILL.md",
+      "canonicalSha256": "372c27f307b2e4d57ba7e3e75f54ec6d28b46ccfef8ce78751caf68ff88ba568",
+      "publicSha256": "5053584f3595a0a00dbf76382a74e6ef9b5305d3000a8d1655dfa835930331f2",
+      "transform": "generic-document-wording"
+    },
+    {
+      "path": "SOURCE.md",
+      "canonicalSha256": "c28bf5735651dabe8e3886b4943c40448bed4808c387271ad818ddf9f3ae0a4e",
+      "publicSha256": "552a7259f8417ad91b1053ba858f7aa09713b3d917326cf0d349bd2a7ad26283",
+      "transform": "publication-provenance-and-local-entry-removal"
+    },
+    {
+      "path": "agents/openai.yaml",
+      "canonicalSha256": "295d0302e78b614ee5e96425192c9940a3cc4e804f4d492c5335cf81af69431c",
+      "publicSha256": "295d0302e78b614ee5e96425192c9940a3cc4e804f4d492c5335cf81af69431c",
+      "transform": "unchanged"
+    },
+    {
+      "path": "assets/genealogy-template.md",
+      "canonicalSha256": "eb6f50e71606eb06e725b3849e5936234097667528d270a457bef928a9ba32dd",
+      "publicSha256": "eb6f50e71606eb06e725b3849e5936234097667528d270a457bef928a9ba32dd",
+      "transform": "unchanged"
+    },
+    {
+      "path": "references/calibration.md",
+      "canonicalSha256": "02dce6ec2ad9386f23c37e2f665b6344f430faa82cf0165710ea7c1766fda719",
+      "publicSha256": "02dce6ec2ad9386f23c37e2f665b6344f430faa82cf0165710ea7c1766fda719",
+      "transform": "unchanged"
+    },
+    {
+      "path": "references/evidence-rules.md",
+      "canonicalSha256": "510a6c43cdd1803e843ec6531ebf7b1886fa58ed3adc49e1b81447068a563bd9",
+      "publicSha256": "510a6c43cdd1803e843ec6531ebf7b1886fa58ed3adc49e1b81447068a563bd9",
+      "transform": "unchanged"
+    }
+  ],
+  "manifestSelfExcluded": true
+}
