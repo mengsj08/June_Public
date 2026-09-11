@@ -1,7 +1,7 @@
 # 来源与公开版说明
 
 - 维护者：June。
-- 方法包：`product-feature-genealogy`。
+- 方法包：`medtech-product-decoder`。
 - 创建：2026-09-11；本公开版：2026-09-12。
 - 来源：维护者在产品研究实践中提炼的方法和 AI 辅助整理，原型由维护者保留；本目录是长期维护正本的公开派生副本。
 - 已决定长期维护；本次以实验版发布，不宣称已完成充分业务验证。
@@ -12,3 +12,7 @@
 - 验证是结构、引用和发布边界检查，不代表真实任务效果已验证。
 - 原始来源与公开派生文件的 SHA-256 映射见 [PUBLICATION_MANIFEST.json](PUBLICATION_MANIFEST.json)。
 - 许可状态见 [README.md](README.md#许可)，未附加通用开源许可。
+
+## 2026-09-12 更名
+
+现名：医疗器械竞品解码（`medtech-product-decoder`）。原名：以功能定义为主线的竞品研究（`feature-definition-research`）。这是同一方法包的命名及领域定位更新，不是另一个新方法或新的验证结论。

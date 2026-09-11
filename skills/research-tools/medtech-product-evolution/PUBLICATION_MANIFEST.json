@@ -1,33 +1,33 @@
 {
   "schema": "skill-publication/v1",
-  "skill": "product-feature-genealogy",
+  "skill": "medtech-product-evolution",
   "date": "2026-09-12",
   "edition": "experimental-public",
-  "canonicalIdentity": "personal/product-feature-genealogy",
+  "canonicalIdentity": "personal/medtech-product-evolution",
   "validationScope": "structure-links-privacy-only; no native-business-validation claim",
   "files": [
     {
       "path": "README.md",
-      "canonicalSha256": "5ae3cb4c8375eea9779347977613698e9c613533ea2f984c7fc72f35e345259a",
-      "publicSha256": "ef8fb05a31f04521971c2824259557f130ff1964b3cacb46b1a1103565120f61",
+      "canonicalSha256": "6a60d83a2a40b44aa312b1b1e39c1a179d997787831cc23ce527af4397b967bb",
+      "publicSha256": "c16c76e43a56044b55038f5ab0e1e34d0624ee5941a6e7af4f9412b82db8ff48",
       "transform": "publication-provenance-and-local-entry-removal"
     },
     {
       "path": "SKILL.md",
-      "canonicalSha256": "372c27f307b2e4d57ba7e3e75f54ec6d28b46ccfef8ce78751caf68ff88ba568",
-      "publicSha256": "5053584f3595a0a00dbf76382a74e6ef9b5305d3000a8d1655dfa835930331f2",
+      "canonicalSha256": "1285dad4be1a1efe996671e8d1ca92d3638ca1630c193d91bdcc458e09e9759f",
+      "publicSha256": "f84fb72a8a25e61b61015c8b53cf3c316da34d83ab319f6dcbeef71401511747",
       "transform": "generic-document-wording"
     },
     {
       "path": "SOURCE.md",
-      "canonicalSha256": "c28bf5735651dabe8e3886b4943c40448bed4808c387271ad818ddf9f3ae0a4e",
-      "publicSha256": "552a7259f8417ad91b1053ba858f7aa09713b3d917326cf0d349bd2a7ad26283",
+      "canonicalSha256": "ba29484309c2b00d66dea48c2de89540197f05dfdd01cdf33ec2aa9db444b16e",
+      "publicSha256": "306cb38da31e36f4666724a85f5e77bddcdfd8876d8bc113e815492ffccc128a",
       "transform": "publication-provenance-and-local-entry-removal"
     },
     {
       "path": "agents/openai.yaml",
-      "canonicalSha256": "295d0302e78b614ee5e96425192c9940a3cc4e804f4d492c5335cf81af69431c",
-      "publicSha256": "295d0302e78b614ee5e96425192c9940a3cc4e804f4d492c5335cf81af69431c",
+      "canonicalSha256": "aeb19eb4cccc972e35604fce94af15fef1bf99af3c1bc4e86b769371eb72c774",
+      "publicSha256": "aeb19eb4cccc972e35604fce94af15fef1bf99af3c1bc4e86b769371eb72c774",
       "transform": "unchanged"
     },
     {
@@ -49,5 +49,6 @@
       "transform": "unchanged"
     }
   ],
-  "manifestSelfExcluded": true
+  "manifestSelfExcluded": true,
+  "previousSkill": "product-feature-genealogy"
 }

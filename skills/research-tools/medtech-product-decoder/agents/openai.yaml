@@ -1,0 +1,4 @@
+interface:
+  display_name: "医疗器械竞品解码"
+  short_description: "从临床任务拆解医疗器械功能、实现与证据，判断竞品卖点的真实价值"
+  default_prompt: "使用 $medtech-product-decoder 分析这款医疗器械的竞品功能，从临床和使用任务、前代变化、实现假说到价值判断，优先补充会改变结论的证据。"

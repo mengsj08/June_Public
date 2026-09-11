@@ -1,0 +1,4 @@
+interface:
+  display_name: "医疗器械产品进化图谱"
+  short_description: "追踪医疗器械产品世代、功能演进与产业化节点，区分发布、获证和供货"
+  default_prompt: "使用 $medtech-product-evolution 梳理这个医疗器械品牌的产品进化图谱，核实产品分支、历代能力、注册与供货节点，标明地区差异和证据缺口。"

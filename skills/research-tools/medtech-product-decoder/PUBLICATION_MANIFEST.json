@@ -1,33 +1,33 @@
 {
   "schema": "skill-publication/v1",
-  "skill": "feature-definition-research",
+  "skill": "medtech-product-decoder",
   "date": "2026-09-12",
   "edition": "experimental-public",
-  "canonicalIdentity": "personal/feature-definition-research",
+  "canonicalIdentity": "personal/medtech-product-decoder",
   "validationScope": "structure-links-privacy-only; no native-business-validation claim",
   "files": [
     {
       "path": "README.md",
-      "canonicalSha256": "5e63ed1026403e428427a9aea6f4dafb8bf2ad219eed8acf7dc62d787a426948",
-      "publicSha256": "e5ba9ce5c4e909cebb9730b36e12a1bce7326f15a827dae9ca8183b20aeebc8c",
+      "canonicalSha256": "bb7e84d6cd836aaa0dd2fb25881cc8fdb9949f1202dc4f92a6897e85757219de",
+      "publicSha256": "348b3869696107784c89d879ee77b1bfcc9f1757eb9ca7272baac484afc34f9b",
       "transform": "publication-provenance-and-local-entry-removal"
     },
     {
       "path": "SKILL.md",
-      "canonicalSha256": "4862ce7d26ffa47e1337c275d8248d732cebef975c11c97ec021bbec8e7ec69a",
-      "publicSha256": "1713b289d8cf907dbf69b181af9099e870c3b69f99d3b076fffbeaead3fed3a1",
+      "canonicalSha256": "acaa68879e89e13d08c93b83e890732532eb0543dc7c6b793dd41b5c13deff85",
+      "publicSha256": "73be19ead230e4640633eede2968d01b5cc098404d934d8cc65d9a361f68e841",
       "transform": "generic-document-wording"
     },
     {
       "path": "SOURCE.md",
-      "canonicalSha256": "1b8d835cc8796ae9f398ea130dd508b8a330c5c4e5b4913e02eceeef8c725a1d",
-      "publicSha256": "2c34cb440df05428b9c153a6ef84238fea7b0c1e5c4ee78a74af8ba7d2811a6d",
+      "canonicalSha256": "782dec23e9804818c936852a0da69ee00fb8ba4c1c4b9cbe28fdbdc96414efb8",
+      "publicSha256": "b52d3d36d200020918cf97d49a1869dc50551a0be658ec3707ba118572d4de64",
       "transform": "publication-provenance-and-local-entry-removal"
     },
     {
       "path": "agents/openai.yaml",
-      "canonicalSha256": "7561c7ecb4c5dacbf4001244b39d9274fabde8dd57493bb92487d8b4990a2389",
-      "publicSha256": "7561c7ecb4c5dacbf4001244b39d9274fabde8dd57493bb92487d8b4990a2389",
+      "canonicalSha256": "1ab793e9e7c49c5510bdcd7141330382a0e29eadc8819a0ea536c5652b957901",
+      "publicSha256": "1ab793e9e7c49c5510bdcd7141330382a0e29eadc8819a0ea536c5652b957901",
       "transform": "unchanged"
     },
     {
@@ -43,5 +43,6 @@
       "transform": "unchanged"
     }
   ],
-  "manifestSelfExcluded": true
+  "manifestSelfExcluded": true,
+  "previousSkill": "feature-definition-research"
 }
