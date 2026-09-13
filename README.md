@@ -61,7 +61,7 @@ Workbench，也有交给 Codex、Claude 等 Agent 执行的 Skill，还有通过
 | --- | --- | --- | --- |
 | Workbench | 想要一个常驻本地界面来承载工作过程的人——调度任务卡与 AI 派活、审阅稿件、双语读长 PDF | 本地服务、可视化工作区、任务留存、人工确认门 | [`workbenches/`](workbenches/) |
 | Skill | 不需要常驻界面，想把一套稳定工作流直接交给 Codex、Claude 等 Agent 执行的人 | `SKILL.md`、脚本、模板、验证说明 | [`skills/`](skills/) |
-| Site | 想浏览 AI × Life Science 公开信息源的人 | Source Atlas、作者文献地图入口 | [GitHub Pages](https://mengsj08.github.io/June_Public/) |
+| Site | 想浏览 AI × Life Science 公开信息源的人 | Source Atlas、学者文献档案入口 | [GitHub Pages](https://mengsj08.github.io/June_Public/) |
 
 ### Workbenches
 
@@ -76,7 +76,7 @@ Workbench，也有交给 Codex、Claude 等 Agent 执行的 Skill，还有通过
 
 | Skill | 典型任务 | 主要输出 |
 | --- | --- | --- |
-| [Author Literature Map](skills/research-tools/author-literature-map/) | 按已确认作者身份生成可核验文献地图 | 单一事实账本、静态 HTML、来源与漂移提示 |
+| [Researcher Bibliography](skills/research-tools/researcher-bibliography/) | 按已确认作者身份生成可核验文献地图 | 单一事实账本、静态 HTML、来源与漂移提示 |
 | [医疗器械竞品解码](skills/research-tools/medtech-product-decoder/) | 从用户任务拆解竞品功能、前代变化、实现假说与价值 | 有据的功能分析、定向补证清单；实验版 |
 | [医疗器械产品进化图谱](skills/research-tools/medtech-product-evolution/) | 梳理产品分支、发布事件与功能演进 | 产品族谱、事件表、功能变化矩阵；实验版 |
 | [药品说明书权威归档](skills/research-tools/drug-label-html2pdf/) | 按地区和具体产品获取官方药品说明书 | 官方原件、可搜索 HTML/PDF、来源 manifest 与验证报告 |
@@ -186,7 +186,7 @@ README 中给出验证方式。
 目标目录的 `LICENSE`、`THIRD_PARTY_NOTICES.md` 和来源说明：
 
 - 长 PDF 双语阅读器：AGPL-3.0。
-- Author Literature Map：MIT。
+- Researcher Bibliography：MIT。
 - Scientific Information Hub：MIT。
 - 小红书自动化 Skills：MIT。
 - Comma Review Studio：公开源码审阅与评估，不授予通用复制、修改或商用许可。
@@ -195,7 +195,7 @@ README 中给出验证方式。
 ## 公开站点
 
 - [AI4LifeScience Source Atlas](https://mengsj08.github.io/June_Public/)
-- [Author Literature Map 介绍页](https://mengsj08.github.io/June_Public/author-map.html)
+- [Researcher Bibliography 介绍页](https://mengsj08.github.io/June_Public/author-map.html)
 
 发现错误或希望复用某个工具时，优先在对应目录核对 README、能力边界与许可，再提交
 Issue 或 Pull Request。

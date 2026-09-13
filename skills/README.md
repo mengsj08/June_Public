@@ -8,7 +8,7 @@
 
 | 领域 | Skill | 适合解决的问题 | 依赖 |
 | --- | --- | --- | --- |
-| 研究工具 | [Author Literature Map](research-tools/author-literature-map/) | 已确认作者身份后，生成来源可追溯、可检测证据漂移的文献地图 | Python 3.9+；在线补充可选 |
+| 研究工具 | [Researcher Bibliography](research-tools/researcher-bibliography/) | 已确认作者身份后，生成来源可追溯、可检测证据漂移的文献地图 | Python 3.9+；在线补充可选 |
 | 产品研究 | [医疗器械竞品解码](research-tools/medtech-product-decoder/) | 拆解用户任务、竞品能力、实现假说与价值；实验版 | Agent 文件阅读与研究工具；无指定私有服务 |
 | 产品研究 | [医疗器械产品进化图谱](research-tools/medtech-product-evolution/) | 核实产品关系、发布事件与功能变化；实验版 | Agent 文件阅读与研究工具；Mermaid 可选 |
 | 研究工具 | [药品说明书权威归档](research-tools/drug-label-html2pdf/) | 按地区与具体产品取得官方说明书，输出可核验 HTML/PDF | Python 3.10+；requests、BeautifulSoup、lxml、PyMuPDF |
@@ -60,7 +60,7 @@ Skill。
 
 每个 Skill 的测试命令都不同：
 
-- `author-literature-map`：可用合成数据离线构建账本与 HTML。
+- `researcher-bibliography`：可用合成数据离线构建账本与 HTML。
 - `medtech-product-decoder` / `medtech-product-evolution`：Markdown 方法包，已做结构、链接、隐私边界检查；校准材料均为虚构场景，不代表原生调用或独立业务验证。长期维护与实验版发布不等于验证充分。
 - `drug-label-html2pdf`：运行 10 项离线安全/解析/工作流测试，再用 `doctor` 检查运行依赖。
 - `article-visualization`：检查 Node 脚本语法，并用公开样例跑渲染和密度检查。

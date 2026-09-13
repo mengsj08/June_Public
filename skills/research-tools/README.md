@@ -36,7 +36,7 @@ python -m unittest discover -s tests -p 'test_*.py' -v
 python scripts/fetch_drug_label.py doctor
 ```
 
-### [Author Literature Map](author-literature-map/)
+### [Researcher Bibliography](researcher-bibliography/)
 
 从使用者已经确认的作者 ID 与文献 CSV 出发，构建一个单一事实账本，再渲染为静态作者
 文献地图。它不会把同名作者自动判成同一个人，也不会把来源不明的记录塞入主结果。
@@ -51,13 +51,13 @@ python scripts/fetch_drug_label.py doctor
 30 秒离线试跑：
 
 ```bash
-cd author-literature-map
+cd researcher-bibliography
 python3 scripts/build_author_map_verdict.py --run-dir example --author "Jane Doe (example)"
 python3 scripts/render_author_map.py --run-dir example --author "Jane Doe (example)"
 open example/index.html
 ```
 
-完整输入格式、身份门与在线补充命令见 [`author-literature-map/README.md`](author-literature-map/README.md)。
+完整输入格式、身份门与在线补充命令见 [`researcher-bibliography/README.md`](researcher-bibliography/README.md)。
 
 ## 共同原则
 
